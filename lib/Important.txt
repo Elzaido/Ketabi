@@ -1,0 +1,96 @@
+in the build.gradle ---------->
+
+
+-----> def keystoreProperties = new Properties()
+-----> def keystorePropertiesFile = rootProject.file('key.properties')
+-----> if (keystorePropertiesFile.exists()) {
+----->     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+-----> }
+
+android {
+
+---------------------------------------------------
+
+android {
+    compileSdkVersion 33
+    ndkVersion flutter.ndkVersion
+
+
+---------------------------------------------------
+
+        minSdkVersion 19
+        targetSdkVersion flutter.targetSdkVersion
+----->  multiDexEnabled true
+
+--------------------------------------------------
+
+signingConfigs {
+    release {
+        keyAlias keystoreProperties['keyAlias']
+        keyPassword keystoreProperties['keyPassword']
+        storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+        storePassword keystoreProperties['storePassword']
+    }
+}
+buildTypes {
+    release {
+        signingConfig signingConfigs.release
+    }
+}
+
+--------------------------------------------------------------------------------
+
+in the AndroidManifest ---------->
+
+       package="com.elzaidotheker.theker">
+-----> <uses-permission android:name= "android.permission.INTERNET"/>
+  
+---------------------------------------------------------
+
+<application
+        android:label="Apple AirPods Pro"
+ -----> android:name="androidx.multidex.MultiDexApplication"
+
+---------------------------------------------------------
+
+        </activity>
+        <!-- Don't delete the meta-data below.
+             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+----->  <service
+            android:name="com.HatidRider.app.BackgroundService"
+            android:enabled="true"
+            android:exported="true" />     
+
+---------------------------------------------------------
+
+<meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value=""/>
+
+---------------------------------------------------------------------------------
+
+
+-first you need to create it in the android file ...
+in the key.properties ---------->
+
+storePassword=zrphotos24
+keyPassword=zrphotos24
+keyAlias=upload
+storeFile=../app/watch7-keystore.jks
+
+----------------------------------------------------------------------------------
+
+things to run ---------->
+
+
+keytool -genkey -v -keystore C:\Users\Hp\londonguide-keystore.jks -storetype JKS -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+
+---------------------------------------------------
+
+flutter pub get
+flutter pub run flutter_launcher_icons:main
+
+---------------------------------------------------
+
+flutter build appbundle
+

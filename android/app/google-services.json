@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "311290449733",
+    "project_id": "book-swapping-25932",
+    "storage_bucket": "book-swapping-25932.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:311290449733:android:419eed37cd27f751c6b82c",
+        "android_client_info": {
+          "package_name": "com.example.book_swapping"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "311290449733-tg9jes565a41vaocr4eirntplchv0qkm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0L5KWGxh8ZVapPIBKKho4-vJKbeli-cI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "311290449733-tg9jes565a41vaocr4eirntplchv0qkm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
