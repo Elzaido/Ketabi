@@ -1,8 +1,13 @@
 // ignore_for_file: avoid_print, prefer_const_constructors
 
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../modules/main_pages/add_post.dart';
+import '../../../modules/main_pages/chats.dart';
+import '../../../modules/main_pages/my_ads.dart';
+import '../../../modules/main_pages/new_feeds.dart';
+import '../../../modules/main_pages/profile.dart';
 import 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeStates> {
@@ -13,7 +18,15 @@ class HomeCubit extends Cubit<HomeStates> {
   File? postImage;
   File? chatImage;
 
-  int currentIndex = 4;
+  int currentIndex = 0;
+
+  List<Widget> screens = [
+    const Profile(),
+    MyAds(),
+    Add_Post(),
+    const Chats(),
+    NewFeeds(),
+  ];
 
   List<String> titles = [
     'حسابي',
@@ -21,21 +34,6 @@ class HomeCubit extends Cubit<HomeStates> {
     'أضف إعلان',
     'دردشاتي',
     'الرئيسية',
-  ];
-
-  List<Widget> images = [
-    Container(
-      decoration: BoxDecoration(
-          image: DecorationImage(image: AssetImage('assets/Ad1.jpeg'))),
-    ),
-    Container(
-      decoration: BoxDecoration(
-          image: DecorationImage(image: AssetImage('assets/Ad2.jpeg'))),
-    ),
-    Container(
-      decoration: BoxDecoration(
-          image: DecorationImage(image: AssetImage('assets/Ad3.jpeg'))),
-    ),
   ];
 
   void changeNav(int index) {

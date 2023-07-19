@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:book_swapping/phone.dart';
+import 'package:book_swapping/modules/authentication/login.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../models/bourding_model.dart';
@@ -18,23 +18,23 @@ class OnBoarding extends StatefulWidget {
 class _OnBoardingState extends State<OnBoarding> {
   List<BoardingModel> boarding = [
     BoardingModel(
-      image: '',
+      image: 'assets/boarding1.png',
       title: 'بدل كتابك القديم',
     ),
     BoardingModel(
-      image: '',
+      image: 'assets/boarding3.png',
       title: 'إعرض كتاباً للبيع',
     ),
     BoardingModel(
-      image: '',
-      title: 'تبرع بكتُبِك للآخرين',
+      image: 'assets/boarding2.png',
+      title: 'تبرع بكتابك للآخرين',
     ),
   ];
 
   void submit() {
     CacheHelper.saveDate(key: 'onBoarding', value: true).then((value) {
       if (value) {
-        navigateAndFinish(context: context, widget: MyPhone());
+        navigateAndFinish(context: context, widget: LoginPage());
       }
     });
   }
@@ -45,6 +45,8 @@ class _OnBoardingState extends State<OnBoarding> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
           actions: [
             TextButton(
                 onPressed: () {
@@ -53,7 +55,7 @@ class _OnBoardingState extends State<OnBoarding> {
                 child: Text(
                   'تخطي',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Cairo',
                     fontSize: 18,
