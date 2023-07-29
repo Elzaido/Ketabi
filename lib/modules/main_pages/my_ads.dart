@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../shared/Cubit/home/home_cubit.dart';
 import '../../shared/Cubit/home/home_state.dart';
+import '../../shared/component.dart';
 
 class MyAds extends StatelessWidget {
   MyAds({Key? key}) : super(key: key);
@@ -20,29 +21,29 @@ class MyAds extends StatelessWidget {
             physics: BouncingScrollPhysics(),
             child: Column(
               children: [
-                // Padding(
-                //   padding:
-                //       const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-                //   child: formField(
-                //       control: Search2,
-                //       isScure: false,
-                //       label: 'إبحث في إعلاناتك ...',
-                //       prefIcon: Icon(Icons.search),
-                //       validator: (String? value) {
-                //         if (value!.isEmpty) {
-                //           return 'Name must not be empty';
-                //         } else {
-                //           return null;
-                //         }
-                //       }),
-                // ),
-                // ListView.separated(
-                //     shrinkWrap: true,
-                //     physics: NeverScrollableScrollPhysics(),
-                //     itemBuilder: ((context, index) => AdItem(
-                //         context, HomeCubit.get(context).posts[index], true)),
-                //     separatorBuilder: (context, index) => SizedBox(height: 10),
-                //     itemCount: HomeCubit.get(context).posts.length),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                  child: formField(
+                      control: Search2,
+                      isScure: false,
+                      label: 'إبحث في إعلاناتك ...',
+                      prefIcon: Icon(Icons.search),
+                      validator: (String? value) {
+                        if (value!.isEmpty) {
+                          return 'Name must not be empty';
+                        } else {
+                          return null;
+                        }
+                      }),
+                ),
+                ListView.separated(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemBuilder: ((context, index) => AdItem(
+                        context, HomeCubit.get(context).posts[index], true)),
+                    separatorBuilder: (context, index) => SizedBox(height: 10),
+                    itemCount: HomeCubit.get(context).posts.length),
               ],
             ),
           );

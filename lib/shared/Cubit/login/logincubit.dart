@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:book_swapping/modules/authentication/loginverify.dart';
 import 'package:book_swapping/modules/authentication/register.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -5,23 +6,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import '../../../Layout/home_layout.dart';
 import '../../../models/user_model.dart';
 import '../../../modules/authentication/login.dart';
 import '../../constant.dart';
 import 'loginstate.dart';
 
-class LoginCubit extends Cubit<verifyState> {
-  LoginCubit() : super(verifyInitialState());
+class LoginCubit extends Cubit<loginState> {
+  LoginCubit() : super(loginInitialState());
 
   static LoginCubit get(context) => BlocProvider.of(context);
   // الأوبجكت بساعدني أوصل للداتا
   bool isPass = true;
-
-  void scureChange() {
-    isPass = !isPass;
-    emit(ChangeScureState());
-  }
 
   void verifyFun({
     required String phone,
@@ -49,7 +44,7 @@ class LoginCubit extends Cubit<verifyState> {
             LoginPage.verify = verificationId;
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => LoginVerify()));
-            emit(verifySuccessState(uId));
+            emit(verifySuccessState());
           }
         });
       },
@@ -61,7 +56,7 @@ class LoginCubit extends Cubit<verifyState> {
     required String code,
     required context,
   }) {
-    emit(verifyLoadingState());
+    emit(loginLoadingState());
 
     PhoneAuthCredential credential = PhoneAuthProvider.credential(
         verificationId: LoginPage.verify, smsCode: code);
@@ -69,46 +64,76 @@ class LoginCubit extends Cubit<verifyState> {
     // Sign the user in (or link) with the credential
     FirebaseAuth.instance.signInWithCredential(credential).then((value) {
       uId = value.user!.uid;
-      emit(verifySuccessState(
+      emit(loginSuccessState(
         value.user!.uid,
       ));
     }).catchError((error) {
-      emit(verifyFaildState());
+      emit(loginFaildState());
     });
-    Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => HomeLayout()),
-        (route) => false);
   }
 
-  goolgeSignIn() async {
-    emit(googleLoadingState());
+  // goolgeSignIn() async {
+  //   emit(googleLoadingState());
 
-    final googleSignIn = GoogleSignIn();
-    GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+  //   final googleSignIn = GoogleSignIn();
+  //   GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
-    GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+  //   GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
 
-    AuthCredential credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
-    );
+  //   AuthCredential credential = GoogleAuthProvider.credential(
+  //     accessToken: googleAuth?.accessToken,
+  //     idToken: googleAuth?.idToken,
+  //   );
 
-    await FirebaseAuth.instance.signInWithCredential(credential).then((value) {
-      creatUser(
-          name: value.user?.displayName,
-          email: value.user?.email,
-          phone: value.user?.phoneNumber,
-          uId: value.user?.uid);
-    });
-
-    emit(googleSuccessState(uId));
-  }
-
-  // catch (error) {
-  //   emit(googleFaildState());
-  //   print("An error has been occured $error");
+  //   await FirebaseAuth.instance.signInWithCredential(credential).then((value) {
+  //     print(value.user?.displayName);
+  //     creatUser(
+  //         name: value.user?.displayName,
+  //         email: value.user?.email,
+  //         phone: value.user?.phoneNumber,
+  //         uId: value.user?.uid);
+  //     emit(googleSuccessState(uId));
+  //   }).catchError((error) {
+  //     emit(googleFaildState());
+  //     print(error);
+  //   });
   // }
+
+  Future<UserCredential> signInWithGoogle() async {
+    try {
+      emit(googleLoadingState());
+      // Trigger the authentication flow
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
+
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
+
+      // Once signed in, return the UserCredential
+      await FirebaseAuth.instance
+          .signInWithCredential(credential)
+          .then((value) {
+        creatUser(
+            name: value.user!.displayName,
+            email: value.user!.email,
+            phone: value.user!.phoneNumber,
+            uId: value.user!.uid);
+        emit(googleSuccessState(uId));
+      });
+    } on FirebaseAuthException catch (e) {
+      final ex = TlsException(e.toString());
+      throw ex.message;
+    } catch (_) {}
+    const ex = TlsException();
+    throw ex.message;
+  }
+
   void creatUser({
     required String? name,
     required String? email,
@@ -132,7 +157,7 @@ class LoginCubit extends Cubit<verifyState> {
       emit(googleSuccessState(uId));
     }).catchError((error) {
       emit(googleFaildState());
-      print(error.toString() + 'hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh');
+      print(error.toString());
     });
   }
 }

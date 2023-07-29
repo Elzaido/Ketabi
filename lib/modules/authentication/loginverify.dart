@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pinput/pinput.dart';
+import '../../network/local/cache_helper.dart';
 import '../../shared/Cubit/login/loginstate.dart';
 import '../../shared/component.dart';
 import 'login.dart';
@@ -21,16 +22,17 @@ class LoginVerify extends StatelessWidget {
 
     return BlocProvider(
         create: (BuildContext context) => LoginCubit(),
-        child:
-            BlocConsumer<LoginCubit, verifyState>(listener: (context, state) {
-          if (state is verifySuccessState) {
+        child: BlocConsumer<LoginCubit, loginState>(listener: (context, state) {
+          if (state is loginSuccessState) {
+            CacheHelper.saveDate(key: 'uId', value: state.uId).then((value) {
+              defaultToast(
+                  massage: 'تم التحقق من رقم الهاتف بنجاح',
+                  state: ToastStates.SUCCESS);
+              navigateAndFinish(context: context, widget: HomeLayout());
+            });
+          } else if (state is loginFaildState) {
             defaultToast(
-                massage: 'تم التحقق من رقم الهاتف بنجاح',
-                state: ToastStates.SUCCESS);
-            navigateAndFinish(context: context, widget: HomeLayout());
-          } else {
-            defaultToast(
-                massage: 'هناك مشكلة في عملية تسجيل الدخول',
+                massage: 'هناك مشكلة في عملية تسجيل الدخول, تحقق الرمز المدخل',
                 state: ToastStates.ERROR);
           }
         }, builder: (context, state) {
@@ -97,17 +99,17 @@ class LoginVerify extends StatelessWidget {
                             LoginCubit.get(context)
                                 .loginCubit(code: code, context: context);
                           },
-                          child: state is verifyLoadingState
-                              ? Text(
-                                  "تحقق من رقم الهاتف",
-                                  style: TextStyle(fontFamily: 'Cairo'),
-                                )
-                              : Center(
+                          child: state is loginLoadingState
+                              ? Center(
                                   child: CircularProgressIndicator(
                                   backgroundColor: Colors.white,
                                   color: mainColor,
                                   strokeWidth: 3,
-                                )),
+                                ))
+                              : Text(
+                                  "تحقق من رقم الهاتف",
+                                  style: TextStyle(fontFamily: 'Cairo'),
+                                ),
                         )),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,

@@ -40,218 +40,190 @@ class _RegisterState extends State<Register> {
     return BlocProvider(
       create: (BuildContext context) => RegisterCubit(),
       child: BlocConsumer<RegisterCubit, RegisterState>(
-          listener: (context, state) {},
-          builder: (context, state) {
-            return Scaffold(
-              appBar: AppBar(
-                elevation: 0,
-                leading: IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.black,
-                  ),
-                ),
-                backgroundColor: Colors.transparent,
+          listener: (context, state) {
+        if (state is RegisterFaildState) {
+          defaultToast(massage: state.error, state: ToastStates.ERROR);
+        }
+      }, builder: (context, state) {
+        return Scaffold(
+          appBar: AppBar(
+            elevation: 0,
+            leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: const Icon(
+                Icons.arrow_back,
+                color: Colors.black,
               ),
-              body: Center(
-                child: Form(
-                  key: formKey,
-                  child: Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: SingleChildScrollView(
-                      child: Column(
+            ),
+            backgroundColor: Colors.transparent,
+          ),
+          body: Center(
+            child: Form(
+              key: formKey,
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Text(
+                        'هيا نبدأ',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'Cairo',
+                          color: Colors.black,
+                          fontSize: 30,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      formField(
+                          control: nameControl,
+                          isScure: false,
+                          label: 'الإسم',
+                          prefIcon: Icon(Icons.person_outline),
+                          validator: (String? value) {
+                            if (value!.isEmpty) {
+                              return 'يجب إدخال الإسم';
+                            } else {
+                              return null;
+                            }
+                          }),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      formField(
+                          control: emailControl,
+                          isScure: false,
+                          label: 'الريد الإلكتروني',
+                          prefIcon: Icon(Icons.email),
+                          validator: (String? value) {
+                            if (value!.isEmpty) {
+                              return 'يجب إدخال البريد الإلكتروني';
+                            } else {
+                              return null;
+                            }
+                          }),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            'هيا نبدأ',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontFamily: 'Cairo',
-                              color: Colors.black,
-                              fontSize: 30,
+                          Expanded(
+                            flex: 1,
+                            child: TextFormField(
+                              controller: countryControl,
+                              keyboardType: TextInputType.phone,
+                              decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              )),
                             ),
                           ),
                           SizedBox(
-                            height: 20,
+                            width: 10,
                           ),
-                          formField(
-                              control: nameControl,
-                              isScure: false,
-                              label: 'الإسم',
-                              prefIcon: Icon(Icons.person_outline),
-                              validator: (String? value) {
-                                if (value!.isEmpty) {
-                                  return 'يجب إدخال الإسم';
-                                } else {
-                                  return null;
-                                }
-                              }),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          formField(
-                              control: emailControl,
-                              isScure: false,
-                              label: 'الريد الإلكتروني',
-                              prefIcon: Icon(Icons.email),
-                              validator: (String? value) {
-                                if (value!.isEmpty) {
-                                  return 'يجب إدخال البريد الإلكتروني';
-                                } else {
-                                  return null;
-                                }
-                              }),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                flex: 1,
-                                child: TextFormField(
-                                  controller: countryControl,
-                                  keyboardType: TextInputType.phone,
-                                  decoration: InputDecoration(
-                                      border: OutlineInputBorder(
+                          Expanded(
+                              flex: 4,
+                              child: TextFormField(
+                                controller: phoneControl,
+                                onChanged: (value) {
+                                  phone = value;
+                                },
+                                keyboardType: TextInputType.phone,
+                                decoration: InputDecoration(
+                                  isDense: true,
+                                  hintTextDirection: TextDirection.rtl,
+                                  border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
-                                  )),
+                                  ),
+                                  hintText: "  رقم الهاتف",
                                 ),
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Expanded(
-                                  flex: 4,
-                                  child: TextFormField(
-                                    controller: phoneControl,
-                                    onChanged: (value) {
-                                      phone = value;
-                                    },
-                                    keyboardType: TextInputType.phone,
-                                    decoration: InputDecoration(
-                                      isDense: true,
-                                      hintTextDirection: TextDirection.rtl,
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      hintText: "  رقم الهاتف",
-                                    ),
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return 'يجب إدخال رقم الهاتف';
-                                      } else {
-                                        return null;
-                                      }
-                                    },
-                                  )),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 45,
-                            child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor: mainColor,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10))),
-                                onPressed: () {
-                                  if (formKey.currentState!.validate()) {
-                                    RegisterCubit.get(context).verifyFun2(
-                                        name: nameControl.text,
-                                        email: emailControl.text,
-                                        phone: countryControl.text +
-                                            phoneControl.text,
-                                        context: context);
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'يجب إدخال رقم الهاتف';
+                                  } else {
+                                    return null;
                                   }
                                 },
-                                child: state is! LoadingRegisterState
-                                    ? Text(
-                                        "إنشاء حساب",
-                                        style: TextStyle(
-                                          fontFamily: 'Cairo',
-                                        ),
-                                      )
-                                    : Center(
-                                        child: CircularProgressIndicator(
-                                        backgroundColor: Colors.white,
-                                        color: mainColor,
-                                        strokeWidth: 3,
-                                      ))),
-                          ),
-                          // Container(
-                          //     decoration: BoxDecoration(
-                          //         color: Colors.green,
-                          //         borderRadius: BorderRadius.circular(30)),
-                          //     width: 200,
-                          //     height: 50,
-                          //     child: state is! LoadingRegisterState
-                          //         ? MaterialButton(
-                          //             child: Text(
-                          //               'إنشاء حساب',
-                          //               style: TextStyle(
-                          //                   fontFamily: 'Cairo',
-                          //                   color: Colors.white,
-                          //                   fontSize: 20,
-                          //                   fontWeight: FontWeight.bold),
-                          //             ),
-                          //             onPressed: () {
-                          //               if (formKey.currentState!.validate()) {
-                          //                 RegisterCubit.get(context).userRegister(
-                          //                   name: nameControl.text,
-                          //                   email: emailControl.text,
-                          //                   phone: phoneControl.text,
-                          //                 );
-                          //               }
-                          //             })
-                          //         : Center(
-                          //             child: CircularProgressIndicator(
-                          //             backgroundColor: Colors.white,
-                          //             strokeWidth: 3,
-                          //           ))),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Text(
-                                    'تسجيل الدخول',
-                                    style: TextStyle(
-                                      fontFamily: 'Cairo',
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.green,
-                                    ),
-                                  )),
-                              Text(
-                                'لديك حساب؟',
-                                style: TextStyle(
-                                  fontFamily: 'Cairo',
-                                ),
-                              ),
-                              SizedBox(
-                                width: 1,
-                              ),
-                            ],
-                          )
+                              )),
                         ],
                       ),
-                    ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 45,
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: mainColor,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10))),
+                            onPressed: () {
+                              if (formKey.currentState!.validate()) {
+                                RegisterCubit.get(context).verifyFun2(
+                                    name: nameControl.text,
+                                    email: emailControl.text,
+                                    phone:
+                                        countryControl.text + phoneControl.text,
+                                    context: context);
+                              }
+                            },
+                            child: state is! LoadingRegisterState
+                                ? Text(
+                                    "إنشاء حساب",
+                                    style: TextStyle(
+                                      fontFamily: 'Cairo',
+                                    ),
+                                  )
+                                : Center(
+                                    child: CircularProgressIndicator(
+                                    backgroundColor: Colors.white,
+                                    color: mainColor,
+                                    strokeWidth: 3,
+                                  ))),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: Text(
+                                'تسجيل الدخول',
+                                style: TextStyle(
+                                  fontFamily: 'Cairo',
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green,
+                                ),
+                              )),
+                          Text(
+                            'لديك حساب؟',
+                            style: TextStyle(
+                              fontFamily: 'Cairo',
+                            ),
+                          ),
+                          SizedBox(
+                            width: 1,
+                          ),
+                        ],
+                      )
+                    ],
                   ),
                 ),
               ),
-            );
-          }),
+            ),
+          ),
+        );
+      }),
     );
   }
 }

@@ -28,6 +28,8 @@ class ErrorUploadProfileImageState extends HomeStates {}
 
 class LoadingUpdateUserState extends HomeStates {}
 
+class SuccessUpdateUserState extends HomeStates {}
+
 class ErrorUpdateUserState extends HomeStates {}
 
 // Posts States =>
@@ -54,12 +56,9 @@ class ErrorGetPostDataState extends HomeStates {
   ErrorGetPostDataState(this.error);
 }
 
-class SuccessLikePostState extends HomeStates {}
+class ChangeSelectionState extends HomeStates {}
 
-class FailedLikePostState extends HomeStates {
-  final String error;
-  FailedLikePostState(this.error);
-}
+// All User Data States
 
 class LoadingAllUserDataState extends HomeStates {}
 
@@ -70,6 +69,8 @@ class FailedAllUserDataState extends HomeStates {
 
   FailedAllUserDataState(this.error);
 }
+
+// Chat States
 
 class SuccessSendMessage extends HomeStates {}
 

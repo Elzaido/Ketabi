@@ -53,12 +53,15 @@ class RegisterCubit extends Cubit<RegisterState> {
     required String phone,
     required context,
   }) {
+    print('My phone is:' + phone);
     emit(LoadingRegisterState());
     FirebaseAuth.instance
         .verifyPhoneNumber(
       phoneNumber: phone,
       verificationCompleted: (PhoneAuthCredential credential) {},
-      verificationFailed: (FirebaseAuthException e) {},
+      verificationFailed: (FirebaseAuthException e) {
+        emit(RegisterFaildState(e.toString()));
+      },
       codeSent: (String verificationId, int? resendToken) {
         CollectionReference usersRef =
             FirebaseFirestore.instance.collection('users');
@@ -68,9 +71,7 @@ class RegisterCubit extends Cubit<RegisterState> {
         });
         // If the user is registered, navigate to the home page
         isRegistered.then((registered) {
-          if (registered) {
-            print('this account is already exist');
-          } else {
+          if (!registered) {
             Register.verify = verificationId;
             Navigator.push(
                 context,

@@ -45,7 +45,7 @@ class _OnBoardingState extends State<OnBoarding> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.transparent,
           elevation: 0,
           actions: [
             TextButton(

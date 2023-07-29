@@ -32,7 +32,7 @@ class RegisterVerify extends StatelessWidget {
                 massage: 'تم التحقق من رقم الهاتف بنجاح',
                 state: ToastStates.SUCCESS);
             navigateAndFinish(context: context, widget: HomeLayout());
-          } else {
+          } else if (state is CreateFaildState) {
             defaultToast(
                 massage: 'هناك مشكلة في عملية إنشاء الحساب',
                 state: ToastStates.ERROR);
@@ -105,16 +105,16 @@ class RegisterVerify extends StatelessWidget {
                               code: code);
                         },
                         child: state is LoadingRegisterState
-                            ? Text(
-                                "تحقق من رقم الهاتف",
-                                style: TextStyle(fontFamily: 'Cairo'),
-                              )
-                            : Center(
+                            ? Center(
                                 child: CircularProgressIndicator(
                                 backgroundColor: Colors.white,
                                 color: mainColor,
                                 strokeWidth: 3,
-                              )),
+                              ))
+                            : Text(
+                                "تحقق من رقم الهاتف",
+                                style: TextStyle(fontFamily: 'Cairo'),
+                              ),
                       ),
                     ),
                     Row(

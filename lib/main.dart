@@ -19,6 +19,8 @@ void main() async {
   Bloc.observer = MyBlocObserver();
   await CacheHelper.init();
   bool? onBoarding = CacheHelper.getData(key: 'onBoarding');
+  uId = CacheHelper.getData(key: 'uId');
+  print('user ID is:' + '${uId}');
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -44,7 +46,10 @@ class myApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
         create: (context) {
-          return HomeCubit();
+          return HomeCubit()
+            ..getUsers()
+            ..getUserData()
+            ..getAllPosts();
         },
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
@@ -55,7 +60,7 @@ class myApp extends StatelessWidget {
               splash: Image(
                 image: AssetImage('assets/logo1.png'),
               ),
-              nextScreen: LoginPage(),
+              nextScreen: startWidget,
               splashTransition: SplashTransition.fadeTransition,
               backgroundColor: Color(0xFF92DF96)),
         ));

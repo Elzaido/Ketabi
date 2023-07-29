@@ -1,12 +1,12 @@
 // ignore_for_file: prefer_const_constructors, must_be_immutable
-
 import 'package:book_swapping/shared/Cubit/login/logincubit.dart';
 import 'package:book_swapping/shared/Cubit/login/loginstate.dart';
 import 'package:book_swapping/shared/constant.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ionicons/ionicons.dart';
-import '../../network/local/cache_helper.dart';
 import '../../shared/component.dart';
 import 'register.dart';
 
@@ -36,15 +36,11 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return BlocProvider(
         create: (BuildContext context) => LoginCubit(),
-        child:
-            BlocConsumer<LoginCubit, verifyState>(listener: (context, state) {
+        child: BlocConsumer<LoginCubit, loginState>(listener: (context, state) {
           if (state is verifyFaildState) {
             defaultToast(
                 massage: 'الرقم غير مسجل, قم بإنشاء حساب أولاً',
                 state: ToastStates.ERROR);
-          }
-          if (state is verifySuccessState) {
-            CacheHelper.saveDate(key: 'uId', value: state.uId);
           }
         }, builder: (context, state) {
           return Scaffold(
@@ -179,30 +175,52 @@ class _LoginPageState extends State<LoginPage> {
                     ],
                   ),
                   ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.all(12),
-                      backgroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          10,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.all(12),
+                        backgroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                            10,
+                          ),
                         ),
                       ),
-                    ),
-                    icon: const Icon(
-                      Ionicons.logo_google,
-                      color: Colors.red,
-                    ),
-                    label: const Text(
-                      "Sign in with google",
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        color: Colors.black,
+                      icon: const Icon(
+                        Ionicons.logo_google,
+                        color: Colors.red,
                       ),
-                    ),
-                    onPressed: () async {
-                      LoginCubit.get(context).goolgeSignIn();
-                    },
-                  ),
+                      label: const Text(
+                        "Sign in with google",
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.black,
+                        ),
+                      ),
+                      onPressed: () async {
+                        // Trigger the authentication flow
+                        final GoogleSignInAccount? googleUser =
+                            await GoogleSignIn().signIn();
+
+                        // Obtain the auth details from the request
+                        final GoogleSignInAuthentication? googleAuth =
+                            await googleUser?.authentication;
+
+                        // Create a new credential
+                        final credential = GoogleAuthProvider.credential(
+                          accessToken: googleAuth?.accessToken,
+                          idToken: googleAuth?.idToken,
+                        );
+
+                        // Once signed in, return the UserCredential
+                        return await FirebaseAuth.instance
+                            .signInWithCredential(credential)
+                            .then((value) {
+                          LoginCubit.get(context).creatUser(
+                              name: value.user!.displayName,
+                              email: value.user!.email,
+                              phone: value.user!.phoneNumber,
+                              uId: value.user!.uid);
+                        });
+                      })
                 ],
               ),
             ),

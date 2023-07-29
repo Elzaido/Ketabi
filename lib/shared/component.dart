@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
 import '../models/bourding_model.dart';
+import '../models/post_model.dart';
+import '../models/user_model.dart';
+import '../modules/chat/chat_details.dart';
 
 Widget formField(
         {required TextEditingController control,
@@ -63,6 +65,13 @@ Color choseToastColor(ToastStates state) {
   return color;
 }
 
+void navigateAndFinish({required context, required Widget widget}) =>
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => widget),
+        // delete previous pages when i go to the next page:
+        (Route<dynamic> route) => false);
+
 Widget boardingItemBuilder(BoardingModel model) => Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -85,9 +94,228 @@ Widget boardingItemBuilder(BoardingModel model) => Column(
       ],
     );
 
-void navigateAndFinish({required context, required Widget widget}) =>
-    Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => widget),
-        // delete previous pages when i go to the next page:
-        (Route<dynamic> route) => false);
+Widget profileButton(
+    {required void Function()? onPressed,
+    required String text,
+    required Icon icon}) {
+  return Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Expanded(
+          child: TextButton(
+              onPressed: onPressed,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    text,
+                    style: TextStyle(
+                      fontFamily: 'Cairo',
+                    ),
+                  ),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  icon,
+                ],
+              )),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget defualtHomeItem({
+  required BuildContext context,
+  required String title,
+  required String image,
+  required void Function()? onTap,
+}) =>
+    Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.3),
+                spreadRadius: 5,
+                blurRadius: 10,
+                offset: Offset(0, 5), // changes position of shadow
+              ),
+            ],
+          ),
+          height: 100,
+          width: double.infinity,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                title,
+                style: TextStyle(fontFamily: 'Cairo', fontSize: 15),
+              ),
+              SizedBox(
+                width: 20,
+              ),
+              Image(
+                image: AssetImage(image),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+Widget AdItem(contrext, PostModel model, bool isMine) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+    child: InkWell(
+      onTap: () {},
+      child: Card(
+          elevation: 5,
+          color: Color.fromARGB(255, 247, 247, 247),
+          child: Column(
+            children: [
+              Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        if (model.postText != '')
+                          Text(
+                            '${model.postText}',
+                            maxLines: 2,
+                            textAlign: TextAlign.end,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        Text(
+                          '${model.type}',
+                          textAlign: TextAlign.end,
+                          style: TextStyle(fontSize: 15, fontFamily: 'Cairo'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                if (model.postImage != '')
+                  Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Image(
+                      image: NetworkImage(
+                        '${model.postImage}',
+                      ),
+                      height: 100,
+                      width: 100,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+              ]),
+              SizedBox(
+                height: 10,
+              ),
+              if (isMine) separator(),
+              SizedBox(
+                height: 10,
+              ),
+              if (isMine)
+                Row(
+                  children: [
+                    Expanded(
+                        child: InkWell(
+                      onTap: () {},
+                      child: Column(
+                        children: [
+                          Icon(Icons.analytics, color: Colors.green),
+                          Text('إحصائيات'),
+                        ],
+                      ),
+                    )),
+                    Expanded(
+                        child: InkWell(
+                      onTap: () {},
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.edit,
+                            color: Colors.orange,
+                          ),
+                          Text('تعديل')
+                        ],
+                      ),
+                    )),
+                    Expanded(
+                        child: InkWell(
+                      onTap: () {},
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.delete,
+                            color: Colors.red,
+                          ),
+                          Text('حذف')
+                        ],
+                      ),
+                    )),
+                  ],
+                ),
+              SizedBox(
+                height: 10,
+              )
+            ],
+          )),
+    ),
+  );
+}
+
+Widget chatItem(context, UserModel model) => InkWell(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ChatDetails(
+                      model: model,
+                    )));
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Row(
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              child: CircleAvatar(
+                  radius: 30.0,
+                  backgroundImage: NetworkImage('${model.image}')),
+            ),
+            Text(
+              '${model.name}',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+Widget separator() => Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: (Container(
+        height: 1,
+        color: Color.fromARGB(255, 226, 226, 226),
+      )),
+    );
