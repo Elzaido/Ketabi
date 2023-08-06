@@ -57,6 +57,7 @@ class HomeLayout extends StatelessWidget {
                           HomeCubit.get(context).currentIndex = 0;
                           HomeCubit.get(context)
                               .changeNav(HomeCubit.get(context).currentIndex);
+                          HomeCubit.get(context).getUserData();
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -116,6 +117,7 @@ class HomeLayout extends StatelessWidget {
                           HomeCubit.get(context).currentIndex = 3;
                           HomeCubit.get(context)
                               .changeNav(HomeCubit.get(context).currentIndex);
+                          HomeCubit.get(context).getUserData();
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,

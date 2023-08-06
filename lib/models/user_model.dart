@@ -6,6 +6,7 @@ class UserModel {
   late String? phone;
   late String image;
   late String uId;
+  late List<String> chatList;
 
   UserModel({
     required this.name,
@@ -13,6 +14,7 @@ class UserModel {
     required this.phone,
     required this.image,
     required this.uId,
+    this.chatList = const [],
   });
 
   UserModel.formJson(Map<String, dynamic> json) {
@@ -21,6 +23,7 @@ class UserModel {
     phone = json['phone'];
     image = json['image'];
     uId = json['uId'];
+    chatList = List<String>.from(json['chatlist'] ?? []);
   }
 
   Map<String, dynamic> toMap() {
@@ -30,6 +33,7 @@ class UserModel {
       'phone': phone,
       'image': image,
       'uId': uId,
+      'chatlist': chatList,
     };
   }
 }

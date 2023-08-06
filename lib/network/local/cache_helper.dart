@@ -7,13 +7,6 @@ class CacheHelper {
     sharedPreferences = await SharedPreferences.getInstance();
   }
 
-  // static Future<bool> putBoolData(
-  //     {required String key, required bool value}) async {
-  //   // it will return boolian whatever we set :
-  //   // هل هو عمل سيت ولا لأ :
-  //   return await sharedPreferences.setBool(key, value);
-  // }
-
   // dynamic becuase i do NOT know what is the type of the data that i will get :
   static dynamic getData({required String key}) {
     return sharedPreferences.get(key);

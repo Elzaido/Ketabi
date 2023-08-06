@@ -48,8 +48,10 @@ class HomeCubit extends Cubit<HomeStates> {
 
   List<Widget> images = [
     Container(
-      decoration: BoxDecoration(
-          image: DecorationImage(image: AssetImage('assets/Ad here.png'))),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Image.asset('assets/Ad here.png'),
+      ),
     ),
   ];
 
@@ -399,7 +401,7 @@ class HomeCubit extends Cubit<HomeStates> {
     emit(RemovePostImageState());
   }
 
-  void selectedPostType(String value) {
+  void selectPostType(String value) {
     selectedOption = value;
     emit(ChangeSelectionState());
   }

@@ -2,26 +2,25 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../models/chat_model.dart';
-import '../../models/user_model.dart';
 import '../../shared/Cubit/home/home_cubit.dart';
 import '../../shared/Cubit/home/home_state.dart';
 
 class ChatDetails extends StatelessWidget {
-  UserModel model;
+  final String uId;
+  final String image;
+  final String name;
 
-  ChatDetails({
-    Key? key,
-    required this.model,
-  }) : super(key: key);
+  ChatDetails(
+      {Key? key, required this.uId, required this.image, required this.name})
+      : super(key: key);
 
   var messageCotroller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
-      HomeCubit.get(context).getMessages(receiverId: model.uId);
+      HomeCubit.get(context).getMessages(receiverId: uId);
 
       return BlocConsumer<HomeCubit, HomeStates>(
           listener: (context, state) {},
@@ -34,14 +33,13 @@ class ChatDetails extends StatelessWidget {
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         child: CircleAvatar(
-                            radius: 22.0,
-                            backgroundImage: NetworkImage(model.image)),
+                            radius: 22.0, backgroundImage: NetworkImage(image)),
                       ),
                       SizedBox(
                         width: 10,
                       ),
                       Text(
-                        model.name!,
+                        name,
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 15,
@@ -59,10 +57,7 @@ class ChatDetails extends StatelessWidget {
                     },
                   ),
                 ),
-                body:
-                    // HomeCubit.get(context).chats.isNotEmpty
-                    //     ?
-                    Padding(
+                body: Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: Column(
                     children: [
@@ -164,7 +159,7 @@ class ChatDetails extends StatelessWidget {
                                         null) {
                                       if (messageCotroller.text != '')
                                         HomeCubit.get(context).sendMessage(
-                                          receiverId: model.uId,
+                                          receiverId: uId,
                                           dateTime: DateTime.now().toString(),
                                           text: messageCotroller.text,
                                         );
@@ -172,7 +167,7 @@ class ChatDetails extends StatelessWidget {
                                     } else {
                                       HomeCubit.get(context).SendChatImage(
                                           text: messageCotroller.text,
-                                          receiverId: model.uId,
+                                          receiverId: uId,
                                           dateTime: DateTime.now().toString());
                                       messageCotroller.clear();
                                     }
@@ -188,9 +183,7 @@ class ChatDetails extends StatelessWidget {
                       ),
                     ],
                   ),
-                )
-                //  : Center(child: CircularProgressIndicator()),
-                );
+                ));
           });
     });
   }

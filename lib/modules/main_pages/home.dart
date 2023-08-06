@@ -41,7 +41,11 @@ class Home extends StatelessWidget {
             onTap: () {
               HomeCubit.get(context).getPostsByType(type: 'تبديل');
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => AllAds()));
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AllAds(
+                            title: 'إعلانات التبديل',
+                          )));
             },
           ),
           defualtHomeItem(
@@ -51,7 +55,11 @@ class Home extends StatelessWidget {
             onTap: () {
               HomeCubit.get(context).getPostsByType(type: 'تبرع');
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => AllAds()));
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AllAds(
+                            title: 'إعلانات التبرع',
+                          )));
             },
           ),
           defualtHomeItem(
@@ -61,7 +69,11 @@ class Home extends StatelessWidget {
             onTap: () {
               HomeCubit.get(context).getPostsByType(type: 'بيع');
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => AllAds()));
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AllAds(
+                            title: 'إعلانات البيع',
+                          )));
             },
           ),
           defualtHomeItem(
@@ -71,7 +83,11 @@ class Home extends StatelessWidget {
             onTap: () {
               HomeCubit.get(context).getAllPosts();
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => AllAds()));
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AllAds(
+                            title: 'جميع الإعلانات',
+                          )));
             },
           ),
           SizedBox(

@@ -173,8 +173,7 @@ class Add_Post extends StatelessWidget {
                                 )
                                 .toList(),
                             onChanged: (newValue) {
-                              HomeCubit.get(context)
-                                  .selectedPostType(newValue!);
+                              HomeCubit.get(context).selectPostType(newValue!);
                             },
                           ),
                           SizedBox(

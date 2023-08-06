@@ -48,8 +48,7 @@ class myApp extends StatelessWidget {
         create: (context) {
           return HomeCubit()
             ..getUsers()
-            ..getUserData()
-            ..getAllPosts();
+            ..getUserData();
         },
         child: MaterialApp(
           debugShowCheckedModeBanner: false,

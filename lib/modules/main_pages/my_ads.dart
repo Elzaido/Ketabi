@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../shared/Cubit/home/home_cubit.dart';
 import '../../shared/Cubit/home/home_state.dart';
 import '../../shared/component.dart';
@@ -31,7 +30,7 @@ class MyAds extends StatelessWidget {
                       prefIcon: Icon(Icons.search),
                       validator: (String? value) {
                         if (value!.isEmpty) {
-                          return 'Name must not be empty';
+                          return 'إبحث في إعلاناتك ...';
                         } else {
                           return null;
                         }
@@ -41,9 +40,15 @@ class MyAds extends StatelessWidget {
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
                     itemBuilder: ((context, index) => AdItem(
-                        context, HomeCubit.get(context).posts[index], true)),
+                          context,
+                          HomeCubit.get(context).posts[index],
+                          true,
+                        )),
                     separatorBuilder: (context, index) => SizedBox(height: 10),
                     itemCount: HomeCubit.get(context).posts.length),
+                SizedBox(
+                  height: 25,
+                )
               ],
             ),
           );

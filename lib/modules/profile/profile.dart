@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, prefer_const_literals_to_create_immutables
 
 import 'package:book_swapping/modules/authentication/login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../network/local/cache_helper.dart';
@@ -99,6 +100,7 @@ class Profile extends StatelessWidget {
                               navigateAndFinish(
                                   context: context, widget: LoginPage());
                               HomeCubit.get(context).changeNav(4);
+                              FirebaseAuth.instance.signOut();
                             }
                           });
                         },

@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../models/bourding_model.dart';
 import '../models/post_model.dart';
 import '../models/user_model.dart';
 import '../modules/chat/chat_details.dart';
+import 'constant.dart';
 
 Widget formField(
         {required TextEditingController control,
@@ -171,11 +173,90 @@ Widget defualtHomeItem({
       ),
     );
 
-Widget AdItem(contrext, PostModel model, bool isMine) {
+UserModel? userModel;
+
+Widget AdItem(
+  context,
+  PostModel model,
+  bool isMine,
+) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
     child: InkWell(
-      onTap: () {},
+      onTap: () {
+        if (model.uId != uId) {
+          showDialog(
+              context: context,
+              builder: (context1) => AlertDialog(
+                    title: Text(
+                      model.type,
+                      style: TextStyle(
+                        fontFamily: 'Cairo',
+                      ),
+                    ),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(model.postText),
+                        Container(
+                            width: 300,
+                            height: 300,
+                            child: Image(
+                              image: NetworkImage(
+                                model.postImage,
+                              ),
+                              fit: BoxFit.cover,
+                            ))
+                      ],
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pop(context1, true);
+                          },
+                          child: Text('إغلاق')),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context1, true);
+                          FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(uId)
+                              .update({
+                            'chatlist': FieldValue.arrayUnion([model.uId]),
+                          });
+                          FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(model.uId)
+                              .update({
+                            'chatlist': FieldValue.arrayUnion([uId]),
+                          });
+                          FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(model.uId)
+                              .get()
+                              .then((value) {
+                            userModel = UserModel.formJson(value.data()!);
+                            String name = userModel!.name!;
+                            String image = userModel!.image;
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ChatDetails(
+                                          uId: model.uId,
+                                          image: image,
+                                          name: name,
+                                        )));
+                          });
+                        },
+                        child: Text('دردشة'),
+                      ),
+                    ],
+                  ));
+        } else {
+          defaultToast(
+              massage: 'هذا الإعلان خاص بك!', state: ToastStates.ERROR);
+        }
+      },
       child: Card(
           elevation: 5,
           color: Color.fromARGB(255, 247, 247, 247),
@@ -287,7 +368,9 @@ Widget chatItem(context, UserModel model) => InkWell(
             context,
             MaterialPageRoute(
                 builder: (context) => ChatDetails(
-                      model: model,
+                      uId: model.uId,
+                      image: model.image,
+                      name: model.name!,
                     )));
       },
       child: Padding(

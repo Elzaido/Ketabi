@@ -2,14 +2,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../shared/Cubit/home/home_cubit.dart';
 import '../../shared/Cubit/home/home_state.dart';
 import '../../shared/component.dart';
 
 class AllAds extends StatelessWidget {
-  AllAds({Key? key});
+  AllAds({Key? key, required this.title});
 
+  final String title;
   TextEditingController Search2 = TextEditingController();
 
   @override
@@ -20,7 +20,7 @@ class AllAds extends StatelessWidget {
           return Scaffold(
             appBar: AppBar(
               title: Text(
-                'جميع الإعلانات',
+                title,
                 style: TextStyle(
                   fontFamily: 'Cairo',
                 ),
@@ -50,7 +50,10 @@ class AllAds extends StatelessWidget {
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
                       itemBuilder: ((context, index) => AdItem(
-                          context, HomeCubit.get(context).posts[index], false)),
+                            context,
+                            HomeCubit.get(context).posts[index],
+                            false,
+                          )),
                       separatorBuilder: (context, index) =>
                           SizedBox(height: 10),
                       itemCount: HomeCubit.get(context).posts.length),
