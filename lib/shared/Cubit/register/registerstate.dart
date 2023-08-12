@@ -2,6 +2,8 @@
 
 abstract class RegisterState {}
 
+// register states
+
 class RegisterInitialState extends RegisterState {}
 
 class LoadingRegisterState extends RegisterState {}
@@ -16,10 +18,24 @@ class RegisterFaildState extends RegisterState {
   RegisterFaildState(this.error);
 }
 
-class CreateSuccessState extends RegisterState {}
+// create account states
+
+class CreateSuccessState extends RegisterState {
+  final uId;
+
+  CreateSuccessState(this.uId);
+}
 
 class CreateFaildState extends RegisterState {
   final error;
 
   CreateFaildState(this.error);
 }
+
+// regsiter verify states
+
+class LoadingVerifiyRegisterState extends RegisterState {}
+
+class SuccessVerifiyRegisterState extends RegisterState {}
+
+class FaildVerifiyRegisterState extends RegisterState {}

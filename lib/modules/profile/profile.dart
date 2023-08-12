@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, prefer_const_literals_to_create_immutables
 
 import 'package:book_swapping/modules/authentication/login.dart';
+import 'package:book_swapping/modules/profile/favorite.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,8 +27,8 @@ class Profile extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: CircleAvatar(
-                  backgroundImage: NetworkImage(
-                      '${HomeCubit.get(context).userModel!.image}'),
+                  backgroundImage:
+                      NetworkImage(HomeCubit.get(context).userModel!.image),
                   radius: 50,
                 ),
               ),
@@ -89,7 +90,12 @@ class Profile extends StatelessWidget {
                         icon: Icon(Icons.ad_units)),
                     separator(),
                     profileButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Favorites()));
+                        },
                         text: 'الإعلانات المفضلة',
                         icon: Icon(Icons.favorite_border)),
                     separator(),

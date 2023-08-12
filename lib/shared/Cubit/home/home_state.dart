@@ -89,3 +89,9 @@ class LoadingUploadChatMessageState extends HomeStates {}
 class SuccessUploadChatImageState extends HomeStates {}
 
 class ErrorUploadChatImageState extends HomeStates {}
+
+// Notification states:
+
+class SuccessSendMessagenotification extends HomeStates {}
+
+class ErrorSendMessagenotification extends HomeStates {}

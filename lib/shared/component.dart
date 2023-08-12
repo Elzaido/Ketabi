@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -78,19 +80,19 @@ Widget boardingItemBuilder(BoardingModel model) => Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Image(image: AssetImage('${model.image}')),
-        SizedBox(
+        const SizedBox(
           height: 30,
         ),
         Text(
           '${model.title}',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 40,
             fontFamily: 'Cairo',
             // fontWeight: FontWeight.bold,
           ),
           textAlign: TextAlign.center,
         ),
-        SizedBox(
+        const SizedBox(
           height: 20,
         ),
       ],
@@ -113,11 +115,11 @@ Widget profileButton(
                 children: [
                   Text(
                     text,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontFamily: 'Cairo',
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 20,
                   ),
                   icon,
@@ -148,7 +150,7 @@ Widget defualtHomeItem({
                 color: Colors.grey.withOpacity(0.3),
                 spreadRadius: 5,
                 blurRadius: 10,
-                offset: Offset(0, 5), // changes position of shadow
+                offset: const Offset(0, 5), // changes position of shadow
               ),
             ],
           ),
@@ -159,9 +161,9 @@ Widget defualtHomeItem({
             children: [
               Text(
                 title,
-                style: TextStyle(fontFamily: 'Cairo', fontSize: 15),
+                style: const TextStyle(fontFamily: 'Cairo', fontSize: 15),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 20,
               ),
               Image(
@@ -175,10 +177,11 @@ Widget defualtHomeItem({
 
 UserModel? userModel;
 
-Widget AdItem(
+Widget adItem(
   context,
   PostModel model,
-  bool isMine,
+  bool infavpage,
+  bool isfav,
 ) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -190,7 +193,7 @@ Widget AdItem(
               builder: (context1) => AlertDialog(
                     title: Text(
                       model.type,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontFamily: 'Cairo',
                       ),
                     ),
@@ -198,7 +201,7 @@ Widget AdItem(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(model.postText),
-                        Container(
+                        SizedBox(
                             width: 300,
                             height: 300,
                             child: Image(
@@ -214,7 +217,7 @@ Widget AdItem(
                           onPressed: () {
                             Navigator.pop(context1, true);
                           },
-                          child: Text('إغلاق')),
+                          child: const Text('إغلاق')),
                       TextButton(
                         onPressed: () {
                           Navigator.pop(context1, true);
@@ -230,6 +233,7 @@ Widget AdItem(
                               .update({
                             'chatlist': FieldValue.arrayUnion([uId]),
                           });
+                          // get the ad owner data and pass it the chat datails page.
                           FirebaseFirestore.instance
                               .collection('users')
                               .doc(model.uId)
@@ -238,6 +242,7 @@ Widget AdItem(
                             userModel = UserModel.formJson(value.data()!);
                             String name = userModel!.name!;
                             String image = userModel!.image;
+                            String token = userModel!.pushToken;
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -245,10 +250,11 @@ Widget AdItem(
                                           uId: model.uId,
                                           image: image,
                                           name: name,
+                                          fToken: token,
                                         )));
                           });
                         },
-                        child: Text('دردشة'),
+                        child: const Text('دردشة'),
                       ),
                     ],
                   ));
@@ -259,10 +265,28 @@ Widget AdItem(
       },
       child: Card(
           elevation: 5,
-          color: Color.fromARGB(255, 247, 247, 247),
+          color: const Color.fromARGB(255, 247, 247, 247),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                if (!infavpage)
+                  IconButton(
+                    onPressed: () {
+                      FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(uId)
+                          .update({
+                        'favlist': FieldValue.arrayUnion([model.postId]),
+                      });
+                    },
+                    icon: isfav
+                        ? const Icon(
+                            Icons.favorite,
+                            color: Colors.red,
+                          )
+                        : const Icon(Icons.favorite_border_outlined),
+                  ),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -273,20 +297,21 @@ Widget AdItem(
                       children: [
                         if (model.postText != '')
                           Text(
-                            '${model.postText}',
+                            model.postText,
                             maxLines: 2,
                             textAlign: TextAlign.end,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         Text(
-                          '${model.type}',
+                          model.type,
                           textAlign: TextAlign.end,
-                          style: TextStyle(fontSize: 15, fontFamily: 'Cairo'),
+                          style: const TextStyle(
+                              fontSize: 15, fontFamily: 'Cairo'),
                         ),
                       ],
                     ),
@@ -297,7 +322,7 @@ Widget AdItem(
                     padding: const EdgeInsets.all(5.0),
                     child: Image(
                       image: NetworkImage(
-                        '${model.postImage}',
+                        model.postImage,
                       ),
                       height: 100,
                       width: 100,
@@ -305,60 +330,111 @@ Widget AdItem(
                     ),
                   ),
               ]),
-              SizedBox(
-                height: 10,
-              ),
-              if (isMine) separator(),
-              SizedBox(
-                height: 10,
-              ),
-              if (isMine)
-                Row(
-                  children: [
-                    Expanded(
-                        child: InkWell(
-                      onTap: () {},
-                      child: Column(
-                        children: [
-                          Icon(Icons.analytics, color: Colors.green),
-                          Text('إحصائيات'),
-                        ],
-                      ),
-                    )),
-                    Expanded(
-                        child: InkWell(
-                      onTap: () {},
-                      child: Column(
-                        children: [
-                          Icon(
-                            Icons.edit,
-                            color: Colors.orange,
-                          ),
-                          Text('تعديل')
-                        ],
-                      ),
-                    )),
-                    Expanded(
-                        child: InkWell(
-                      onTap: () {},
-                      child: Column(
-                        children: [
-                          Icon(
-                            Icons.delete,
-                            color: Colors.red,
-                          ),
-                          Text('حذف')
-                        ],
-                      ),
-                    )),
-                  ],
-                ),
-              SizedBox(
-                height: 10,
-              )
             ],
           )),
     ),
+  );
+}
+
+Widget myAdItem(
+  context,
+  PostModel model,
+) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+    child: Card(
+        elevation: 5,
+        color: const Color.fromARGB(255, 247, 247, 247),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      if (model.postText != '')
+                        Text(
+                          model.postText,
+                          maxLines: 2,
+                          textAlign: TextAlign.end,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      Text(
+                        model.type,
+                        textAlign: TextAlign.end,
+                        style:
+                            const TextStyle(fontSize: 15, fontFamily: 'Cairo'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              if (model.postImage != '')
+                Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: Image(
+                    image: NetworkImage(
+                      model.postImage,
+                    ),
+                    height: 100,
+                    width: 100,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+            ]),
+            separator(),
+            Row(
+              children: [
+                Expanded(
+                    child: InkWell(
+                  onTap: () {},
+                  child: const Column(
+                    children: [
+                      Icon(Icons.analytics, color: Colors.green),
+                      Text('إحصائيات'),
+                    ],
+                  ),
+                )),
+                Expanded(
+                    child: InkWell(
+                  onTap: () {},
+                  child: const Column(
+                    children: [
+                      Icon(
+                        Icons.edit,
+                        color: Colors.orange,
+                      ),
+                      Text('تعديل')
+                    ],
+                  ),
+                )),
+                Expanded(
+                    child: InkWell(
+                  onTap: () {},
+                  child: const Column(
+                    children: [
+                      Icon(
+                        Icons.delete,
+                        color: Colors.red,
+                      ),
+                      Text('حذف')
+                    ],
+                  ),
+                )),
+              ],
+            ),
+          ],
+        )),
   );
 }
 
@@ -371,6 +447,7 @@ Widget chatItem(context, UserModel model) => InkWell(
                       uId: model.uId,
                       image: model.image,
                       name: model.name!,
+                      fToken: model.pushToken,
                     )));
       },
       child: Padding(
@@ -378,14 +455,13 @@ Widget chatItem(context, UserModel model) => InkWell(
         child: Row(
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               child: CircleAvatar(
-                  radius: 30.0,
-                  backgroundImage: NetworkImage('${model.image}')),
+                  radius: 30.0, backgroundImage: NetworkImage(model.image)),
             ),
             Text(
               '${model.name}',
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 15,
               ),
@@ -399,6 +475,6 @@ Widget separator() => Padding(
       padding: const EdgeInsets.all(8.0),
       child: (Container(
         height: 1,
-        color: Color.fromARGB(255, 226, 226, 226),
+        color: const Color.fromARGB(255, 226, 226, 226),
       )),
     );

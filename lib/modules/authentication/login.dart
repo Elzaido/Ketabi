@@ -11,7 +11,7 @@ import '../../shared/component.dart';
 import 'register.dart';
 
 class LoginPage extends StatefulWidget {
-  LoginPage({Key? key}) : super(key: key);
+  const LoginPage({Key? key}) : super(key: key);
 
   static String verify = "";
 
@@ -36,8 +36,8 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return BlocProvider(
         create: (BuildContext context) => LoginCubit(),
-        child: BlocConsumer<LoginCubit, loginState>(listener: (context, state) {
-          if (state is verifyFaildState) {
+        child: BlocConsumer<LoginCubit, LoginState>(listener: (context, state) {
+          if (state is VerifyFaildState) {
             defaultToast(
                 massage: 'الرقم غير مسجل, قم بإنشاء حساب أولاً',
                 state: ToastStates.ERROR);
@@ -134,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                               phone: countryController.text + phone,
                               context: context);
                         },
-                        child: state is! verifyLoadingState
+                        child: state is! VerifyLoadingState
                             ? Text(
                                 "أرسل الرمز",
                                 style: TextStyle(

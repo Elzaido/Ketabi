@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, avoid_print
 
 import 'package:book_swapping/Layout/home_layout.dart';
 import 'package:book_swapping/shared/Cubit/login/logincubit.dart';
@@ -13,7 +13,7 @@ import '../../shared/component.dart';
 import 'login.dart';
 
 class LoginVerify extends StatelessWidget {
-  LoginVerify({Key? key});
+  LoginVerify({super.key});
 
   final FirebaseAuth auth = FirebaseAuth.instance;
   @override
@@ -22,15 +22,15 @@ class LoginVerify extends StatelessWidget {
 
     return BlocProvider(
         create: (BuildContext context) => LoginCubit(),
-        child: BlocConsumer<LoginCubit, loginState>(listener: (context, state) {
-          if (state is loginSuccessState) {
+        child: BlocConsumer<LoginCubit, LoginState>(listener: (context, state) {
+          if (state is LoginSuccessState) {
             CacheHelper.saveDate(key: 'uId', value: state.uId).then((value) {
               defaultToast(
                   massage: 'تم التحقق من رقم الهاتف بنجاح',
                   state: ToastStates.SUCCESS);
               navigateAndFinish(context: context, widget: HomeLayout());
             });
-          } else if (state is loginFaildState) {
+          } else if (state is LoginFaildState) {
             defaultToast(
                 massage: 'هناك مشكلة في عملية تسجيل الدخول, تحقق الرمز المدخل',
                 state: ToastStates.ERROR);
@@ -99,7 +99,7 @@ class LoginVerify extends StatelessWidget {
                             LoginCubit.get(context)
                                 .loginCubit(code: code, context: context);
                           },
-                          child: state is loginLoadingState
+                          child: state is LoginLoadingState
                               ? Center(
                                   child: CircularProgressIndicator(
                                   backgroundColor: Colors.white,

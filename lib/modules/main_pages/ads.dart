@@ -7,7 +7,7 @@ import '../../shared/Cubit/home/home_state.dart';
 import '../../shared/component.dart';
 
 class AllAds extends StatelessWidget {
-  AllAds({Key? key, required this.title});
+  AllAds({super.key, required this.title});
 
   final String title;
   TextEditingController Search2 = TextEditingController();
@@ -49,11 +49,8 @@ class AllAds extends StatelessWidget {
                   ListView.separated(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: ((context, index) => AdItem(
-                            context,
-                            HomeCubit.get(context).posts[index],
-                            false,
-                          )),
+                      itemBuilder: ((context, index) => adItem(context,
+                          HomeCubit.get(context).posts[index], false, true)),
                       separatorBuilder: (context, index) =>
                           SizedBox(height: 10),
                       itemCount: HomeCubit.get(context).posts.length),

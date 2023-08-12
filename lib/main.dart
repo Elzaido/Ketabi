@@ -20,7 +20,6 @@ void main() async {
   await CacheHelper.init();
   bool? onBoarding = CacheHelper.getData(key: 'onBoarding');
   uId = CacheHelper.getData(key: 'uId');
-  print('user ID is:' + '${uId}');
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -34,11 +33,13 @@ void main() async {
   } else {
     widget = OnBoarding();
   }
-  runApp(myApp(widget));
+  runApp(myApp(
+    startWidget: widget,
+  ));
 }
 
 class myApp extends StatelessWidget {
-  const myApp(this.startWidget);
+  const myApp({super.key, required this.startWidget});
 
   final Widget startWidget;
 

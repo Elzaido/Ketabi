@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, avoid_print
 
 import 'package:book_swapping/Layout/home_layout.dart';
 import 'package:book_swapping/shared/Cubit/register/registercubit.dart';
@@ -7,12 +7,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pinput/pinput.dart';
+import '../../network/local/cache_helper.dart';
 import '../../shared/Cubit/register/registerstate.dart';
 import '../../shared/component.dart';
 import 'login.dart';
 
 class RegisterVerify extends StatelessWidget {
-  RegisterVerify({Key? key, this.name, this.email, this.phone});
+  RegisterVerify({super.key, this.name, this.email, this.phone});
 
   final String? name;
   final String? email;
@@ -28,10 +29,12 @@ class RegisterVerify extends StatelessWidget {
         child: BlocConsumer<RegisterCubit, RegisterState>(
             listener: (context, state) {
           if (state is CreateSuccessState) {
-            defaultToast(
-                massage: 'تم التحقق من رقم الهاتف بنجاح',
-                state: ToastStates.SUCCESS);
-            navigateAndFinish(context: context, widget: HomeLayout());
+            CacheHelper.saveDate(key: 'uId', value: state.uId).then((value) {
+              defaultToast(
+                  massage: 'تم التحقق من رقم الهاتف بنجاح',
+                  state: ToastStates.SUCCESS);
+              navigateAndFinish(context: context, widget: HomeLayout());
+            });
           } else if (state is CreateFaildState) {
             defaultToast(
                 massage: 'هناك مشكلة في عملية إنشاء الحساب',

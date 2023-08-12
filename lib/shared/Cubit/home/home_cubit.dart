@@ -1,9 +1,13 @@
 // ignore_for_file: avoid_print, prefer_const_constructors
 
+import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../models/chat_model.dart';
 import '../../../models/post_model.dart';
@@ -47,11 +51,9 @@ class HomeCubit extends Cubit<HomeStates> {
   ];
 
   List<Widget> images = [
-    Container(
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Image.asset('assets/Ad here.png'),
-      ),
+    ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: Image.asset('assets/Ad here.png'),
     ),
   ];
 
@@ -64,12 +66,55 @@ class HomeCubit extends Cubit<HomeStates> {
     }
   }
 
+  static FirebaseMessaging fMessaging = FirebaseMessaging.instance;
+
+  Future<void> getFirebaseMessagingToken() async {
+    await fMessaging.requestPermission();
+
+    await fMessaging.getToken().then((t) {
+      if (t != null) {
+        userModel!.pushToken = t;
+        print('Push Token: $t');
+      }
+    }).catchError((error) {
+      print('Push Token Error is: $error');
+    });
+  }
+
+  Future<void> sendPushNotification(
+      String pushToken, String name, String msg) async {
+    try {
+      final body = {
+        "to": pushToken,
+        "notification": {"title": name, "body": msg}
+      };
+
+      var res = await post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
+          headers: {
+            HttpHeaders.contentTypeHeader: 'application/json',
+            HttpHeaders.authorizationHeader:
+                'key=AAAASHpbT0U:APA91bH4pfTc7KvV4rJWHfJm9cU-bcrxLVfJC0nxQZxFNrGmMWvKca_I9qAYC_I3PJUpCTKjVS3XcQjZM1WGYzu6hb5ylhlK7Q4e11fZYs21xubhYZ6oczogr1bKKG2suo5ssXo4_iI6',
+          },
+          body: jsonEncode(body));
+      emit(SuccessSendMessagenotification());
+      log('Response status: ${res.statusCode}');
+      log('Response body: ${res.body}');
+    } catch (e) {
+      emit(ErrorSendMessagenotification());
+      log('sendPushNotification error is: $e');
+    }
+  }
+
   void getUserData() {
     emit(LoadingGetUserDataState());
 
-    FirebaseFirestore.instance.collection('users').doc(uId).get().then((value) {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(uId)
+        .get()
+        .then((value) async {
       userModel = UserModel.formJson(value.data()!);
-      print(userModel!.email);
+      await getFirebaseMessagingToken();
       emit(SuccessGetUserDataState());
     }).catchError((error) {
       print(error.toString());
@@ -103,14 +148,11 @@ class HomeCubit extends Cubit<HomeStates> {
       value.ref.getDownloadURL().then((value) {
         updateUserData(name: name, phone: phone, image: value);
         emit(SuccessUploadProfileImageState());
-        print(value);
       }).catchError((onError) {
         emit(ErrorUploadProfileImageState());
-        print(onError.toString() + '---- 1');
       });
     }).catchError((onError) {
       emit(ErrorUploadProfileImageState());
-      print(onError.toString() + '---- 2');
     });
   }
 
@@ -118,7 +160,6 @@ class HomeCubit extends Cubit<HomeStates> {
     required String name,
     required String phone,
     String? image,
-    String? cover,
   }) {
     emit(LoadingUpdateUserState());
     UserModel model = UserModel(
@@ -127,6 +168,9 @@ class HomeCubit extends Cubit<HomeStates> {
       image: image ?? userModel!.image,
       email: userModel!.email,
       uId: userModel!.uId,
+      pushToken: userModel!.pushToken,
+      chatList: userModel!.chatList,
+      favList: userModel!.favList,
     );
     FirebaseFirestore.instance
         .collection('users')
@@ -170,9 +214,14 @@ class HomeCubit extends Cubit<HomeStates> {
         .putFile(postImage!)
         .then((value) {
       value.ref.getDownloadURL().then((value) {
-        createPost(date: date, text: text, postImage: value, type: type);
+        createPost(
+          date: date,
+          text: text,
+          postImage: value,
+          type: type,
+          // postId: value
+        );
         emit(SuccessUploadPostState());
-        print(value);
       }).catchError((onError) {
         emit(ErrorUploadPostState());
       });
@@ -186,10 +235,11 @@ class HomeCubit extends Cubit<HomeStates> {
     required String date,
     String? postImage,
     required String type,
-  }) {
+  }) async {
     emit(LoadingUploadPostState());
     PostModel model = PostModel(
       name: userModel!.name,
+      postId: '',
       userImage: userModel!.image,
       uId: userModel!.uId,
       postText: text,
@@ -197,15 +247,20 @@ class HomeCubit extends Cubit<HomeStates> {
       type: type,
       postImage: postImage ?? '',
     );
-    FirebaseFirestore.instance
-        .collection('posts')
-        // .add creates an id for the post and put the values under it.
-        .add(model.toMap())
-        .then((value) {
+
+    try {
+      // Add the post to the 'posts' collection
+      DocumentReference postRef = await FirebaseFirestore.instance
+          .collection('posts')
+          .add(model.toMap());
+      // Update the model with the actual post ID
+      model.postId = postRef.id;
+      // Update the post document with the correct post ID
+      await postRef.update({'postId': postRef.id});
       emit(SuccessUploadPostState());
-    }).catchError((onError) {
+    } catch (e) {
       emit(ErrorUploadPostState());
-    });
+    }
   }
 
   List<PostModel> posts = [];
@@ -236,7 +291,6 @@ class HomeCubit extends Cubit<HomeStates> {
     FirebaseFirestore.instance
         .collection('posts')
         .where('type', isEqualTo: type)
-        // get() will call the all the posts without being bound by a specific uId.
         .get()
         .then((value) {
       value.docs.forEach(((element) {
@@ -245,6 +299,7 @@ class HomeCubit extends Cubit<HomeStates> {
       emit(SuccessGetPostDataState());
     }).catchError((error) {
       emit(ErrorGetPostDataState(error.toString()));
+      print('The Error is: $error');
     });
   }
 
@@ -290,18 +345,19 @@ class HomeCubit extends Cubit<HomeStates> {
     }
   }
 
-  void sendMessage({
+  Future<void> sendMessage({
     required String receiverId,
     required String dateTime,
     required String text,
-    String? Image,
-  }) {
+    required String token,
+    String? image,
+  }) async {
     ChatModel model = ChatModel(
         senderId: userModel!.uId,
         receiverId: receiverId,
         date: dateTime,
         text: text,
-        image: Image ?? '');
+        image: image ?? '');
 
 // set my chats
 
@@ -313,6 +369,7 @@ class HomeCubit extends Cubit<HomeStates> {
         .collection('messages')
         .add(model.toMap())
         .then((value) {
+      sendPushNotification(token, userModel!.name!, text);
       emit(SuccessSendMessage());
     }).catchError((error) {
       emit(ErrorSendMessage());
@@ -327,7 +384,7 @@ class HomeCubit extends Cubit<HomeStates> {
         .doc(uId)
         .collection('messages')
         .add(model.toMap())
-        .then((value) {
+        .then((value) async {
       emit(SuccessGetMessage());
     }).catchError((error) {
       emit(ErrorGetMessage());
@@ -350,9 +407,9 @@ class HomeCubit extends Cubit<HomeStates> {
         .listen((event) {
       chats = [];
 
-      event.docs.forEach((element) {
+      for (var element in event.docs) {
         chats.add(ChatModel.formJson(element.data()));
-      });
+      }
       emit(SuccessGetMessage());
     });
   }
@@ -369,10 +426,11 @@ class HomeCubit extends Cubit<HomeStates> {
     }
   }
 
-  void SendChatImage({
+  void sendChatImage({
     required String text,
     required String receiverId,
     required String dateTime,
+    required String fToken,
   }) {
     emit(LoadingUploadChatMessageState());
     firebase_storage.FirebaseStorage.instance
@@ -385,7 +443,8 @@ class HomeCubit extends Cubit<HomeStates> {
             receiverId: receiverId,
             dateTime: dateTime,
             text: text,
-            Image: value);
+            image: value,
+            token: fToken);
         emit(SuccessUploadChatImageState());
         print(value);
       }).catchError((onError) {

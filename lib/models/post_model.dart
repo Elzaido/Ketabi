@@ -2,6 +2,7 @@
 
 class PostModel {
   late String? name;
+  late String postId;
   late String userImage;
   late String postText;
   late String date;
@@ -11,6 +12,7 @@ class PostModel {
 
   PostModel({
     required this.name,
+    required this.postId,
     required this.userImage,
     required this.postText,
     required this.date,
@@ -21,6 +23,7 @@ class PostModel {
 
   PostModel.formJson(Map<String, dynamic> json) {
     name = json['name'];
+    postId = json['postId'];
     userImage = json['userImage'];
     postText = json['postText'];
     date = json['date'];
@@ -32,6 +35,7 @@ class PostModel {
   Map<String, dynamic> toMap() {
     return {
       'name': name,
+      'postId': postId,
       'userImage': userImage,
       'postText': postText,
       'date': date,

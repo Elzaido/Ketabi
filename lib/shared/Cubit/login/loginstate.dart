@@ -1,35 +1,35 @@
 // ignore_for_file: prefer_typing_uninitialized_variables
 
-abstract class loginState {}
+abstract class LoginState {}
 
-class loginInitialState extends loginState {}
+class LoginInitialState extends LoginState {}
 
-class verifyLoadingState extends loginState {}
+class VerifyLoadingState extends LoginState {}
 
-class verifySuccessState extends loginState {}
+class VerifySuccessState extends LoginState {}
 
-class verifyFaildState extends loginState {}
+class VerifyFaildState extends LoginState {}
 
 // login States
 
-class loginLoadingState extends loginState {}
+class LoginLoadingState extends LoginState {}
 
-class loginSuccessState extends loginState {
+class LoginSuccessState extends LoginState {
   final uId;
 
-  loginSuccessState(this.uId);
+  LoginSuccessState(this.uId);
 }
 
-class loginFaildState extends loginState {}
+class LoginFaildState extends LoginState {}
 
 // Google SignUp States
 
-class googleLoadingState extends loginState {}
+class GoogleLoadingState extends LoginState {}
 
-class googleSuccessState extends loginState {
+class GoogleSuccessState extends LoginState {
   final uId;
 
-  googleSuccessState(this.uId);
+  GoogleSuccessState(this.uId);
 }
 
-class googleFaildState extends loginState {}
+class GoogleFaildState extends LoginState {}

@@ -7,7 +7,7 @@ import '../../shared/Cubit/home/home_cubit.dart';
 import '../../shared/component.dart';
 
 class Chats extends StatelessWidget {
-  const Chats({Key? key});
+  const Chats({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -29,12 +29,9 @@ class Chats extends StatelessWidget {
             // Get the list of user IDs from the user data
             final List<String> chatlist =
                 List<String>.from(userData?['chatlist'] ?? []);
-            bool NoSeparate = false;
+            bool noSeparate = false;
 
-            print('Chatlist length: ${chatlist.length}');
-            print('User data: $userData');
-
-            return chatlist.length != 0
+            return chatlist.isNotEmpty
                 ? SingleChildScrollView(
                     physics: BouncingScrollPhysics(),
                     child: Column(
@@ -44,26 +41,22 @@ class Chats extends StatelessWidget {
                             physics: NeverScrollableScrollPhysics(),
                             itemBuilder: ((context, index) {
                               final user = HomeCubit.get(context).users[index];
-                              print('User ID at index $index: ${user.uId}');
                               // Check if the user's ID is in the chatlist of the current user.
                               final bool isUserInChatList =
                                   chatlist.contains(user.uId);
-                              print('Is user in chatlist: $isUserInChatList');
-                              print(user.uId);
-
                               // If the user's ID is in the chatlist, display the chat item.
                               if (isUserInChatList) {
                                 return chatItem(context,
                                     user); // Return the chat item widget.
                               } else {
-                                NoSeparate = true;
+                                noSeparate = true;
                                 return Container(
                                   height: 0,
                                 );
                                 // Return an empty container if the condition is false.
                               }
                             }),
-                            separatorBuilder: ((context, index) => NoSeparate
+                            separatorBuilder: ((context, index) => noSeparate
                                 ? Container(
                                     height: 0,
                                   )
@@ -95,7 +88,7 @@ class Chats extends StatelessWidget {
                         SizedBox(
                           width: 7,
                         ),
-                        Container(
+                        SizedBox(
                             height: 50,
                             width: 50,
                             child:

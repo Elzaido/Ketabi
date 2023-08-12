@@ -11,8 +11,8 @@ import '../../../modules/authentication/login.dart';
 import '../../constant.dart';
 import 'loginstate.dart';
 
-class LoginCubit extends Cubit<loginState> {
-  LoginCubit() : super(loginInitialState());
+class LoginCubit extends Cubit<LoginState> {
+  LoginCubit() : super(LoginInitialState());
 
   static LoginCubit get(context) => BlocProvider.of(context);
   // الأوبجكت بساعدني أوصل للداتا
@@ -22,14 +22,15 @@ class LoginCubit extends Cubit<loginState> {
     required String phone,
     required context,
   }) {
-    emit(verifyLoadingState());
-    FirebaseAuth.instance.verifyPhoneNumber(
+    emit(VerifyLoadingState());
+    FirebaseAuth.instance
+        .verifyPhoneNumber(
       phoneNumber: phone,
       verificationCompleted: (PhoneAuthCredential credential) {},
       verificationFailed: (FirebaseAuthException e) {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Register()));
-        emit(verifyFaildState());
+            context, MaterialPageRoute(builder: (context) => const Register()));
+        emit(VerifyFaildState());
       },
       codeSent: (String verificationId, int? resendToken) {
         CollectionReference usersRef =
@@ -44,19 +45,26 @@ class LoginCubit extends Cubit<loginState> {
             LoginPage.verify = verificationId;
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => LoginVerify()));
-            emit(verifySuccessState());
+            emit(VerifySuccessState());
+          } else {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const Register()));
+            emit(VerifyFaildState());
           }
         });
       },
       codeAutoRetrievalTimeout: (String verificationId) {},
-    );
+    )
+        .catchError((error) {
+      emit(VerifyFaildState());
+    });
   }
 
   void loginCubit({
     required String code,
     required context,
   }) {
-    emit(loginLoadingState());
+    emit(LoginLoadingState());
 
     PhoneAuthCredential credential = PhoneAuthProvider.credential(
         verificationId: LoginPage.verify, smsCode: code);
@@ -64,44 +72,17 @@ class LoginCubit extends Cubit<loginState> {
     // Sign the user in (or link) with the credential
     FirebaseAuth.instance.signInWithCredential(credential).then((value) {
       uId = value.user!.uid;
-      emit(loginSuccessState(
+      emit(LoginSuccessState(
         value.user!.uid,
       ));
     }).catchError((error) {
-      emit(loginFaildState());
+      emit(LoginFaildState());
     });
   }
 
-  // goolgeSignIn() async {
-  //   emit(googleLoadingState());
-
-  //   final googleSignIn = GoogleSignIn();
-  //   GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-
-  //   GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
-
-  //   AuthCredential credential = GoogleAuthProvider.credential(
-  //     accessToken: googleAuth?.accessToken,
-  //     idToken: googleAuth?.idToken,
-  //   );
-
-  //   await FirebaseAuth.instance.signInWithCredential(credential).then((value) {
-  //     print(value.user?.displayName);
-  //     creatUser(
-  //         name: value.user?.displayName,
-  //         email: value.user?.email,
-  //         phone: value.user?.phoneNumber,
-  //         uId: value.user?.uid);
-  //     emit(googleSuccessState(uId));
-  //   }).catchError((error) {
-  //     emit(googleFaildState());
-  //     print(error);
-  //   });
-  // }
-
   Future<UserCredential> signInWithGoogle() async {
     try {
-      emit(googleLoadingState());
+      emit(GoogleLoadingState());
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
@@ -124,7 +105,7 @@ class LoginCubit extends Cubit<loginState> {
             email: value.user!.email,
             phone: value.user!.phoneNumber,
             uId: value.user!.uid);
-        emit(googleSuccessState(uId));
+        emit(GoogleSuccessState(uId));
       });
     } on FirebaseAuthException catch (e) {
       final ex = TlsException(e.toString());
@@ -147,6 +128,7 @@ class LoginCubit extends Cubit<loginState> {
       image:
           'https://th.bing.com/th/id/OIP.IhLi5SNoTJG7at5pDZ4_wAHaHa?pid=ImgDet&rs=1',
       uId: uId!,
+      pushToken: '',
     );
 
     FirebaseFirestore.instance
@@ -154,10 +136,9 @@ class LoginCubit extends Cubit<loginState> {
         .doc(uId)
         .set(model.toMap())
         .then((value) {
-      emit(googleSuccessState(uId));
+      emit(GoogleSuccessState(uId));
     }).catchError((error) {
-      emit(googleFaildState());
-      print(error.toString());
+      emit(GoogleFaildState());
     });
   }
 }

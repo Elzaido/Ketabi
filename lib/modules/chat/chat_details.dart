@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, must_be_immutable, curly_braces_in_flow_control_structures, unnecessary_null_comparison
 
+import 'package:book_swapping/shared/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../models/chat_model.dart';
@@ -10,9 +11,14 @@ class ChatDetails extends StatelessWidget {
   final String uId;
   final String image;
   final String name;
+  final String fToken;
 
   ChatDetails(
-      {Key? key, required this.uId, required this.image, required this.name})
+      {Key? key,
+      required this.uId,
+      required this.image,
+      required this.name,
+      required this.fToken})
       : super(key: key);
 
   var messageCotroller = TextEditingController();
@@ -27,6 +33,7 @@ class ChatDetails extends StatelessWidget {
           builder: (context, state) {
             return Scaffold(
                 appBar: AppBar(
+                  backgroundColor: mainColor,
                   titleSpacing: 0.0,
                   title: Row(
                     children: [
@@ -144,13 +151,13 @@ class ChatDetails extends StatelessWidget {
                                 },
                                 icon: Icon(
                                   Icons.camera_alt_outlined,
-                                  color: Colors.green,
+                                  color: mainColor,
                                 )),
                             SizedBox(
                               width: 5,
                             ),
                             MaterialButton(
-                                color: Colors.green,
+                                color: mainColor,
                                 minWidth: 40,
                                 height: 55,
                                 onPressed: () {
@@ -162,13 +169,17 @@ class ChatDetails extends StatelessWidget {
                                           receiverId: uId,
                                           dateTime: DateTime.now().toString(),
                                           text: messageCotroller.text,
+                                          token: fToken,
                                         );
                                       messageCotroller.clear();
                                     } else {
-                                      HomeCubit.get(context).SendChatImage(
-                                          text: messageCotroller.text,
-                                          receiverId: uId,
-                                          dateTime: DateTime.now().toString());
+                                      HomeCubit.get(context).sendChatImage(
+                                        text: messageCotroller.text,
+                                        receiverId: uId,
+                                        dateTime: DateTime.now().toString(),
+                                        fToken: fToken,
+                                      );
+
                                       messageCotroller.clear();
                                     }
                                     HomeCubit.get(context).removeChatImage();

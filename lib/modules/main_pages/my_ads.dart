@@ -39,10 +39,9 @@ class MyAds extends StatelessWidget {
                 ListView.separated(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
-                    itemBuilder: ((context, index) => AdItem(
+                    itemBuilder: ((context, index) => myAdItem(
                           context,
                           HomeCubit.get(context).posts[index],
-                          true,
                         )),
                     separatorBuilder: (context, index) => SizedBox(height: 10),
                     itemCount: HomeCubit.get(context).posts.length),

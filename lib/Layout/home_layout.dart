@@ -11,6 +11,8 @@ import '../shared/Cubit/home/home_state.dart';
 class HomeLayout extends StatelessWidget {
   final PageStorageBucket bucket = PageStorageBucket();
 
+  HomeLayout({super.key});
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<HomeCubit, HomeStates>(
@@ -44,7 +46,7 @@ class HomeLayout extends StatelessWidget {
           bottomNavigationBar: BottomAppBar(
             shape: CircularNotchedRectangle(),
             notchMargin: 10,
-            child: Container(
+            child: SizedBox(
               height: 60,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

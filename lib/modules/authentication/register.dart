@@ -8,6 +8,8 @@ import '../../shared/component.dart';
 import '../../shared/constant.dart';
 
 class Register extends StatefulWidget {
+  const Register({super.key});
+
   static String verify = "";
 
   @override
