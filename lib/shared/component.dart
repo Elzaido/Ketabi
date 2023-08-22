@@ -193,6 +193,7 @@ Widget adItem(
               builder: (context1) => AlertDialog(
                     title: Text(
                       model.type,
+                      textAlign: TextAlign.right,
                       style: const TextStyle(
                         fontFamily: 'Cairo',
                       ),
@@ -200,7 +201,18 @@ Widget adItem(
                     content: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(model.postText),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            model.postText,
+                            style: const TextStyle(
+                              fontFamily: 'Cairo',
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 7,
+                        ),
                         SizedBox(
                             width: 300,
                             height: 300,
@@ -217,7 +229,12 @@ Widget adItem(
                           onPressed: () {
                             Navigator.pop(context1, true);
                           },
-                          child: const Text('إغلاق')),
+                          child: const Text(
+                            'إغلاق',
+                            style: TextStyle(
+                              fontFamily: 'Cairo',
+                            ),
+                          )),
                       TextButton(
                         onPressed: () {
                           Navigator.pop(context1, true);
@@ -254,7 +271,12 @@ Widget adItem(
                                         )));
                           });
                         },
-                        child: const Text('دردشة'),
+                        child: const Text(
+                          'دردشة',
+                          style: TextStyle(
+                            fontFamily: 'Cairo',
+                          ),
+                        ),
                       ),
                     ],
                   ));
@@ -285,7 +307,10 @@ Widget adItem(
                             Icons.favorite,
                             color: Colors.red,
                           )
-                        : const Icon(Icons.favorite_border_outlined),
+                        : const Icon(
+                            Icons.favorite_border_outlined,
+                            color: Colors.red,
+                          ),
                   ),
                 Expanded(
                   child: Padding(
@@ -299,19 +324,22 @@ Widget adItem(
                           Text(
                             model.postText,
                             maxLines: 2,
-                            textAlign: TextAlign.end,
+                            textAlign: TextAlign.justify,
                             overflow: TextOverflow.ellipsis,
+                            textDirection: TextDirection.rtl,
                             style: const TextStyle(
                               fontSize: 15,
-                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Cairo',
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         Text(
-                          model.type,
+                          '${model.type} -',
                           textAlign: TextAlign.end,
                           style: const TextStyle(
-                              fontSize: 15, fontFamily: 'Cairo'),
+                            fontSize: 15,
+                            fontFamily: 'Cairo',
+                          ),
                         ),
                       ],
                     ),

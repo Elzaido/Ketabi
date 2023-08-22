@@ -87,16 +87,19 @@ class Add_Post extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(right: 15),
-                  child: TextFormField(
-                    textDirection: TextDirection.rtl,
-                    controller: textController,
-                    decoration: InputDecoration(
-                        hintText: 'إشرح عن الكتاب قليلاً ...',
-                        hintTextDirection: TextDirection.rtl,
-                        border: InputBorder.none),
-                  ),
-                ),
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: formField(
+                        control: textController,
+                        isScure: false,
+                        label: 'إسم الكتاب',
+                        validator: (String? value) {
+                          if (value!.isEmpty) {
+                            return 'يجب إدخال إسم الكتاب';
+                          } else {
+                            return null;
+                          }
+                        },
+                        prefIcon: Icon(Icons.book))),
                 if (HomeCubit.get(context).postImage != null)
                   Stack(
                     children: [

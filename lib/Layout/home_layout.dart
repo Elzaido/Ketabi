@@ -60,6 +60,7 @@ class HomeLayout extends StatelessWidget {
                           HomeCubit.get(context)
                               .changeNav(HomeCubit.get(context).currentIndex);
                           HomeCubit.get(context).getUserData();
+                          HomeCubit.get(context).getAllPosts();
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
