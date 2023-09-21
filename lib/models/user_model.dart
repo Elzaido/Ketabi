@@ -8,7 +8,6 @@ class UserModel {
   late String uId;
   late List<String> chatList;
   late List<String> favList;
-
   late String pushToken;
 
   UserModel({

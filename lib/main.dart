@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, camel_case_types
+// ignore_for_file: camel_case_types
 
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:book_swapping/modules/authentication/login.dart';
@@ -6,11 +6,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'Layout/home_layout.dart';
+import 'firebase_messeging.dart';
 import 'firebase_options.dart';
 import 'modules/on_boarding.dart';
 import 'network/local/cache_helper.dart';
 import 'shared/Cubit/home/home_cubit.dart';
-import 'shared/Style/themes.dart';
 import 'shared/bloc_observer.dart';
 import 'shared/constant.dart';
 
@@ -23,15 +23,16 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  initFirebaseMessaging();
   Widget widget;
   if (onBoarding != null) {
     if (uId != null) {
       widget = HomeLayout();
     } else {
-      widget = LoginPage();
+      widget = const LoginPage();
     }
   } else {
-    widget = OnBoarding();
+    widget = const OnBoarding();
   }
   runApp(myApp(
     startWidget: widget,
@@ -53,16 +54,15 @@ class myApp extends StatelessWidget {
         },
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
-          theme: lightTheme,
           home: AnimatedSplashScreen(
               splashIconSize: 180,
               duration: 4000,
-              splash: Image(
+              splash: const Image(
                 image: AssetImage('assets/logo1.png'),
               ),
               nextScreen: startWidget,
               splashTransition: SplashTransition.fadeTransition,
-              backgroundColor: Color(0xFF92DF96)),
+              backgroundColor: const Color(0xFF92DF96)),
         ));
   }
 }

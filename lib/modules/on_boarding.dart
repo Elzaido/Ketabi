@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:book_swapping/modules/authentication/login.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -34,7 +32,7 @@ class _OnBoardingState extends State<OnBoarding> {
   void submit() {
     CacheHelper.saveDate(key: 'onBoarding', value: true).then((value) {
       if (value) {
-        navigateAndFinish(context: context, widget: LoginPage());
+        navigateAndFinish(context: context, widget: const LoginPage());
       }
     });
   }
@@ -52,7 +50,7 @@ class _OnBoardingState extends State<OnBoarding> {
                 onPressed: () {
                   submit();
                 },
-                child: Text(
+                child: const Text(
                   'تخطي',
                   style: TextStyle(
                     color: Colors.black,
@@ -61,7 +59,7 @@ class _OnBoardingState extends State<OnBoarding> {
                     fontSize: 18,
                   ),
                 )),
-            SizedBox(
+            const SizedBox(
               width: 5,
             )
           ],
@@ -70,13 +68,13 @@ class _OnBoardingState extends State<OnBoarding> {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 100,
               ),
               Expanded(
                 // PageView means that i have many pages in one page :
                 child: PageView.builder(
-                  physics: BouncingScrollPhysics(),
+                  physics: const BouncingScrollPhysics(),
                   controller: boardController,
                   onPageChanged: (int index) {
                     // if the index equal the index of the last page then :
@@ -100,7 +98,7 @@ class _OnBoardingState extends State<OnBoarding> {
                   SmoothPageIndicator(
                     controller: boardController,
                     count: boarding.length,
-                    effect: ExpandingDotsEffect(
+                    effect: const ExpandingDotsEffect(
                       activeDotColor: Colors.green,
                       dotHeight: 10,
                       dotWidth: 10,
@@ -108,7 +106,7 @@ class _OnBoardingState extends State<OnBoarding> {
                       spacing: 5,
                     ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   FloatingActionButton(
                       backgroundColor: Colors.green,
                       onPressed: () {
@@ -116,13 +114,13 @@ class _OnBoardingState extends State<OnBoarding> {
                           submit();
                         } else {
                           boardController.nextPage(
-                              duration: Duration(
+                              duration: const Duration(
                                 milliseconds: 750,
                               ),
                               curve: Curves.fastLinearToSlowEaseIn);
                         }
                       },
-                      child: Icon(
+                      child: const Icon(
                         Icons.arrow_forward_ios,
                         color: Colors.white,
                       ))
