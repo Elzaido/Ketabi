@@ -21,6 +21,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   TextEditingController countryController = TextEditingController();
+  TextEditingController phoneControl = TextEditingController();
 
   var phone = "";
 
@@ -44,186 +45,183 @@ class _LoginPageState extends State<LoginPage> {
           }
         }, builder: (context, state) {
           return Scaffold(
-              body: Container(
-            margin: EdgeInsets.only(left: 25, right: 25),
-            alignment: Alignment.center,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/login.png',
-                    width: 180,
-                    height: 180,
-                  ),
-                  SizedBox(
-                    height: 25,
-                  ),
-                  Text(
-                    "تسجيل الدخول",
-                    style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Cairo'),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    "الرجاء إدخال رقم هاتفك لإتمام عملية تسجبل الدخول",
-                    style: TextStyle(fontFamily: 'Cairo'),
-                  ),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  Container(
-                    height: 55,
-                    decoration: BoxDecoration(
-                        border: Border.all(width: 1, color: Colors.grey),
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 10,
-                        ),
-                        SizedBox(
-                          width: 40,
-                          child: TextField(
-                            controller: countryController,
-                            keyboardType: TextInputType.phone,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                            ),
-                          ),
-                        ),
-                        Text(
-                          "|",
-                          style: TextStyle(fontSize: 33, color: Colors.grey),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Expanded(
-                            child: TextField(
-                          onChanged: (value) {
-                            phone = value;
-                          },
-                          keyboardType: TextInputType.phone,
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: "Phone",
-                          ),
-                        ))
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 45,
-                    child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: mainColor,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10))),
-                        onPressed: () {
-                          LoginCubit.get(context).verifyFun(
-                              phone: countryController.text + phone,
-                              context: context);
-                        },
-                        child: state is! VerifyLoadingState
-                            ? Text(
-                                "أرسل الرمز",
-                                style: TextStyle(
-                                  fontFamily: 'Cairo',
-                                ),
-                              )
-                            : Center(
-                                child: CircularProgressIndicator(
-                                backgroundColor: Colors.white,
-                                color: mainColor,
-                                strokeWidth: 3,
-                              ))),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+              body: Stack(
+            children: [
+              Center(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.all(15),
+                  child: Column(
                     children: [
-                      TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                                // from where :
-                                context,
-                                // where to send :
-                                MaterialPageRoute(
-                                    builder: (context) => Register()));
-                          },
-                          child: const Text(
-                            'إنشاء حساب',
-                            style: TextStyle(
-                              fontFamily: 'Cairo',
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green,
-                            ),
-                          )),
+                      Image.asset(
+                        'assets/login.png',
+                        width: 180,
+                        height: 180,
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
                       Text(
-                        'ليس لديك حساب؟',
+                        "تسجيل الدخول",
+                        style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Cairo'),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        "الرجاء إدخال رقم هاتفك لإتمام عملية تسجبل الدخول",
                         style: TextStyle(fontFamily: 'Cairo'),
                       ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: TextFormField(
+                              controller: countryController,
+                              keyboardType: TextInputType.phone,
+                              decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              )),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Expanded(
+                              flex: 4,
+                              child: TextFormField(
+                                controller: phoneControl,
+                                // onChanged: (value) {
+                                //   phone = value;
+                                // },
+                                keyboardType: TextInputType.phone,
+                                decoration: InputDecoration(
+                                  isDense: true,
+                                  hintTextDirection: TextDirection.rtl,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  hintText: "  رقم الهاتف",
+                                ),
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'يجب إدخال رقم الهاتف';
+                                  } else {
+                                    return null;
+                                  }
+                                },
+                              )),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      button(
+                          onPressed: () {
+                            LoginCubit.get(context).verifyFun(
+                                phone:
+                                    countryController.text + phoneControl.text,
+                                context: context);
+                          },
+                          child: Text(
+                            "أرسل الرمز",
+                            style: TextStyle(
+                              fontFamily: 'Cairo',
+                            ),
+                          ),
+                          color: mainColor),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    // from where :
+                                    context,
+                                    // where to send :
+                                    MaterialPageRoute(
+                                        builder: (context) => Register()));
+                              },
+                              child: const Text(
+                                'إنشاء حساب',
+                                style: TextStyle(
+                                  fontFamily: 'Cairo',
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green,
+                                ),
+                              )),
+                          Text(
+                            'ليس لديك حساب؟',
+                            style: TextStyle(fontFamily: 'Cairo'),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.all(12),
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                10,
+                              ),
+                            ),
+                          ),
+                          icon: const Icon(
+                            Ionicons.logo_google,
+                            color: Colors.red,
+                          ),
+                          label: const Text(
+                            "Sign in with google",
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.black,
+                            ),
+                          ),
+                          onPressed: () async {
+                            // Trigger the authentication flow
+                            final GoogleSignInAccount? googleUser =
+                                await GoogleSignIn().signIn();
+
+                            // Obtain the auth details from the request
+                            final GoogleSignInAuthentication? googleAuth =
+                                await googleUser?.authentication;
+
+                            // Create a new credential
+                            final credential = GoogleAuthProvider.credential(
+                              accessToken: googleAuth?.accessToken,
+                              idToken: googleAuth?.idToken,
+                            );
+
+                            // Once signed in, return the UserCredential
+                            return await FirebaseAuth.instance
+                                .signInWithCredential(credential)
+                                .then((value) {
+                              LoginCubit.get(context).creatUser(
+                                  name: value.user!.displayName,
+                                  email: value.user!.email,
+                                  phone: value.user!.phoneNumber,
+                                  uId: value.user!.uid);
+                            });
+                          })
                     ],
                   ),
-                  ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.all(12),
-                        backgroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            10,
-                          ),
-                        ),
-                      ),
-                      icon: const Icon(
-                        Ionicons.logo_google,
-                        color: Colors.red,
-                      ),
-                      label: const Text(
-                        "Sign in with google",
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.black,
-                        ),
-                      ),
-                      onPressed: () async {
-                        // Trigger the authentication flow
-                        final GoogleSignInAccount? googleUser =
-                            await GoogleSignIn().signIn();
-
-                        // Obtain the auth details from the request
-                        final GoogleSignInAuthentication? googleAuth =
-                            await googleUser?.authentication;
-
-                        // Create a new credential
-                        final credential = GoogleAuthProvider.credential(
-                          accessToken: googleAuth?.accessToken,
-                          idToken: googleAuth?.idToken,
-                        );
-
-                        // Once signed in, return the UserCredential
-                        return await FirebaseAuth.instance
-                            .signInWithCredential(credential)
-                            .then((value) {
-                          LoginCubit.get(context).creatUser(
-                              name: value.user!.displayName,
-                              email: value.user!.email,
-                              phone: value.user!.phoneNumber,
-                              uId: value.user!.uid);
-                        });
-                      })
-                ],
+                ),
               ),
-            ),
+              if (state is VerifyLoadingState) loading(),
+            ],
           ));
         }));
   }

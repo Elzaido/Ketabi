@@ -34,8 +34,8 @@ class CreateFaildState extends RegisterState {
 
 // regsiter verify states
 
-class LoadingVerifiyRegisterState extends RegisterState {}
+class LoadingVerifyRegisterState extends RegisterState {}
 
-class SuccessVerifiyRegisterState extends RegisterState {}
+class SuccessVerifyRegisterState extends RegisterState {}
 
-class FaildVerifiyRegisterState extends RegisterState {}
+class FaildVerifyRegisterState extends RegisterState {}

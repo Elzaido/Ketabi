@@ -1,4 +1,4 @@
-// ignore_for_file: non_constant_identifier_names, unused_local_variable
+// ignore_for_file: non_constant_identifier_names, unused_local_variable, use_build_context_synchronously
 
 import 'dart:developer';
 import 'package:book_swapping/modules/authentication/login.dart';
@@ -54,6 +54,7 @@ class RegisterCubit extends Cubit<RegisterState> {
           emit(RegisterSuccessState());
         }).catchError((error) {
           emit(RegisterFaildState(error));
+          log(error);
         });
       }
     });
@@ -63,48 +64,76 @@ class RegisterCubit extends Cubit<RegisterState> {
     required String name,
     required String email,
     required String phone,
-    required context,
-  }) {
-    emit(LoadingVerifiyRegisterState());
-    FirebaseAuth.instance
-        .verifyPhoneNumber(
-      phoneNumber: phone,
-      verificationCompleted: (PhoneAuthCredential credential) {},
-      verificationFailed: (FirebaseAuthException e) {
-        emit(FaildVerifiyRegisterState());
-      },
-      codeSent: (String verificationId, int? resendToken) {
-        CollectionReference usersRef =
-            FirebaseFirestore.instance.collection('users');
-        Future<bool> isRegistered =
-            usersRef.where('phone', isEqualTo: phone).get().then((snapshot) {
-          return snapshot.docs.isNotEmpty;
-        });
-        // If the user is registered, navigate to the home page
-        isRegistered.then((registered) {
-          if (!registered) {
+    required BuildContext context,
+  }) async {
+    try {
+      // Show loading state
+      emit(LoadingVerifyRegisterState());
+
+      // Verify the phone number using Firebase Authentication
+      await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: phone,
+        verificationCompleted: (PhoneAuthCredential credential) {
+          // Auto-retrieval of SMS code succeeded, but we don't need to handle it here.
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          // Verification failed
+          emit(FaildVerifyRegisterState());
+          log("Verification failed: ${e.message}");
+        },
+        codeSent: (String verificationId, int? resendToken) async {
+          // Check if the user is already registered
+          final isRegistered = await isUserRegistered(phone);
+
+          if (!isRegistered) {
+            // Store the verification ID and navigate to verification screen
             Register.verify = verificationId;
             Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => RegisterVerify(
-                          name: name,
-                          email: email,
-                          phone: phone,
-                        )));
-            emit(SuccessVerifiyRegisterState());
+              context,
+              MaterialPageRoute(
+                builder: (context) => RegisterVerify(
+                  name: name,
+                  email: email,
+                  phone: phone,
+                ),
+              ),
+            );
+            emit(SuccessVerifyRegisterState());
           } else {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const LoginPage()));
-            emit(FaildVerifiyRegisterState());
+            // User is already registered, navigate to login screen
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginPage()),
+            );
+            emit(FaildVerifyRegisterState());
           }
-        });
-      },
-      codeAutoRetrievalTimeout: (String verificationId) {},
-    )
-        .catchError((error) {
-      emit(FaildVerifiyRegisterState());
-    });
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {
+          // Auto-retrieval of SMS code timed out
+          // You can add handling logic here if needed
+        },
+      );
+    } catch (error) {
+      // Handle other errors
+      emit(FaildVerifyRegisterState());
+      log("Error during phone verification: $error");
+    }
+  }
+
+  Future<bool> isUserRegistered(String phone) async {
+    try {
+      // Check if a user with the given phone number exists in Firestore
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('phone', isEqualTo: phone)
+          .get();
+
+      return querySnapshot.docs.isNotEmpty;
+    } catch (error) {
+      // Handle Firestore query error here
+      log("Error querying Firestore: $error");
+      return false; // Assume user is not registered in case of error
+    }
   }
 
   void creatUser({

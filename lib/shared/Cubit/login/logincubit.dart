@@ -1,3 +1,6 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:developer';
 import 'dart:io';
 import 'package:book_swapping/modules/authentication/loginverify.dart';
 import 'package:book_swapping/modules/authentication/register.dart';
@@ -20,44 +23,66 @@ class LoginCubit extends Cubit<LoginState> {
 
   void verifyFun({
     required String phone,
-    required context,
-  }) {
+    required BuildContext context,
+  }) async {
     emit(VerifyLoadingState());
-    FirebaseAuth.instance
-        .verifyPhoneNumber(
-      phoneNumber: phone,
-      verificationCompleted: (PhoneAuthCredential credential) {},
-      verificationFailed: (FirebaseAuthException e) {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const Register()));
-        emit(VerifyFaildState());
-      },
-      codeSent: (String verificationId, int? resendToken) {
-        CollectionReference usersRef =
-            FirebaseFirestore.instance.collection('users');
-        Future<bool> isRegistered =
-            usersRef.where('phone', isEqualTo: phone).get().then((snapshot) {
-          return snapshot.docs.isNotEmpty;
-        });
-        // If the user is registered, navigate to the verify page
-        isRegistered.then((registered) {
-          if (registered) {
+
+    try {
+      // Verify the phone number using Firebase Authentication
+      await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: phone,
+        verificationCompleted: (PhoneAuthCredential credential) {
+          // Auto-retrieval of SMS code succeeded, but we don't need to handle it here.
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const Register()),
+          );
+          emit(VerifyFaildState());
+          log("Verification failed: ${e.message}");
+        },
+        codeSent: (String verificationId, int? resendToken) async {
+          final isRegistered = await isUserRegistered(phone);
+
+          if (!isRegistered) {
             LoginPage.verify = verificationId;
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => LoginVerify()));
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => LoginVerify()),
+            );
             emit(VerifySuccessState());
           } else {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const Register()));
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const Register()),
+            );
             emit(VerifyFaildState());
           }
-        });
-      },
-      codeAutoRetrievalTimeout: (String verificationId) {},
-    )
-        .catchError((error) {
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {
+          // Auto-retrieval of SMS code timed out
+          // You can add handling logic here if needed
+        },
+      );
+    } catch (error) {
       emit(VerifyFaildState());
-    });
+      log("Error during phone verification: $error");
+    }
+  }
+
+  Future<bool> isUserRegistered(String phone) async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('phone', isEqualTo: phone)
+          .get();
+
+      return querySnapshot.docs.isNotEmpty;
+    } catch (error) {
+      log("Error querying Firestore: $error");
+      return false;
+    }
   }
 
   void loginCubit({

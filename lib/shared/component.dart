@@ -1,5 +1,6 @@
 // ignore_for_file: constant_identifier_names
 
+import 'package:book_swapping/shared/Cubit/home/home_cubit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -14,6 +15,7 @@ Widget formField(
         required bool isScure,
         required String label,
         required Icon prefIcon,
+        TextInputType inputType = TextInputType.visiblePassword,
         ValueChanged<String>? onSubmit,
         required FormFieldValidator<String> validator,
         IconButton? suffButton}) =>
@@ -21,7 +23,7 @@ Widget formField(
       textDirection: TextDirection.rtl,
       validator: validator,
       controller: control,
-      keyboardType: TextInputType.visiblePassword,
+      keyboardType: inputType,
       obscureText: isScure,
       obscuringCharacter: '*',
       onFieldSubmitted: onSubmit,
@@ -34,6 +36,37 @@ Widget formField(
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
           )),
+    );
+
+Widget button(
+        {required void Function()? onPressed,
+        required Widget? child,
+        required Color color}) =>
+    SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+            backgroundColor: color,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10))),
+        onPressed: onPressed,
+        child: child,
+      ),
+    );
+
+Widget loading() => Center(
+      child: Container(
+        decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(10)),
+        child: const Padding(
+          padding: EdgeInsets.all(18.0),
+          child: CircularProgressIndicator(
+            color: Color.fromARGB(255, 102, 187, 106),
+          ),
+        ),
+      ),
     );
 
 void defaultToast({
@@ -138,7 +171,7 @@ Widget defualtHomeItem({
   required void Function()? onTap,
 }) =>
     Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: InkWell(
         onTap: onTap,
         child: Container(
@@ -147,10 +180,13 @@ Widget defualtHomeItem({
             borderRadius: BorderRadius.circular(10),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.3),
-                spreadRadius: 5,
-                blurRadius: 10,
-                offset: const Offset(0, 5), // changes position of shadow
+                color: Colors.grey.withOpacity(0.4), // Shadow color
+                spreadRadius: 2,
+                blurRadius: 4,
+                offset: const Offset(
+                  0,
+                  2,
+                ), // Shadow position [horizontal, vertical]
               ),
             ],
           ),
@@ -204,7 +240,7 @@ Widget adItem(
                         Align(
                           alignment: Alignment.centerRight,
                           child: Text(
-                            model.postText,
+                            model.bookName,
                             style: const TextStyle(
                               fontFamily: 'Cairo',
                             ),
@@ -320,19 +356,18 @@ Widget adItem(
                       mainAxisAlignment: MainAxisAlignment.start,
                       mainAxisSize: MainAxisSize.max,
                       children: [
-                        if (model.postText != '')
-                          Text(
-                            model.postText,
-                            maxLines: 2,
-                            textAlign: TextAlign.justify,
+                        Text(
+                          model.bookName,
+                          maxLines: 2,
+                          textAlign: TextAlign.justify,
+                          overflow: TextOverflow.ellipsis,
+                          textDirection: TextDirection.rtl,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontFamily: 'Cairo',
                             overflow: TextOverflow.ellipsis,
-                            textDirection: TextDirection.rtl,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontFamily: 'Cairo',
-                              overflow: TextOverflow.ellipsis,
-                            ),
                           ),
+                        ),
                         Text(
                           '${model.type} -',
                           textAlign: TextAlign.end,
@@ -385,18 +420,17 @@ Widget myAdItem(
                     mainAxisAlignment: MainAxisAlignment.start,
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      if (model.postText != '')
-                        Text(
-                          model.postText,
-                          maxLines: 2,
-                          textAlign: TextAlign.end,
+                      Text(
+                        model.bookName,
+                        maxLines: 2,
+                        textAlign: TextAlign.end,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            overflow: TextOverflow.ellipsis,
-                          ),
                         ),
+                      ),
                       Text(
                         model.type,
                         textAlign: TextAlign.end,
@@ -428,16 +462,6 @@ Widget myAdItem(
                   onTap: () {},
                   child: const Column(
                     children: [
-                      Icon(Icons.analytics, color: Colors.green),
-                      Text('إحصائيات'),
-                    ],
-                  ),
-                )),
-                Expanded(
-                    child: InkWell(
-                  onTap: () {},
-                  child: const Column(
-                    children: [
                       Icon(
                         Icons.edit,
                         color: Colors.orange,
@@ -448,7 +472,9 @@ Widget myAdItem(
                 )),
                 Expanded(
                     child: InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    HomeCubit.get(context).deletePost(model.postId);
+                  },
                   child: const Column(
                     children: [
                       Icon(
@@ -500,7 +526,7 @@ Widget chatItem(context, UserModel model) => InkWell(
     );
 
 Widget separator() => Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(10.0),
       child: (Container(
         height: 1,
         color: const Color.fromARGB(255, 226, 226, 226),

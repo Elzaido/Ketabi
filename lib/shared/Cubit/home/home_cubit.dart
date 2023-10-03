@@ -30,8 +30,10 @@ class HomeCubit extends Cubit<HomeStates> {
   File? postImage;
   File? chatImage;
 
+  String selectedBookType = 'تبديل';
+  List<String> bookTypes = ['تبديل', 'بيع', 'تبرع'];
+
   var picker = ImagePicker();
-  String selectedOption = 'تبديل';
   int currentIndex = 4;
 
   List<Widget> screens = [
@@ -138,6 +140,7 @@ class HomeCubit extends Cubit<HomeStates> {
   void uploadProfileImage({
     required String name,
     required String phone,
+    required String email,
   }) {
     emit(LoadingUpdateUserState());
     firebase_storage.FirebaseStorage.instance
@@ -146,7 +149,7 @@ class HomeCubit extends Cubit<HomeStates> {
         .putFile(profileImage!)
         .then((value) {
       value.ref.getDownloadURL().then((value) {
-        updateUserData(name: name, phone: phone, image: value);
+        updateUserData(name: name, phone: phone, image: value, email: email);
         emit(SuccessUploadProfileImageState());
       }).catchError((onError) {
         emit(ErrorUploadProfileImageState());
@@ -159,6 +162,7 @@ class HomeCubit extends Cubit<HomeStates> {
   void updateUserData({
     required String name,
     required String phone,
+    required String email,
     String? image,
   }) {
     emit(LoadingUpdateUserState());
@@ -166,7 +170,7 @@ class HomeCubit extends Cubit<HomeStates> {
       name: name,
       phone: phone,
       image: image ?? userModel!.image,
-      email: userModel!.email,
+      email: email,
       uId: userModel!.uId,
       pushToken: userModel!.pushToken,
       chatList: userModel!.chatList,
@@ -185,8 +189,20 @@ class HomeCubit extends Cubit<HomeStates> {
     });
   }
 
-  Future<void> pickPostImage() async {
+  Future<void> pickImageFromGallery() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      postImage = File(pickedFile.path);
+      emit(SuccessPickPostImageState());
+    } else {
+      print('No image selected');
+      emit(ErrorPickPostImageState());
+    }
+  }
+
+  Future<void> pickImageFromCamera() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.camera);
 
     if (pickedFile != null) {
       postImage = File(pickedFile.path);
@@ -203,9 +219,11 @@ class HomeCubit extends Cubit<HomeStates> {
   }
 
   void uplaodPostImage({
-    required String text,
     required String date,
     required String type,
+    required String bookName,
+    String? bookPrice,
+    String? swapedBook,
   }) {
     emit(LoadingUploadPostState());
     firebase_storage.FirebaseStorage.instance
@@ -216,7 +234,9 @@ class HomeCubit extends Cubit<HomeStates> {
       value.ref.getDownloadURL().then((value) {
         createPost(
           date: date,
-          text: text,
+          bookName: bookName,
+          swapedBook: swapedBook,
+          bookPrice: bookPrice,
           postImage: value,
           type: type,
           // postId: value
@@ -231,18 +251,22 @@ class HomeCubit extends Cubit<HomeStates> {
   }
 
   void createPost({
-    required String text,
     required String date,
-    String? postImage,
     required String type,
+    required String bookName,
+    String? postImage,
+    String? bookPrice,
+    String? swapedBook,
   }) async {
     emit(LoadingUploadPostState());
     PostModel model = PostModel(
-      name: userModel!.name,
+      ownerName: userModel!.name,
+      bookName: bookName,
+      bookPrice: bookPrice ?? '',
+      swapedBook: swapedBook ?? '',
       postId: '',
       userImage: userModel!.image,
       uId: userModel!.uId,
-      postText: text,
       date: date,
       type: type,
       postImage: postImage ?? '',
@@ -257,9 +281,21 @@ class HomeCubit extends Cubit<HomeStates> {
       model.postId = postRef.id;
       // Update the post document with the correct post ID
       await postRef.update({'postId': postRef.id});
+      getMyPosts(uId: uId!);
       emit(SuccessUploadPostState());
     } catch (e) {
       emit(ErrorUploadPostState());
+    }
+  }
+
+  Future<void> deletePost(String postId) async {
+    try {
+      // Delete the post document from the 'posts' collection
+      await FirebaseFirestore.instance.collection('posts').doc(postId).delete();
+      getMyPosts(uId: uId!);
+      emit(SuccessDeletePostState());
+    } catch (e) {
+      emit(ErrorDeletePostState());
     }
   }
 
@@ -268,12 +304,7 @@ class HomeCubit extends Cubit<HomeStates> {
   void getAllPosts() {
     posts = [];
     emit(LoadingGetPostDataState());
-    FirebaseFirestore.instance
-        .collection('posts')
-
-        // get() will call the all the posts without being bound by a specific uId.
-        .get()
-        .then((value) {
+    FirebaseFirestore.instance.collection('posts').get().then((value) {
       value.docs.forEach(((element) {
         posts.add(PostModel.formJson(element.data()));
       }));
@@ -461,7 +492,7 @@ class HomeCubit extends Cubit<HomeStates> {
   }
 
   void selectPostType(String value) {
-    selectedOption = value;
+    selectedBookType = value;
     emit(ChangeSelectionState());
   }
 }

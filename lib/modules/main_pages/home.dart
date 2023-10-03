@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_constructors_in_immutables, non_constant_identifier_names, prefer_const_literals_to_create_immutables, must_be_immutable
+// ignore_for_file: must_be_immutable
 import 'package:book_swapping/shared/component.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -8,30 +8,32 @@ import 'ads.dart';
 class Home extends StatelessWidget {
   Home({Key? key}) : super(key: key);
 
-  TextEditingController Search = TextEditingController();
+  TextEditingController search = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.sizeOf(context);
+
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.all(15),
       child: Column(
         children: [
-          SizedBox(
-            height: 20,
-          ),
           CarouselSlider(
               items: HomeCubit.get(context).images,
               options: CarouselOptions(
-                height: 220.0,
+                height: size.height * 0.30,
                 initialPage: 0,
                 viewportFraction: 1.0,
                 enableInfiniteScroll: true,
                 reverse: false,
                 autoPlay: true,
-                autoPlayInterval: Duration(seconds: 3),
-                autoPlayAnimationDuration: Duration(seconds: 1),
+                autoPlayInterval: const Duration(seconds: 7),
+                autoPlayAnimationDuration: const Duration(seconds: 1),
                 autoPlayCurve: Curves.fastOutSlowIn,
                 scrollDirection: Axis.horizontal,
               )),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           defualtHomeItem(
@@ -90,7 +92,7 @@ class Home extends StatelessWidget {
                           )));
             },
           ),
-          SizedBox(
+          const SizedBox(
             height: 25,
           )
         ],

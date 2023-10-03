@@ -56,90 +56,78 @@ class RegisterVerify extends StatelessWidget {
               ),
               elevation: 0,
             ),
-            body: Container(
-              margin: EdgeInsets.only(left: 25, right: 25),
-              alignment: Alignment.center,
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/auth.png',
-                      width: 180,
-                      height: 180,
-                    ),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    Text(
-                      "التحقق من الهاتف",
-                      style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Cairo'),
-                    ),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    Pinput(
-                      length: 6,
-                      onChanged: (value) {
-                        code = value;
-                      },
-                      showCursor: true,
-                      onCompleted: (pin) => print(pin),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 45,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: mainColor,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10))),
-                        onPressed: () {
-                          RegisterCubit.get(context).userRegister(
-                              name: name,
-                              email: email,
-                              phone: phone,
-                              code: code);
-                        },
-                        child: state is LoadingRegisterState
-                            ? Center(
-                                child: CircularProgressIndicator(
-                                backgroundColor: Colors.white,
-                                color: mainColor,
-                                strokeWidth: 3,
-                              ))
-                            : Text(
-                                "تحقق من رقم الهاتف",
-                                style: TextStyle(fontFamily: 'Cairo'),
-                              ),
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+            body: Stack(
+              children: [
+                Center(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.all(15),
+                    child: Column(
                       children: [
-                        TextButton(
+                        Image.asset(
+                          'assets/auth.png',
+                          width: 180,
+                          height: 180,
+                        ),
+                        SizedBox(
+                          height: 25,
+                        ),
+                        Text(
+                          "التحقق من الهاتف",
+                          style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Cairo'),
+                        ),
+                        SizedBox(
+                          height: 30,
+                        ),
+                        Pinput(
+                          length: 6,
+                          onChanged: (value) {
+                            code = value;
+                          },
+                          showCursor: true,
+                          onCompleted: (pin) => print(pin),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        button(
                             onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => LoginPage()));
+                              RegisterCubit.get(context).userRegister(
+                                  name: name,
+                                  email: email,
+                                  phone: phone,
+                                  code: code);
                             },
                             child: Text(
-                              "تغيير رقم الهاتف؟",
-                              style: TextStyle(
-                                  color: Colors.black, fontFamily: 'Cairo'),
-                            ))
+                              "تحقق من رقم الهاتف",
+                              style: TextStyle(fontFamily: 'Cairo'),
+                            ),
+                            color: mainColor),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => LoginPage()));
+                                },
+                                child: Text(
+                                  "تغيير رقم الهاتف؟",
+                                  style: TextStyle(
+                                      color: Colors.black, fontFamily: 'Cairo'),
+                                ))
+                          ],
+                        )
                       ],
-                    )
-                  ],
+                    ),
+                  ),
                 ),
-              ),
+                if (state is LoadingRegisterState) loading(),
+              ],
             ),
           );
         }));

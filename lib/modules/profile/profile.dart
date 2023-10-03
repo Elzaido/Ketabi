@@ -43,14 +43,6 @@ class Profile extends StatelessWidget {
                     fontSize: 20,
                   ),
                 ),
-                SizedBox(
-                  width: 5,
-                ),
-                Icon(
-                  Icons.verified,
-                  color: Colors.blue,
-                  size: 20,
-                )
               ],
             ),
             SizedBox(height: 20),
@@ -66,7 +58,7 @@ class Profile extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const Edit_Profile()),
+                                builder: (context) => const EditProfile()),
                           );
                         },
                         icon: Icon(Icons.edit),
@@ -105,8 +97,8 @@ class Profile extends StatelessWidget {
                             if (value) {
                               navigateAndFinish(
                                   context: context, widget: LoginPage());
-                              HomeCubit.get(context).changeNav(4);
                               FirebaseAuth.instance.signOut();
+                              HomeCubit.get(context).changeNav(4);
                             }
                           });
                         },

@@ -27,9 +27,7 @@ class Favorites extends StatelessWidget {
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
+              return loading();
             } else if (snapshot.hasError) {
               return Center(
                 child: Text('Error fetching user data'),

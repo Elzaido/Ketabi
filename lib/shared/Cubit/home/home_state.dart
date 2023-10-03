@@ -48,6 +48,10 @@ class ErrorUploadPostState extends HomeStates {}
 
 class LoadingGetPostDataState extends HomeStates {}
 
+class SuccessDeletePostState extends HomeStates {}
+
+class ErrorDeletePostState extends HomeStates {}
+
 class SuccessGetPostDataState extends HomeStates {}
 
 class ErrorGetPostDataState extends HomeStates {
