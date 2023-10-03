@@ -57,6 +57,7 @@ class myApp extends StatelessWidget {
           home: AnimatedSplashScreen(
               splashIconSize: 180,
               duration: 4000,
+              animationDuration: const Duration(milliseconds: 1000),
               splash: const Image(
                 image: AssetImage('assets/logo1.png'),
               ),

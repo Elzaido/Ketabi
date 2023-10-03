@@ -3,6 +3,7 @@
 import 'dart:developer';
 import 'package:book_swapping/modules/authentication/login.dart';
 import 'package:book_swapping/modules/authentication/register.dart';
+import 'package:book_swapping/shared/component.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -80,6 +81,9 @@ class RegisterCubit extends Cubit<RegisterState> {
           // Verification failed
           emit(FaildVerifyRegisterState());
           log("Verification failed: ${e.message}");
+          defaultToast(
+              massage: 'الرجاء إستخدام الأرقام التجريبية فقط',
+              state: ToastStates.ERROR);
         },
         codeSent: (String verificationId, int? resendToken) async {
           // Check if the user is already registered

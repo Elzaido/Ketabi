@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, non_constant_identifier_names, prefer_const_literals_to_create_immutables, must_be_immutable, unnecessary_string_interpolations
+// ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,7 +9,7 @@ import '../../shared/component.dart';
 class MyAds extends StatelessWidget {
   MyAds({Key? key}) : super(key: key);
 
-  TextEditingController Search2 = TextEditingController();
+  TextEditingController search2 = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -19,76 +19,75 @@ class MyAds extends StatelessWidget {
             massage: 'تم حذف الإعلان بنجاح', state: ToastStates.SUCCESS);
       } else if (state is ErrorDeletePostState) {
         defaultToast(
-            massage: 'هناك مشكلة في حذف الإعلان بنجاح',
-            state: ToastStates.ERROR);
+            massage: 'هناك مشكلة في حذف الإعلان', state: ToastStates.ERROR);
       }
     }, builder: (context, state) {
-      return HomeCubit.get(context).posts.isNotEmpty
-          ? SingleChildScrollView(
-              physics: BouncingScrollPhysics(),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 15, horizontal: 10),
-                    child: formField(
-                        control: Search2,
-                        isScure: false,
-                        label: 'إبحث في إعلاناتك ...',
-                        prefIcon: Icon(Icons.search),
-                        validator: (String? value) {
-                          if (value!.isEmpty) {
-                            return 'إبحث في إعلاناتك ...';
-                          } else {
-                            return null;
-                          }
-                        }),
-                  ),
-                  ListView.separated(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: ((context, index) => myAdItem(
-                            context,
-                            HomeCubit.get(context).posts[index],
-                          )),
-                      separatorBuilder: (context, index) =>
-                          SizedBox(height: 10),
-                      itemCount: HomeCubit.get(context).posts.length),
-                  SizedBox(
-                    height: 25,
-                  )
-                ],
-              ),
-            )
-          : Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    '!',
-                    style: TextStyle(
-                      fontFamily: 'Cairo',
-                      fontSize: 15,
+      return state is LoadingGetPostDataState
+          ? loading()
+          : HomeCubit.get(context).posts.isNotEmpty
+              ? Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Column(
+                      children: [
+                        formField(
+                            control: search2,
+                            isScure: false,
+                            label: 'إبحث في إعلاناتك ...',
+                            prefIcon: const Icon(Icons.search),
+                            validator: (String? value) {
+                              if (value!.isEmpty) {
+                                return 'إبحث في إعلاناتك ...';
+                              } else {
+                                return null;
+                              }
+                            }),
+                        const SizedBox(height: 20),
+                        ListView.separated(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: ((context, index) => adItem(context,
+                                HomeCubit.get(context).posts[index], true)),
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 15),
+                            itemCount: HomeCubit.get(context).posts.length),
+                        const SizedBox(
+                          height: 25,
+                        )
+                      ],
                     ),
                   ),
-                  Text(
-                    'لا يوجد لديك إعلانات لعرضها',
-                    style: TextStyle(
-                      fontFamily: 'Cairo',
-                      fontSize: 15,
-                    ),
+                )
+              : const Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '!',
+                        style: TextStyle(
+                          fontFamily: 'Cairo',
+                          fontSize: 15,
+                        ),
+                      ),
+                      Text(
+                        'لا يوجد لديك إعلانات لعرضها',
+                        style: TextStyle(
+                          fontFamily: 'Cairo',
+                          fontSize: 15,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 7,
+                      ),
+                      Icon(
+                        Icons.warning,
+                        color: Colors.red,
+                        size: 35,
+                      )
+                    ],
                   ),
-                  SizedBox(
-                    width: 7,
-                  ),
-                  const Icon(
-                    Icons.warning,
-                    color: Colors.red,
-                    size: 35,
-                  )
-                ],
-              ),
-            );
+                );
     });
   }
 }

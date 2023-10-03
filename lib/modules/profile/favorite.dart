@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_string_interpolations, prefer_const_literals_to_create_immutables
-
 import 'package:book_swapping/shared/constant.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -13,12 +11,13 @@ class Favorites extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'المفضلة',
           style: TextStyle(
             fontFamily: 'Cairo',
           ),
         ),
+        backgroundColor: mainColor,
       ),
       body: StreamBuilder<DocumentSnapshot>(
           stream: FirebaseFirestore.instance
@@ -29,7 +28,7 @@ class Favorites extends StatelessWidget {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return loading();
             } else if (snapshot.hasError) {
-              return Center(
+              return const Center(
                 child: Text('Error fetching user data'),
               );
             } else {
@@ -41,43 +40,48 @@ class Favorites extends StatelessWidget {
               bool noSeparate = false;
 
               return favList.isNotEmpty
-                  ? SingleChildScrollView(
-                      physics: BouncingScrollPhysics(),
-                      child: Column(
-                        children: [
-                          ListView.separated(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemBuilder: ((context, index) {
-                                final post =
-                                    HomeCubit.get(context).posts[index];
-                                // Check if the post's ID is in the favlist of the current user.
-                                final bool isPostInFavList =
-                                    favList.contains(post.postId);
-                                // If the user's ID is in the chatlist, display the chat item.
-                                if (isPostInFavList) {
-                                  return adItem(context, post, true,
-                                      true); // Return the chat item widget.
-                                } else {
-                                  noSeparate = true;
-                                  return Container(
-                                    height: 0,
-                                  );
-                                  // Return an empty container if the condition is false.
-                                }
-                              }),
-                              separatorBuilder: ((context, index) => noSeparate
-                                  ? Container(
-                                      height: 0,
-                                    )
-                                  : separator()),
-                              itemCount: HomeCubit.get(context).posts.length),
-                          SizedBox(
-                            height: 25,
-                          )
-                        ],
-                      ))
-                  : Center(
+                  ? Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: SingleChildScrollView(
+                          physics: const BouncingScrollPhysics(),
+                          child: Column(
+                            children: [
+                              ListView.separated(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemBuilder: ((context, index) {
+                                    final post =
+                                        HomeCubit.get(context).posts[index];
+                                    // Check if the post's ID is in the favlist of the current user.
+                                    final bool isPostInFavList =
+                                        favList.contains(post.postId);
+                                    // If the user's ID is in the chatlist, display the chat item.
+                                    if (isPostInFavList) {
+                                      return adItem(context, post,
+                                          false); // Return the chat item widget.
+                                    } else {
+                                      noSeparate = true;
+                                      return Container(
+                                        height: 0,
+                                      );
+                                      // Return an empty container if the condition is false.
+                                    }
+                                  }),
+                                  separatorBuilder: ((context, index) =>
+                                      noSeparate
+                                          ? Container(
+                                              height: 0,
+                                            )
+                                          : separator()),
+                                  itemCount:
+                                      HomeCubit.get(context).posts.length),
+                              const SizedBox(
+                                height: 25,
+                              )
+                            ],
+                          )),
+                    )
+                  : const Center(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print, prefer_const_constructors
-
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
@@ -37,10 +35,10 @@ class HomeCubit extends Cubit<HomeStates> {
   int currentIndex = 4;
 
   List<Widget> screens = [
-    Profile(),
+    const Profile(),
     MyAds(),
     Add_Post(),
-    Chats(),
+    const Chats(),
     Home(),
   ];
 
@@ -62,6 +60,9 @@ class HomeCubit extends Cubit<HomeStates> {
   void changeNav(int index) {
     if (index == 2) {
       emit(AddPostState());
+    } else if (index == 1) {
+      getMyPosts(uId: uId!);
+      currentIndex = index;
     } else {
       currentIndex = index;
       emit(ChangeNavState());
@@ -76,10 +77,10 @@ class HomeCubit extends Cubit<HomeStates> {
     await fMessaging.getToken().then((t) {
       if (t != null) {
         userModel!.pushToken = t;
-        print('Push Token: $t');
+        log('Push Token: $t');
       }
     }).catchError((error) {
-      print('Push Token Error is: $error');
+      log('Push Token Error is: $error');
     });
   }
 
@@ -119,7 +120,7 @@ class HomeCubit extends Cubit<HomeStates> {
       await getFirebaseMessagingToken();
       emit(SuccessGetUserDataState());
     }).catchError((error) {
-      print(error.toString());
+      log(error.toString());
       emit(ErrorGetUserDataState(error.toString()));
     });
   }
@@ -130,9 +131,9 @@ class HomeCubit extends Cubit<HomeStates> {
     if (pickedFile != null) {
       profileImage = File(pickedFile.path);
       emit(SuccessPickProfileImageState());
-      print(pickedFile.path.toString());
+      log(pickedFile.path.toString());
     } else {
-      print('No image selected');
+      log('No image selected');
       emit(ErrorPickProfileImageState());
     }
   }
@@ -196,7 +197,7 @@ class HomeCubit extends Cubit<HomeStates> {
       postImage = File(pickedFile.path);
       emit(SuccessPickPostImageState());
     } else {
-      print('No image selected');
+      log('No image selected');
       emit(ErrorPickPostImageState());
     }
   }
@@ -208,7 +209,7 @@ class HomeCubit extends Cubit<HomeStates> {
       postImage = File(pickedFile.path);
       emit(SuccessPickPostImageState());
     } else {
-      print('No image selected');
+      log('No image selected');
       emit(ErrorPickPostImageState());
     }
   }
@@ -330,7 +331,29 @@ class HomeCubit extends Cubit<HomeStates> {
       emit(SuccessGetPostDataState());
     }).catchError((error) {
       emit(ErrorGetPostDataState(error.toString()));
-      print('The Error is: $error');
+      log('The Error is: $error');
+    });
+  }
+
+  void getPostsByTypeAndName({
+    required String type,
+    required String name,
+  }) {
+    posts = [];
+    emit(LoadingGetPostDataState());
+    FirebaseFirestore.instance
+        .collection('posts')
+        .where('type', isEqualTo: type) // Filter by type
+        .where('bookName', isEqualTo: name) // Filter by name
+        .get()
+        .then((value) {
+      value.docs.forEach(((element) {
+        posts.add(PostModel.formJson(element.data()));
+      }));
+      emit(SuccessGetPostDataState());
+    }).catchError((error) {
+      emit(ErrorGetPostDataState(error.toString()));
+      log('The Error is: $error');
     });
   }
 
@@ -452,7 +475,7 @@ class HomeCubit extends Cubit<HomeStates> {
       chatImage = File(pickedFile.path);
       emit(SuccessPickChatImageState());
     } else {
-      print('No image selected');
+      log('No image selected');
       emit(ErrorPickChatImageState());
     }
   }
@@ -477,7 +500,7 @@ class HomeCubit extends Cubit<HomeStates> {
             image: value,
             token: fToken);
         emit(SuccessUploadChatImageState());
-        print(value);
+        log(value);
       }).catchError((onError) {
         emit(ErrorUploadChatImageState());
       });

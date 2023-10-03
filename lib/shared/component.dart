@@ -41,10 +41,11 @@ Widget formField(
 Widget button(
         {required void Function()? onPressed,
         required Widget? child,
-        required Color color}) =>
+        required Color color,
+        double height = 50}) =>
     SizedBox(
       width: double.infinity,
-      height: 50,
+      height: height,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
             backgroundColor: color,
@@ -216,202 +217,79 @@ UserModel? userModel;
 Widget adItem(
   context,
   PostModel model,
-  bool infavpage,
-  bool isfav,
+  bool myAd,
 ) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-    child: InkWell(
-      onTap: () {
-        if (model.uId != uId) {
-          showDialog(
-              context: context,
-              builder: (context1) => AlertDialog(
-                    title: Text(
-                      model.type,
-                      textAlign: TextAlign.right,
-                      style: const TextStyle(
-                        fontFamily: 'Cairo',
-                      ),
-                    ),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            model.bookName,
-                            style: const TextStyle(
-                              fontFamily: 'Cairo',
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 7,
-                        ),
-                        SizedBox(
-                            width: 300,
-                            height: 300,
-                            child: Image(
-                              image: NetworkImage(
-                                model.postImage,
-                              ),
-                              fit: BoxFit.cover,
-                            ))
-                      ],
-                    ),
-                    actions: <Widget>[
-                      TextButton(
-                          onPressed: () {
-                            Navigator.pop(context1, true);
-                          },
-                          child: const Text(
-                            'إغلاق',
-                            style: TextStyle(
-                              fontFamily: 'Cairo',
-                            ),
-                          )),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context1, true);
-                          FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(uId)
-                              .update({
-                            'chatlist': FieldValue.arrayUnion([model.uId]),
-                          });
-                          FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(model.uId)
-                              .update({
-                            'chatlist': FieldValue.arrayUnion([uId]),
-                          });
-                          // get the ad owner data and pass it the chat datails page.
-                          FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(model.uId)
-                              .get()
-                              .then((value) {
-                            userModel = UserModel.formJson(value.data()!);
-                            String name = userModel!.name!;
-                            String image = userModel!.image;
-                            String token = userModel!.pushToken;
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ChatDetails(
-                                          uId: model.uId,
-                                          image: image,
-                                          name: name,
-                                          fToken: token,
-                                        )));
-                          });
-                        },
-                        child: const Text(
-                          'دردشة',
-                          style: TextStyle(
-                            fontFamily: 'Cairo',
-                          ),
-                        ),
-                      ),
-                    ],
-                  ));
-        } else {
-          defaultToast(
-              massage: 'هذا الإعلان خاص بك!', state: ToastStates.ERROR);
-        }
-      },
-      child: Card(
-          elevation: 5,
-          color: const Color.fromARGB(255, 247, 247, 247),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                if (!infavpage)
-                  IconButton(
-                    onPressed: () {
+  return Container(
+      decoration: BoxDecoration(
+        borderRadius:
+            BorderRadius.circular(16.0), // Adjust the radius as needed
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.4), // Shadow color
+            spreadRadius: 2,
+            blurRadius: 4,
+            offset:
+                const Offset(0, 2), // Shadow position [horizontal, vertical]
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          InkWell(
+            onTap: () {
+              if (model.uId != uId) {
+                showItemDialog(
+                    model, context, model.postImage.isNotEmpty, model.type);
+              } else {
+                defaultToast(
+                    massage: 'هذا الإعلان خاص بك!', state: ToastStates.ERROR);
+              }
+            },
+            child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+              if (!myAd)
+                IconButton(
+                  onPressed: () {
+                    if (!HomeCubit.get(context)
+                        .userModel!
+                        .favList
+                        .contains(model.postId)) {
                       FirebaseFirestore.instance
                           .collection('users')
                           .doc(uId)
                           .update({
                         'favlist': FieldValue.arrayUnion([model.postId]),
                       });
-                    },
-                    icon: isfav
-                        ? const Icon(
-                            Icons.favorite,
-                            color: Colors.red,
-                          )
-                        : const Icon(
-                            Icons.favorite_border_outlined,
-                            color: Colors.red,
-                          ),
-                  ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Text(
-                          model.bookName,
-                          maxLines: 2,
-                          textAlign: TextAlign.justify,
-                          overflow: TextOverflow.ellipsis,
-                          textDirection: TextDirection.rtl,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontFamily: 'Cairo',
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                      defaultToast(
+                          massage: 'تمت إضافة الإعلان إلى المفضلة',
+                          state: ToastStates.SUCCESS);
+                    } else {
+                      FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(uId)
+                          .update({
+                        'favlist': FieldValue.arrayRemove([model.postId]),
+                      });
+                      defaultToast(
+                          massage: 'تمت إزالة الإعلان من المفضلة',
+                          state: ToastStates.ERROR);
+                    }
+                    HomeCubit.get(context).getUserData();
+                  },
+                  icon: HomeCubit.get(context)
+                          .userModel!
+                          .favList
+                          .contains(model.postId)
+                      ? const Icon(
+                          Icons.favorite,
+                          color: Colors.red,
+                        )
+                      : const Icon(
+                          Icons.favorite_border_outlined,
+                          color: Colors.red,
                         ),
-                        Text(
-                          '${model.type} -',
-                          textAlign: TextAlign.end,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontFamily: 'Cairo',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ),
-                if (model.postImage != '')
-                  Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: Image(
-                      image: NetworkImage(
-                        model.postImage,
-                      ),
-                      height: 100,
-                      width: 100,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-              ]),
-            ],
-          )),
-    ),
-  );
-}
-
-Widget myAdItem(
-  context,
-  PostModel model,
-) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-    child: Card(
-        elevation: 5,
-        color: const Color.fromARGB(255, 247, 247, 247),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Row(mainAxisAlignment: MainAxisAlignment.end, children: [
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -422,20 +300,22 @@ Widget myAdItem(
                     children: [
                       Text(
                         model.bookName,
-                        maxLines: 2,
-                        textAlign: TextAlign.end,
+                        textAlign: TextAlign.justify,
                         overflow: TextOverflow.ellipsis,
+                        textDirection: TextDirection.rtl,
                         style: const TextStyle(
                           fontSize: 15,
-                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Cairo',
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       Text(
-                        model.type,
+                        'كتاب لل${model.type} -',
                         textAlign: TextAlign.end,
-                        style:
-                            const TextStyle(fontSize: 15, fontFamily: 'Cairo'),
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontFamily: 'Cairo',
+                        ),
                       ),
                     ],
                   ),
@@ -454,43 +334,174 @@ Widget myAdItem(
                   ),
                 ),
             ]),
-            separator(),
-            Row(
+          ),
+          if (myAd)
+            Column(
               children: [
-                Expanded(
-                    child: InkWell(
-                  onTap: () {},
-                  child: const Column(
-                    children: [
-                      Icon(
-                        Icons.edit,
-                        color: Colors.orange,
+                separator(),
+                Row(
+                  children: [
+                    Expanded(
+                        child: InkWell(
+                      onTap: () {},
+                      child: const Column(
+                        children: [
+                          Icon(
+                            Icons.edit,
+                            color: Colors.orange,
+                          ),
+                          Text('تعديل')
+                        ],
                       ),
-                      Text('تعديل')
-                    ],
-                  ),
-                )),
-                Expanded(
-                    child: InkWell(
-                  onTap: () {
-                    HomeCubit.get(context).deletePost(model.postId);
-                  },
-                  child: const Column(
-                    children: [
-                      Icon(
-                        Icons.delete,
-                        color: Colors.red,
+                    )),
+                    Expanded(
+                        child: InkWell(
+                      onTap: () {
+                        HomeCubit.get(context).deletePost(model.postId);
+                      },
+                      child: const Column(
+                        children: [
+                          Icon(
+                            Icons.delete,
+                            color: Colors.red,
+                          ),
+                          Text('حذف')
+                        ],
                       ),
-                      Text('حذف')
-                    ],
-                  ),
-                )),
+                    )),
+                  ],
+                ),
+              ],
+            )
+        ]),
+      ));
+}
+
+void showItemDialog(PostModel model, context, bool isImage, String bookType) {
+  showDialog(
+      context: context,
+      builder: (context1) => AlertDialog(
+            title: Text(
+              model.type,
+              textAlign: TextAlign.right,
+              style: const TextStyle(
+                fontFamily: 'Cairo',
+              ),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                infoItems(title: 'إسم الكتاب', info: model.bookName),
+                if (bookType == 'تبديل')
+                  infoItems(title: 'للتبديل على', info: model.swapedBook),
+                if (bookType == 'بيع')
+                  infoItems(title: 'سعرالكتاب', info: model.bookPrice),
+                infoItems(title: 'صاحب الكتاب', info: model.ownerName!),
+                if (isImage)
+                  SizedBox(
+                      width: 300,
+                      height: 300,
+                      child: Image(
+                        image: NetworkImage(
+                          model.postImage,
+                        ),
+                        fit: BoxFit.cover,
+                      ))
               ],
             ),
-          ],
-        )),
-  );
+            actions: <Widget>[
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context1, true);
+                  },
+                  child: const Text(
+                    'إغلاق',
+                    style: TextStyle(
+                      fontFamily: 'Cairo',
+                    ),
+                  )),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context1, true);
+                  FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(uId)
+                      .update({
+                    'chatlist': FieldValue.arrayUnion([model.uId]),
+                  });
+                  FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(model.uId)
+                      .update({
+                    'chatlist': FieldValue.arrayUnion([uId]),
+                  });
+                  // get the ad owner data and pass it the chat datails page.
+                  FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(model.uId)
+                      .get()
+                      .then((value) {
+                    userModel = UserModel.formJson(value.data()!);
+                    String name = userModel!.name!;
+                    String image = userModel!.image;
+                    String token = userModel!.pushToken;
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ChatDetails(
+                                  uId: model.uId,
+                                  image: image,
+                                  name: name,
+                                  fToken: token,
+                                )));
+                  });
+                },
+                child: const Text(
+                  'دردشة',
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                  ),
+                ),
+              ),
+            ],
+          ));
 }
+
+Widget infoItems({required String title, required String info}) => Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Flexible(
+            child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(5)),
+                child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      info,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontFamily: "Cairo",
+                      ),
+                      maxLines: 10,
+                      overflow: TextOverflow.ellipsis,
+                      textDirection: TextDirection.rtl,
+                    ))),
+          ),
+          const Text(
+            '   :',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          Text(title,
+              style: const TextStyle(
+                fontSize: 15,
+                fontFamily: "Cairo",
+              )),
+        ],
+      ),
+    );
 
 Widget chatItem(context, UserModel model) => InkWell(
       onTap: () {

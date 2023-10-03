@@ -28,7 +28,7 @@ class Home extends StatelessWidget {
                 enableInfiniteScroll: true,
                 reverse: false,
                 autoPlay: true,
-                autoPlayInterval: const Duration(seconds: 7),
+                autoPlayInterval: const Duration(seconds: 5),
                 autoPlayAnimationDuration: const Duration(seconds: 1),
                 autoPlayCurve: Curves.fastOutSlowIn,
                 scrollDirection: Axis.horizontal,
@@ -47,6 +47,7 @@ class Home extends StatelessWidget {
                   MaterialPageRoute(
                       builder: (context) => AllAds(
                             title: 'إعلانات التبديل',
+                            type: 'تبديل',
                           )));
             },
           ),
@@ -61,6 +62,7 @@ class Home extends StatelessWidget {
                   MaterialPageRoute(
                       builder: (context) => AllAds(
                             title: 'إعلانات التبرع',
+                            type: 'تبرع',
                           )));
             },
           ),
@@ -75,6 +77,7 @@ class Home extends StatelessWidget {
                   MaterialPageRoute(
                       builder: (context) => AllAds(
                             title: 'إعلانات البيع',
+                            type: 'بيع',
                           )));
             },
           ),
@@ -89,6 +92,7 @@ class Home extends StatelessWidget {
                   MaterialPageRoute(
                       builder: (context) => AllAds(
                             title: 'جميع الإعلانات',
+                            type: 'all',
                           )));
             },
           ),

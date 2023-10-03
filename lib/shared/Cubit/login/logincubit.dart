@@ -6,6 +6,7 @@ import 'package:book_swapping/modules/authentication/loginverify.dart';
 import 'package:book_swapping/modules/authentication/register.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -85,24 +86,40 @@ class LoginCubit extends Cubit<LoginState> {
     }
   }
 
+  FirebaseMessaging fMessaging = FirebaseMessaging.instance;
+
   void loginCubit({
     required String code,
     required context,
-  }) {
+  }) async {
     emit(LoginLoadingState());
 
-    PhoneAuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: LoginPage.verify, smsCode: code);
+    // Request permission and get the new FCM token
+    await fMessaging.requestPermission();
+    String? newToken = await fMessaging.getToken();
 
-    // Sign the user in (or link) with the credential
-    FirebaseAuth.instance.signInWithCredential(credential).then((value) {
-      uId = value.user!.uid;
-      emit(LoginSuccessState(
-        value.user!.uid,
-      ));
-    }).catchError((error) {
+    if (newToken != null) {
+      log('Push Token: $newToken');
+
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+          verificationId: LoginPage.verify, smsCode: code);
+
+      // Sign the user in (or link) with the credential
+      FirebaseAuth.instance.signInWithCredential(credential).then((value) {
+        uId = value.user!.uid;
+
+        // Update the user's token in Firestore
+        FirebaseFirestore.instance.collection('users').doc(uId).update({
+          'push_token': newToken
+        }); // Replace 'token' with the field name where you store the token
+
+        emit(LoginSuccessState(value.user!.uid));
+      }).catchError((error) {
+        emit(LoginFaildState());
+      });
+    } else {
       emit(LoginFaildState());
-    });
+    }
   }
 
   Future<UserCredential> signInWithGoogle() async {
