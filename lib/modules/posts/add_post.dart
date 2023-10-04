@@ -49,8 +49,8 @@ class Add_Post extends StatelessWidget {
                         Text(
                           '${HomeCubit.get(context).userModel!.name}',
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
+                            fontFamily: 'Cairo',
+                            fontSize: 18,
                           ),
                         ),
                         SizedBox(
