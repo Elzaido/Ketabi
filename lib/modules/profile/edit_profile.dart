@@ -136,7 +136,7 @@ class EditProfile extends StatelessWidget {
                         button(
                             onPressed: () {
                               if (profileImage != null) {
-                                HomeCubit.get(context).uploadProfileImage(
+                                HomeCubit.get(context).updateProfileImage(
                                     name: nameController.text,
                                     phone: phoneController.text,
                                     email: emailController.text);

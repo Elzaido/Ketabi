@@ -31,19 +31,6 @@ class MyAds extends StatelessWidget {
                     physics: const BouncingScrollPhysics(),
                     child: Column(
                       children: [
-                        formField(
-                            control: search2,
-                            isScure: false,
-                            label: 'إبحث في إعلاناتك ...',
-                            prefIcon: const Icon(Icons.search),
-                            validator: (String? value) {
-                              if (value!.isEmpty) {
-                                return 'إبحث في إعلاناتك ...';
-                              } else {
-                                return null;
-                              }
-                            }),
-                        const SizedBox(height: 20),
                         ListView.separated(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),

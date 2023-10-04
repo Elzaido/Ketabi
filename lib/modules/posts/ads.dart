@@ -46,7 +46,7 @@ class AllAds extends StatelessWidget {
                                     child: formField(
                                         control: search2,
                                         isScure: false,
-                                        label: 'إبحث عن ما تريد ...',
+                                        label: 'إبحث عن الكتاب الذي تريده ...',
                                         prefIcon: const Icon(Icons.search),
                                         validator: (String? value) {
                                           if (value!.isEmpty) {

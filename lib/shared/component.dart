@@ -343,19 +343,6 @@ Widget adItem(
                   children: [
                     Expanded(
                         child: InkWell(
-                      onTap: () {},
-                      child: const Column(
-                        children: [
-                          Icon(
-                            Icons.edit,
-                            color: Colors.orange,
-                          ),
-                          Text('تعديل')
-                        ],
-                      ),
-                    )),
-                    Expanded(
-                        child: InkWell(
                       onTap: () {
                         HomeCubit.get(context).deletePost(model.postId);
                       },
@@ -365,7 +352,13 @@ Widget adItem(
                             Icons.delete,
                             color: Colors.red,
                           ),
-                          Text('حذف')
+                          Text(
+                            'حذف',
+                            style: TextStyle(
+                              fontFamily: 'Cairo',
+                              color: Colors.red,
+                            ),
+                          )
                         ],
                       ),
                     )),

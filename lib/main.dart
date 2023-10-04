@@ -1,5 +1,3 @@
-// ignore_for_file: camel_case_types
-
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:book_swapping/modules/authentication/login.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -34,13 +32,13 @@ void main() async {
   } else {
     widget = const OnBoarding();
   }
-  runApp(myApp(
+  runApp(MyApp(
     startWidget: widget,
   ));
 }
 
-class myApp extends StatelessWidget {
-  const myApp({super.key, required this.startWidget});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key, required this.startWidget});
 
   final Widget startWidget;
 

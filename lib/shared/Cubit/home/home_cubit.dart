@@ -11,9 +11,9 @@ import '../../../models/chat_model.dart';
 import '../../../models/post_model.dart';
 import '../../../models/user_model.dart';
 import '../../../modules/chat/chats.dart';
-import '../../../modules/main_pages/add_post.dart';
-import '../../../modules/main_pages/my_ads.dart';
-import '../../../modules/main_pages/home.dart';
+import '../../../modules/home.dart';
+import '../../../modules/posts/add_post.dart';
+import '../../../modules/posts/my_ads.dart';
 import '../../../modules/profile/profile.dart';
 import '../../constant.dart';
 import 'home_state.dart';
@@ -24,6 +24,7 @@ class HomeCubit extends Cubit<HomeStates> {
 
   static HomeCubit get(context) => BlocProvider.of(context);
   UserModel? userModel;
+  PostModel? postModel;
   File? profileImage;
   File? postImage;
   File? chatImage;
@@ -138,7 +139,7 @@ class HomeCubit extends Cubit<HomeStates> {
     }
   }
 
-  void uploadProfileImage({
+  void updateProfileImage({
     required String name,
     required String phone,
     required String email,
@@ -219,7 +220,7 @@ class HomeCubit extends Cubit<HomeStates> {
     emit(RemovePostImageState());
   }
 
-  void uplaodPostImage({
+  void uploadPostImage({
     required String date,
     required String type,
     required String bookName,
@@ -341,20 +342,36 @@ class HomeCubit extends Cubit<HomeStates> {
   }) {
     posts = [];
     emit(LoadingGetPostDataState());
-    FirebaseFirestore.instance
-        .collection('posts')
-        .where('type', isEqualTo: type) // Filter by type
-        .where('bookName', isEqualTo: name) // Filter by name
-        .get()
-        .then((value) {
-      value.docs.forEach(((element) {
-        posts.add(PostModel.formJson(element.data()));
-      }));
-      emit(SuccessGetPostDataState());
-    }).catchError((error) {
-      emit(ErrorGetPostDataState(error.toString()));
-      log('The Error is: $error');
-    });
+    if (type == 'all') {
+      FirebaseFirestore.instance
+          .collection('posts')
+          .where('bookName', isEqualTo: name) // Filter by name
+          .get()
+          .then((value) {
+        value.docs.forEach(((element) {
+          posts.add(PostModel.formJson(element.data()));
+        }));
+        emit(SuccessGetPostDataState());
+      }).catchError((error) {
+        emit(ErrorGetPostDataState(error.toString()));
+        log('The Error is: $error');
+      });
+    } else {
+      FirebaseFirestore.instance
+          .collection('posts')
+          .where('type', isEqualTo: type) // Filter by type
+          .where('bookName', isEqualTo: name) // Filter by name
+          .get()
+          .then((value) {
+        value.docs.forEach(((element) {
+          posts.add(PostModel.formJson(element.data()));
+        }));
+        emit(SuccessGetPostDataState());
+      }).catchError((error) {
+        emit(ErrorGetPostDataState(error.toString()));
+        log('The Error is: $error');
+      });
+    }
   }
 
   void getMyPosts({

@@ -118,7 +118,7 @@ class Add_Post extends StatelessWidget {
                       formField(
                           control: bookPriceController,
                           isScure: false,
-                          label: 'كم سعر الكتاب بالدينار الأردني',
+                          label: 'سعر الكتاب بالدينار الأردني',
                           inputType: TextInputType.number,
                           validator: (String? value) {
                             if (value!.isEmpty) {
@@ -269,7 +269,7 @@ class Add_Post extends StatelessWidget {
                                 date: DateTime.now().toString(),
                                 type: HomeCubit.get(context).selectedBookType);
                           } else {
-                            HomeCubit.get(context).uplaodPostImage(
+                            HomeCubit.get(context).uploadPostImage(
                               bookName: bookNameController.text,
                               bookPrice: bookPriceController.text,
                               swapedBook: swappedBookCotroller.text,

@@ -2,8 +2,8 @@
 import 'package:book_swapping/shared/component.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import '../../shared/Cubit/home/home_cubit.dart';
-import 'ads.dart';
+import '../shared/Cubit/home/home_cubit.dart';
+import 'posts/ads.dart';
 
 class Home extends StatelessWidget {
   Home({Key? key}) : super(key: key);

@@ -1,10 +1,8 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'package:book_swapping/shared/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ionicons/ionicons.dart';
-import '../modules/main_pages/add_post.dart';
+import '../modules/posts/add_post.dart';
 import '../shared/Cubit/home/home_cubit.dart';
 import '../shared/Cubit/home/home_state.dart';
 
@@ -25,7 +23,7 @@ class HomeLayout extends StatelessWidget {
             title: Center(
               child: Text(
                 cubit.titles[cubit.currentIndex],
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Cairo',
                   fontSize: 25,
                 ),
@@ -39,12 +37,12 @@ class HomeLayout extends StatelessWidget {
               Navigator.push(
                   context, MaterialPageRoute(builder: (context) => Add_Post()));
             },
-            child: Icon(Icons.add),
+            child: const Icon(Icons.add),
           ),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,
           bottomNavigationBar: BottomAppBar(
-            shape: CircularNotchedRectangle(),
+            shape: const CircularNotchedRectangle(),
             notchMargin: 10,
             child: SizedBox(
               height: 60,
