@@ -1,7 +1,6 @@
 import 'package:book_swapping/shared/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ionicons/ionicons.dart';
 import '../modules/posts/add_post.dart';
 import '../shared/Cubit/home/home_cubit.dart';
 import '../shared/Cubit/home/home_state.dart';
@@ -63,7 +62,7 @@ class HomeLayout extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              Ionicons.person,
+                              Icons.person,
                               color: HomeCubit.get(context).currentIndex == 0
                                   ? mainColor
                                   : Colors.grey,
@@ -122,7 +121,7 @@ class HomeLayout extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
-                              Ionicons.chatbox,
+                              Icons.chat_outlined,
                               color: HomeCubit.get(context).currentIndex == 3
                                   ? mainColor
                                   : Colors.grey,

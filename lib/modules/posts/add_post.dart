@@ -12,6 +12,8 @@ class Add_Post extends StatelessWidget {
   final bookNameController = TextEditingController();
   final bookPriceController = TextEditingController();
   final swappedBookCotroller = TextEditingController();
+  final isbnNumberController = TextEditingController();
+  final categoryController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +23,6 @@ class Add_Post extends StatelessWidget {
             massage: 'تم نشر الإعلان بنجاح', state: ToastStates.SUCCESS);
         HomeCubit.get(context).removePostImage();
         bookNameController.text = '';
-        bookPriceController.text = '';
         swappedBookCotroller.text = '';
       } else if (state is ErrorUploadPostState) {
         defaultToast(
@@ -65,13 +66,23 @@ class Add_Post extends StatelessWidget {
                     SizedBox(
                       height: 20,
                     ),
+                    dropDownTitle('عن ماذا تريد أن تعلن'),
+                    dropDown(
+                        selected: HomeCubit.get(context).selectedAdContentType,
+                        list: HomeCubit.get(context).adContentTypes,
+                        context: context,
+                        dropDown: 2),
+                    SizedBox(
+                      height: 20,
+                    ),
                     formField(
                         control: bookNameController,
                         isScure: false,
-                        label: 'إسم الكتاب',
+                        label:
+                            'إسم ال${HomeCubit.get(context).selectedAdContentType}',
                         validator: (String? value) {
                           if (value!.isEmpty) {
-                            return 'يجب إدخال إسم الكتاب';
+                            return 'يجب إدخال الإسم';
                           } else {
                             return null;
                           }
@@ -80,54 +91,80 @@ class Add_Post extends StatelessWidget {
                     SizedBox(
                       height: 20,
                     ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 5),
-                        child: Text(
-                          'نوع الإعلان',
-                          style: const TextStyle(
-                            fontFamily: 'Cairo',
+                    if (HomeCubit.get(context).selectedAdContentType == 'كتاب')
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: formField(
+                                control: isbnNumberController,
+                                isScure: false,
+                                label: 'ISPN of the book',
+                                prefIcon: const Icon(Icons.search),
+                                validator: (String? value) {
+                                  if (value!.isEmpty) {
+                                    return 'يجب إدخال الرقم';
+                                  } else {
+                                    return null;
+                                  }
+                                }),
                           ),
-                          textAlign: TextAlign.right,
-                          textDirection: TextDirection.rtl,
-                        ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: button(
+                                onPressed: () {
+                                  HomeCubit.get(context).fetchBookInfoByISBN(
+                                      isbnNumberController.text.toString());
+                                },
+                                child: const Text(
+                                  'بحث',
+                                  style: TextStyle(
+                                    fontFamily: 'Cairo',
+                                    fontSize: 15,
+                                  ),
+                                ),
+                                color: mainColor,
+                                height: 60),
+                          ),
+                        ],
                       ),
-                    ),
-                    dropDown(
-                        selected: HomeCubit.get(context).selectedBookType,
-                        list: HomeCubit.get(context).bookTypes,
-                        context: context),
                     SizedBox(
                       height: 20,
                     ),
-                    if (HomeCubit.get(context).selectedBookType == 'تبديل')
+                    dropDownTitle('المجال أو الصنف'),
+                    dropDown(
+                        selected: HomeCubit.get(context).selectedAdCategory,
+                        list: HomeCubit.get(context).adCategories,
+                        context: context,
+                        dropDown: 3),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    dropDownTitle('نوع الإعلان'),
+                    dropDown(
+                        selected: HomeCubit.get(context).selectedAdType,
+                        list: HomeCubit.get(context).adTypes,
+                        context: context,
+                        dropDown: 1),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    if (HomeCubit.get(context).selectedAdType == 'تبديل')
                       formField(
                           control: swappedBookCotroller,
                           isScure: false,
                           label: 'بماذا تريد أن تبدل',
                           validator: (String? value) {
                             if (value!.isEmpty) {
-                              return 'يجب إدخال إسم الكتاب';
+                              return 'لا يجب أن يترك فارغاً';
                             } else {
                               return null;
                             }
                           },
                           prefIcon: Icon(Icons.book)),
-                    if (HomeCubit.get(context).selectedBookType == 'بيع')
-                      formField(
-                          control: bookPriceController,
-                          isScure: false,
-                          label: 'سعر الكتاب بالدينار الأردني',
-                          inputType: TextInputType.number,
-                          validator: (String? value) {
-                            if (value!.isEmpty) {
-                              return 'يجب إدخال سعر الكتاب الكتاب';
-                            } else {
-                              return null;
-                            }
-                          },
-                          prefIcon: Icon(Icons.price_change_outlined)),
                     SizedBox(
                       height: 20,
                     ),
@@ -263,18 +300,25 @@ class Add_Post extends StatelessWidget {
                         onPressed: () {
                           if (HomeCubit.get(context).postImage == null) {
                             HomeCubit.get(context).createPost(
-                                bookName: bookNameController.text,
-                                bookPrice: bookPriceController.text,
-                                swapedBook: swappedBookCotroller.text,
-                                date: DateTime.now().toString(),
-                                type: HomeCubit.get(context).selectedBookType);
+                              bookName: bookNameController.text,
+                              swapedBook: swappedBookCotroller.text,
+                              date: DateTime.now().toString(),
+                              adType: HomeCubit.get(context).selectedAdType,
+                              adContentType:
+                                  HomeCubit.get(context).selectedAdContentType,
+                              category:
+                                  HomeCubit.get(context).selectedAdCategory,
+                            );
                           } else {
                             HomeCubit.get(context).uploadPostImage(
                               bookName: bookNameController.text,
-                              bookPrice: bookPriceController.text,
                               swapedBook: swappedBookCotroller.text,
                               date: DateTime.now().toString(),
-                              type: HomeCubit.get(context).selectedBookType,
+                              adType: HomeCubit.get(context).selectedAdType,
+                              adContentType:
+                                  HomeCubit.get(context).selectedAdContentType,
+                              category:
+                                  HomeCubit.get(context).selectedAdCategory,
                             );
                           }
                         },
@@ -297,6 +341,7 @@ Widget dropDown({
   required String selected,
   required List<String> list,
   required context,
+  required int dropDown,
 }) =>
     Container(
         decoration: BoxDecoration(
@@ -328,5 +373,28 @@ Widget dropDown({
                   ));
             }).toList(),
             onChanged: (newValue) {
-              HomeCubit.get(context).selectPostType(newValue!);
+              if (dropDown == 1) {
+                HomeCubit.get(context).selectAdType(newValue!);
+              } else if (dropDown == 2) {
+                HomeCubit.get(context).selectAdContentType(newValue!);
+              } else {
+                HomeCubit.get(context).selectAdCategory(newValue!);
+              }
             }));
+
+Widget dropDownTitle(String title) {
+  return Align(
+    alignment: Alignment.centerRight,
+    child: Padding(
+      padding: const EdgeInsets.only(right: 5),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontFamily: 'Cairo',
+        ),
+        textAlign: TextAlign.right,
+        textDirection: TextDirection.rtl,
+      ),
+    ),
+  );
+}

@@ -2,8 +2,9 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
@@ -18,6 +19,7 @@ import '../../../modules/profile/profile.dart';
 import '../../constant.dart';
 import 'home_state.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:http/http.dart' as http;
 
 class HomeCubit extends Cubit<HomeStates> {
   HomeCubit() : super(InitHomeState());
@@ -29,8 +31,28 @@ class HomeCubit extends Cubit<HomeStates> {
   File? postImage;
   File? chatImage;
 
-  String selectedBookType = 'تبديل';
-  List<String> bookTypes = ['تبديل', 'بيع', 'تبرع'];
+  String selectedAdType = 'تبرع';
+  List<String> adTypes = ['تبديل', 'تبرع'];
+
+  String selectedAdContentType = 'دوسية';
+  List<String> adContentTypes = ['سلايدات', 'دوسية', 'كتاب'];
+
+  String selectedAdCategory = 'رواية';
+  List<String> adCategories = [
+    'هندسة طبية',
+    'طب',
+    'هندسة حاسوب',
+    'كتاب ديني',
+    'رواية',
+    'هندسة مدنية',
+    'هندسة معمارية',
+    'هندسة قوى كهربائية',
+    'هندسة إتصالات',
+    'علوم حاسوب',
+    'نظم معلومات حاسوبية',
+    'نظم معلومات إدارية',
+    'هندسة طبية',
+  ];
 
   var picker = ImagePicker();
   int currentIndex = 4;
@@ -70,21 +92,6 @@ class HomeCubit extends Cubit<HomeStates> {
     }
   }
 
-  static FirebaseMessaging fMessaging = FirebaseMessaging.instance;
-
-  Future<void> getFirebaseMessagingToken() async {
-    await fMessaging.requestPermission();
-
-    await fMessaging.getToken().then((t) {
-      if (t != null) {
-        userModel!.pushToken = t;
-        log('Push Token: $t');
-      }
-    }).catchError((error) {
-      log('Push Token Error is: $error');
-    });
-  }
-
   Future<void> sendPushNotification(
       String pushToken, String name, String msg) async {
     try {
@@ -118,7 +125,6 @@ class HomeCubit extends Cubit<HomeStates> {
         .get()
         .then((value) async {
       userModel = UserModel.formJson(value.data()!);
-      await getFirebaseMessagingToken();
       emit(SuccessGetUserDataState());
     }).catchError((error) {
       log(error.toString());
@@ -222,8 +228,10 @@ class HomeCubit extends Cubit<HomeStates> {
 
   void uploadPostImage({
     required String date,
-    required String type,
+    required String adType,
     required String bookName,
+    required String adContentType,
+    required String category,
     String? bookPrice,
     String? swapedBook,
   }) {
@@ -238,9 +246,10 @@ class HomeCubit extends Cubit<HomeStates> {
           date: date,
           bookName: bookName,
           swapedBook: swapedBook,
-          bookPrice: bookPrice,
           postImage: value,
-          type: type,
+          adType: adType,
+          adContentType: adContentType,
+          category: category,
           // postId: value
         );
         emit(SuccessUploadPostState());
@@ -254,23 +263,25 @@ class HomeCubit extends Cubit<HomeStates> {
 
   void createPost({
     required String date,
-    required String type,
+    required String adType,
     required String bookName,
+    required String adContentType,
+    required String category,
     String? postImage,
-    String? bookPrice,
     String? swapedBook,
   }) async {
     emit(LoadingUploadPostState());
     PostModel model = PostModel(
       ownerName: userModel!.name,
       bookName: bookName,
-      bookPrice: bookPrice ?? '',
       swapedBook: swapedBook ?? '',
       postId: '',
       userImage: userModel!.image,
       uId: userModel!.uId,
       date: date,
-      type: type,
+      adType: adType,
+      adContentType: adContentType,
+      bookCategory: category,
       postImage: postImage ?? '',
     );
 
@@ -323,7 +334,7 @@ class HomeCubit extends Cubit<HomeStates> {
     emit(LoadingGetPostDataState());
     FirebaseFirestore.instance
         .collection('posts')
-        .where('type', isEqualTo: type)
+        .where('adType', isEqualTo: type)
         .get()
         .then((value) {
       value.docs.forEach(((element) {
@@ -345,7 +356,7 @@ class HomeCubit extends Cubit<HomeStates> {
     if (type == 'all') {
       FirebaseFirestore.instance
           .collection('posts')
-          .where('bookName', isEqualTo: name) // Filter by name
+          .where('bookName', isEqualTo: name)
           .get()
           .then((value) {
         value.docs.forEach(((element) {
@@ -359,8 +370,8 @@ class HomeCubit extends Cubit<HomeStates> {
     } else {
       FirebaseFirestore.instance
           .collection('posts')
-          .where('type', isEqualTo: type) // Filter by type
-          .where('bookName', isEqualTo: name) // Filter by name
+          .where('type', isEqualTo: type)
+          .where('bookName', isEqualTo: name)
           .get()
           .then((value) {
         value.docs.forEach(((element) {
@@ -531,8 +542,77 @@ class HomeCubit extends Cubit<HomeStates> {
     emit(RemovePostImageState());
   }
 
-  void selectPostType(String value) {
-    selectedBookType = value;
+  void selectAdType(String value) {
+    selectedAdType = value;
     emit(ChangeSelectionState());
+  }
+
+  void selectAdContentType(String value) {
+    selectedAdContentType = value;
+    emit(ChangeSelectionState());
+  }
+
+  void selectAdCategory(String value) {
+    selectedAdCategory = value;
+    emit(ChangeSelectionState());
+  }
+
+  String isbn = ""; // Variable to store the scanned ISBN
+
+  Future<void> scanBarcode() async {
+    emit(LoadingScanState());
+    try {
+      String barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+        '#ff6666', // Color for the scan button
+        'Cancel', // Text for the cancel button
+        true, // Allow flash
+        ScanMode.BARCODE, // Scan mode for ISBN
+      );
+
+      // Store the scanned ISBN in the 'isbn' variable
+
+      isbn = barcodeScanRes;
+
+      // You can now use 'isbn' in your application to retrieve book information, etc.
+      print('Scanned ISBN: $isbn');
+      emit(SuccessScanState());
+    } on PlatformException {
+      // Handle exceptions here, e.g., permission denied or scan canceled
+      print('Error scanning barcode');
+      emit(ErrorScanState());
+    }
+  }
+
+  Future<void> fetchBookInfoByISBN(String isbn) async {
+    final apiUrl =
+        'https://openlibrary.org/api/books?bibkeys=ISBN:$isbn&format=json';
+
+    final response = await http.get(Uri.parse(apiUrl));
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+
+      // Extract book details from the JSON response
+      final bookInfo = data['ISBN:$isbn'];
+
+      if (bookInfo != null) {
+        final title = bookInfo['title'];
+        final author = bookInfo['authors'] != null
+            ? bookInfo['authors'][0]['name']
+            : 'Unknown';
+        final publisher = bookInfo['publishers'] != null
+            ? bookInfo['publishers'][0]['name']
+            : 'Unknown';
+
+        print('Title: $title');
+        print('Author: $author');
+        print('Publisher: $publisher');
+      } else {
+        print('Book not found with ISBN: $isbn');
+      }
+    } else {
+      // Handle error
+      print('Error fetching book data');
+    }
   }
 }

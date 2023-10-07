@@ -10,6 +10,40 @@ import '../models/user_model.dart';
 import '../modules/chat/chat_details.dart';
 import 'constant.dart';
 
+Widget bookState(String state) {
+  Color backgroundColor;
+  switch (state) {
+    case 'قيد الدراسة':
+      backgroundColor = Colors.orange;
+      break;
+    case 'تم الرفض':
+      backgroundColor = Colors.red;
+      break;
+    case 'تم القبول':
+      backgroundColor = Colors.green;
+      break;
+    default:
+      backgroundColor = Colors.transparent; // Default color for unknown states
+      break;
+  }
+
+  return Container(
+    width: double.infinity,
+    height: 50,
+    decoration: BoxDecoration(
+      color: backgroundColor,
+      borderRadius: BorderRadius.circular(10),
+    ),
+    child: Center(
+      child: Text(
+        state,
+        style: const TextStyle(
+            fontFamily: 'Cairo', color: Colors.white, fontSize: 12),
+      ),
+    ),
+  );
+}
+
 Widget formField(
         {required TextEditingController control,
         required bool isScure,
@@ -38,11 +72,12 @@ Widget formField(
           )),
     );
 
-Widget button(
-        {required void Function()? onPressed,
-        required Widget? child,
-        required Color color,
-        double height = 50}) =>
+Widget button({
+  required void Function()? onPressed,
+  required Widget? child,
+  required Color color,
+  double height = 50,
+}) =>
     SizedBox(
       width: double.infinity,
       height: height,
@@ -241,10 +276,10 @@ Widget adItem(
             onTap: () {
               if (model.uId != uId) {
                 showItemDialog(
-                    model, context, model.postImage.isNotEmpty, model.type);
+                    model, context, model.postImage.isNotEmpty, model.adType);
               } else {
-                defaultToast(
-                    massage: 'هذا الإعلان خاص بك!', state: ToastStates.ERROR);
+                showMyItemDialog(
+                    model, context, model.postImage.isNotEmpty, model.adType);
               }
             },
             child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
@@ -292,7 +327,7 @@ Widget adItem(
                 ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -310,7 +345,7 @@ Widget adItem(
                         ),
                       ),
                       Text(
-                        'كتاب لل${model.type} -',
+                        '${model.adType} -',
                         textAlign: TextAlign.end,
                         style: const TextStyle(
                           fontSize: 15,
@@ -339,30 +374,30 @@ Widget adItem(
             Column(
               children: [
                 separator(),
-                Row(
-                  children: [
-                    Expanded(
-                        child: InkWell(
-                      onTap: () {
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: button(
+                      onPressed: () {
                         HomeCubit.get(context).deletePost(model.postId);
                       },
-                      child: const Column(
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
                             Icons.delete,
-                            color: Colors.red,
+                          ),
+                          SizedBox(
+                            width: 5,
                           ),
                           Text(
                             'حذف',
                             style: TextStyle(
                               fontFamily: 'Cairo',
-                              color: Colors.red,
                             ),
                           )
                         ],
                       ),
-                    )),
-                  ],
+                      color: Colors.red),
                 ),
               ],
             )
@@ -375,7 +410,7 @@ void showItemDialog(PostModel model, context, bool isImage, String bookType) {
       context: context,
       builder: (context1) => AlertDialog(
             title: Text(
-              model.type,
+              model.adType,
               textAlign: TextAlign.right,
               style: const TextStyle(
                 fontFamily: 'Cairo',
@@ -384,11 +419,11 @@ void showItemDialog(PostModel model, context, bool isImage, String bookType) {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                infoItems(title: 'إسم الكتاب', info: model.bookName),
+                infoItems(
+                    title: 'إسم ال${model.adContentType}',
+                    info: model.bookName),
                 if (bookType == 'تبديل')
                   infoItems(title: 'للتبديل على', info: model.swapedBook),
-                if (bookType == 'بيع')
-                  infoItems(title: 'سعرالكتاب', info: model.bookPrice),
                 infoItems(title: 'صاحب الكتاب', info: model.ownerName!),
                 if (isImage)
                   SizedBox(
@@ -456,6 +491,81 @@ void showItemDialog(PostModel model, context, bool isImage, String bookType) {
                   ),
                 ),
               ),
+            ],
+          ));
+}
+
+void showMyItemDialog(PostModel model, context, bool isImage, String bookType) {
+  showDialog(
+      context: context,
+      builder: (context1) => AlertDialog(
+            title: Text(
+              model.adType,
+              textAlign: TextAlign.right,
+              style: const TextStyle(
+                fontFamily: 'Cairo',
+              ),
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                infoItems(
+                    title: 'إسم ال${model.adContentType}',
+                    info: model.bookName),
+                if (bookType == 'تبديل')
+                  infoItems(title: 'للتبديل على', info: model.swapedBook),
+                if (isImage)
+                  SizedBox(
+                      width: 300,
+                      height: 300,
+                      child: Image(
+                        image: NetworkImage(
+                          model.postImage,
+                        ),
+                        fit: BoxFit.cover,
+                      ))
+              ],
+            ),
+            actions: <Widget>[
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: button(
+                      onPressed: () {
+                        HomeCubit.get(context).deletePost(model.postId);
+                        Navigator.pop(context);
+                      },
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.delete,
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                            'حذف',
+                            style: TextStyle(
+                              fontFamily: 'Cairo',
+                            ),
+                          )
+                        ],
+                      ),
+                      color: Colors.red),
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      'إغلاق',
+                      style: TextStyle(fontFamily: 'Cairo'),
+                    )),
+              )
             ],
           ));
 }

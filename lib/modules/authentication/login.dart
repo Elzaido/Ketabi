@@ -1,4 +1,3 @@
-// ignore_for_file: prefer_const_constructors, must_be_immutable
 import 'package:book_swapping/shared/Cubit/login/logincubit.dart';
 import 'package:book_swapping/shared/Cubit/login/loginstate.dart';
 import 'package:book_swapping/shared/constant.dart';
@@ -6,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:ionicons/ionicons.dart';
 import '../../shared/component.dart';
 import 'register.dart';
 
@@ -49,7 +47,7 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               Center(
                 child: SingleChildScrollView(
-                  padding: EdgeInsets.all(15),
+                  padding: const EdgeInsets.all(15),
                   child: Column(
                     children: [
                       Image.asset(
@@ -57,24 +55,24 @@ class _LoginPageState extends State<LoginPage> {
                         width: 180,
                         height: 180,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
-                      Text(
+                      const Text(
                         "تسجيل الدخول",
                         style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'Cairo'),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
-                      Text(
+                      const Text(
                         "الرجاء إدخال رقم هاتفك لإتمام عملية تسجبل الدخول",
                         style: TextStyle(fontFamily: 'Cairo'),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 30,
                       ),
                       Row(
@@ -91,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
                               )),
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 10,
                           ),
                           Expanded(
@@ -120,7 +118,7 @@ class _LoginPageState extends State<LoginPage> {
                               )),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       button(
@@ -130,14 +128,14 @@ class _LoginPageState extends State<LoginPage> {
                                     countryController.text + phoneControl.text,
                                 context: context);
                           },
-                          child: Text(
+                          child: const Text(
                             "أرسل الرمز",
                             style: TextStyle(
                               fontFamily: 'Cairo',
                             ),
                           ),
                           color: mainColor),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       Row(
@@ -150,7 +148,8 @@ class _LoginPageState extends State<LoginPage> {
                                     context,
                                     // where to send :
                                     MaterialPageRoute(
-                                        builder: (context) => Register()));
+                                        builder: (context) =>
+                                            const Register()));
                               },
                               child: const Text(
                                 'إنشاء حساب',
@@ -160,37 +159,27 @@ class _LoginPageState extends State<LoginPage> {
                                   color: Colors.green,
                                 ),
                               )),
-                          Text(
+                          const Text(
                             'ليس لديك حساب؟',
                             style: TextStyle(fontFamily: 'Cairo'),
                           ),
                         ],
                       ),
-                      SizedBox(
-                        height: 20,
+                      const SizedBox(
+                        height: 10,
                       ),
-                      ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.all(12),
-                            backgroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                10,
-                              ),
-                            ),
-                          ),
-                          icon: const Icon(
-                            Ionicons.logo_google,
-                            color: Colors.red,
-                          ),
-                          label: const Text(
-                            "Sign in with google",
-                            style: TextStyle(
-                              fontSize: 16.0,
-                              color: Colors.black,
-                            ),
-                          ),
-                          onPressed: () async {
+                      separator(),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          border: Border.all(width: 1, color: Colors.grey),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: InkWell(
+                          onTap: () async {
                             // Trigger the authentication flow
                             final GoogleSignInAccount? googleUser =
                                 await GoogleSignIn().signIn();
@@ -215,7 +204,26 @@ class _LoginPageState extends State<LoginPage> {
                                   phone: value.user!.phoneNumber,
                                   uId: value.user!.uid);
                             });
-                          })
+                          },
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'G',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red,
+                                  fontSize: 20,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text('Or sign in with Google'),
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),

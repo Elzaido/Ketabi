@@ -99,3 +99,11 @@ class ErrorUploadChatImageState extends HomeStates {}
 class SuccessSendMessagenotification extends HomeStates {}
 
 class ErrorSendMessagenotification extends HomeStates {}
+
+// Scan Barcode States:
+
+class LoadingScanState extends HomeStates {}
+
+class SuccessScanState extends HomeStates {}
+
+class ErrorScanState extends HomeStates {}
