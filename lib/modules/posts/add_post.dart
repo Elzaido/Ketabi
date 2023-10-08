@@ -1,4 +1,3 @@
-// ignore_for_file: camel_case_types, prefer_const_constructors, prefer_const_literals_to_create_immutables, unnecessary_string_interpolations
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../shared/Cubit/home/home_cubit.dart';
@@ -6,8 +5,8 @@ import '../../shared/Cubit/home/home_state.dart';
 import '../../shared/component.dart';
 import '../../shared/constant.dart';
 
-class Add_Post extends StatelessWidget {
-  Add_Post({Key? key}) : super(key: key);
+class AddPost extends StatelessWidget {
+  AddPost({Key? key}) : super(key: key);
 
   final bookNameController = TextEditingController();
   final bookPriceController = TextEditingController();
@@ -24,6 +23,9 @@ class Add_Post extends StatelessWidget {
         HomeCubit.get(context).removePostImage();
         bookNameController.text = '';
         swappedBookCotroller.text = '';
+        HomeCubit.get(context).bookTitle = '';
+        HomeCubit.get(context).author = '';
+        HomeCubit.get(context).publisher = '';
       } else if (state is ErrorUploadPostState) {
         defaultToast(
             massage: 'هناك مشكلة في نشر الإعلان', state: ToastStates.ERROR);
@@ -31,7 +33,7 @@ class Add_Post extends StatelessWidget {
     }, builder: (context, state) {
       return Scaffold(
           appBar: AppBar(
-            title: Text(
+            title: const Text(
               'أضف إعلاناً',
               style: TextStyle(fontFamily: 'Cairo'),
             ),
@@ -40,8 +42,8 @@ class Add_Post extends StatelessWidget {
           body: Stack(
             children: [
               SingleChildScrollView(
-                physics: BouncingScrollPhysics(),
-                padding: EdgeInsets.all(15),
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.all(15),
                 child: Column(
                   children: [
                     Row(
@@ -49,21 +51,21 @@ class Add_Post extends StatelessWidget {
                       children: [
                         Text(
                           '${HomeCubit.get(context).userModel!.name}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontFamily: 'Cairo',
                             fontSize: 18,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 10,
                         ),
                         CircleAvatar(
                             radius: 30.0,
                             backgroundImage: NetworkImage(
-                                '${HomeCubit.get(context).userModel!.image}')),
+                                HomeCubit.get(context).userModel!.image)),
                       ],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     dropDownTitle('عن ماذا تريد أن تعلن'),
@@ -72,66 +74,122 @@ class Add_Post extends StatelessWidget {
                         list: HomeCubit.get(context).adContentTypes,
                         context: context,
                         dropDown: 2),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
-                    formField(
-                        control: bookNameController,
-                        isScure: false,
-                        label:
-                            'إسم ال${HomeCubit.get(context).selectedAdContentType}',
-                        validator: (String? value) {
-                          if (value!.isEmpty) {
-                            return 'يجب إدخال الإسم';
-                          } else {
-                            return null;
-                          }
-                        },
-                        prefIcon: Icon(Icons.book)),
-                    SizedBox(
+                    if (HomeCubit.get(context).selectedAdContentType ==
+                            'دوسية' ||
+                        HomeCubit.get(context).selectedAdContentType ==
+                            'سلايدات')
+                      formField(
+                          control: bookNameController,
+                          isScure: false,
+                          label:
+                              'إسم ال${HomeCubit.get(context).selectedAdContentType}',
+                          validator: (String? value) {
+                            if (value!.isEmpty) {
+                              return 'يجب إدخال الإسم';
+                            } else {
+                              return null;
+                            }
+                          },
+                          prefIcon: const Icon(Icons.book)),
+                    const SizedBox(
                       height: 20,
                     ),
                     if (HomeCubit.get(context).selectedAdContentType == 'كتاب')
-                      Row(
+                      Column(
                         children: [
-                          Expanded(
-                            flex: 3,
-                            child: formField(
-                                control: isbnNumberController,
-                                isScure: false,
-                                label: 'ISPN of the book',
-                                prefIcon: const Icon(Icons.search),
-                                validator: (String? value) {
-                                  if (value!.isEmpty) {
-                                    return 'يجب إدخال الرقم';
-                                  } else {
-                                    return null;
-                                  }
-                                }),
+                          Row(
+                            children: [
+                              IconButton(
+                                  onPressed: () {
+                                    showISBNInfoDialog(context);
+                                  },
+                                  icon: const Icon(
+                                    Icons.help,
+                                    color: Colors.grey,
+                                  )),
+                              Expanded(
+                                child: InkWell(
+                                    onTap: () async {
+                                      showISBNDialog(
+                                          context, isbnNumberController);
+                                    },
+                                    child: Container(
+                                      height: 50,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border:
+                                              Border.all(color: Colors.green)),
+                                      child: const Center(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              'ISBN',
+                                              style: TextStyle(
+                                                color: Colors.green,
+                                                fontFamily: "Cairo",
+                                              ),
+                                            ),
+                                            Text(
+                                              'أضف رقم ال',
+                                              style: TextStyle(
+                                                color: Colors.green,
+                                                fontFamily: "Cairo",
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 5,
+                                            ),
+                                            Icon(
+                                              Icons.numbers,
+                                              color: Colors.green,
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    )),
+                              ),
+                            ],
                           ),
                           const SizedBox(
-                            width: 10,
+                            height: 10,
                           ),
-                          Expanded(
-                            flex: 1,
-                            child: button(
-                                onPressed: () {
-                                  HomeCubit.get(context).fetchBookInfoByISBN(
-                                      isbnNumberController.text.toString());
-                                },
-                                child: const Text(
-                                  'بحث',
-                                  style: TextStyle(
-                                    fontFamily: 'Cairo',
-                                    fontSize: 15,
-                                  ),
-                                ),
-                                color: mainColor,
-                                height: 60),
+                          if (HomeCubit.get(context).bookTitle.isNotEmpty)
+                            infoItems(
+                                title: 'عنوان الكتاب',
+                                info: HomeCubit.get(context).bookTitle),
+                          const SizedBox(
+                            height: 10,
                           ),
+                          if (HomeCubit.get(context).author.isNotEmpty)
+                            infoItems(
+                                title: 'المؤلف',
+                                info: HomeCubit.get(context).author),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          if (HomeCubit.get(context).publisher.isNotEmpty)
+                            infoItems(
+                                title: 'الناشر',
+                                info: HomeCubit.get(context).publisher),
                         ],
                       ),
-                    SizedBox(
+                    if (HomeCubit.get(context).selectedAdContentType == 'كتاب')
+                      const SizedBox(
+                        height: 20,
+                      ),
+                    dropDownTitle('الجامعة'),
+                    dropDown(
+                        selected: HomeCubit.get(context).selectedUniversity,
+                        list: HomeCubit.get(context).universities,
+                        context: context,
+                        dropDown: 4),
+                    const SizedBox(
                       height: 20,
                     ),
                     dropDownTitle('المجال أو الصنف'),
@@ -140,7 +198,7 @@ class Add_Post extends StatelessWidget {
                         list: HomeCubit.get(context).adCategories,
                         context: context,
                         dropDown: 3),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     dropDownTitle('نوع الإعلان'),
@@ -149,7 +207,7 @@ class Add_Post extends StatelessWidget {
                         list: HomeCubit.get(context).adTypes,
                         context: context,
                         dropDown: 1),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     if (HomeCubit.get(context).selectedAdType == 'تبديل')
@@ -164,76 +222,13 @@ class Add_Post extends StatelessWidget {
                               return null;
                             }
                           },
-                          prefIcon: Icon(Icons.book)),
-                    SizedBox(
+                          prefIcon: const Icon(Icons.book)),
+                    const SizedBox(
                       height: 20,
                     ),
                     InkWell(
                         onTap: () async {
-                          showDialog(
-                              context: context,
-                              builder: (
-                                context1,
-                              ) =>
-                                  AlertDialog(
-                                      title: const Text(
-                                        'أضف صورة',
-                                        style: TextStyle(
-                                          fontFamily: 'Cairo',
-                                        ),
-                                        textAlign: TextAlign.end,
-                                      ),
-                                      actions: <Widget>[
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 10, vertical: 10),
-                                          child: button(
-                                              //choosing image  from camera
-                                              onPressed: () {
-                                                HomeCubit.get(context)
-                                                    .pickImageFromCamera();
-                                                Navigator.pop(context);
-                                              },
-                                              color: mainColor,
-                                              child: const Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Text('إلتقط صورة',
-                                                      style: TextStyle(
-                                                          fontFamily: 'Cairo')),
-                                                  SizedBox(width: 5),
-                                                  Icon(Icons.camera),
-                                                ],
-                                              )),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 10, vertical: 10),
-                                          child: button(
-                                              onPressed: () {
-                                                HomeCubit.get(context)
-                                                    .pickImageFromGallery();
-                                                Navigator.pop(context);
-                                              },
-                                              color: mainColor,
-                                              child: const Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    'إختر من المعرض',
-                                                    style: TextStyle(
-                                                        fontFamily: 'Cairo'),
-                                                  ),
-                                                  SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                  Icon(Icons.image),
-                                                ],
-                                              )),
-                                        ),
-                                      ]));
+                          showImageDialog(context);
                         },
                         child: Container(
                           height: 50,
@@ -251,6 +246,9 @@ class Add_Post extends StatelessWidget {
                                     fontFamily: "Cairo",
                                   ),
                                 ),
+                                SizedBox(
+                                  width: 5,
+                                ),
                                 Icon(
                                   Icons.add_a_photo,
                                   color: Colors.green,
@@ -259,7 +257,7 @@ class Add_Post extends StatelessWidget {
                             ),
                           ),
                         )),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     if (HomeCubit.get(context).postImage != null)
@@ -285,7 +283,7 @@ class Add_Post extends StatelessWidget {
                                     onPressed: () {
                                       HomeCubit.get(context).removePostImage();
                                     },
-                                    icon: Icon(
+                                    icon: const Icon(
                                       Icons.close,
                                     )),
                               ),
@@ -293,14 +291,19 @@ class Add_Post extends StatelessWidget {
                           ),
                         ],
                       ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     button(
                         onPressed: () {
                           if (HomeCubit.get(context).postImage == null) {
                             HomeCubit.get(context).createPost(
-                              bookName: bookNameController.text,
+                              contentName: bookNameController.text,
+                              university:
+                                  HomeCubit.get(context).selectedUniversity,
+                              bookName: HomeCubit.get(context).bookTitle,
+                              bookAuthor: HomeCubit.get(context).author,
+                              bookPublisher: HomeCubit.get(context).publisher,
                               swapedBook: swappedBookCotroller.text,
                               date: DateTime.now().toString(),
                               adType: HomeCubit.get(context).selectedAdType,
@@ -311,7 +314,12 @@ class Add_Post extends StatelessWidget {
                             );
                           } else {
                             HomeCubit.get(context).uploadPostImage(
-                              bookName: bookNameController.text,
+                              contentName: bookNameController.text,
+                              university:
+                                  HomeCubit.get(context).selectedUniversity,
+                              bookName: HomeCubit.get(context).bookTitle,
+                              bookAuthor: HomeCubit.get(context).author,
+                              bookPublisher: HomeCubit.get(context).publisher,
                               swapedBook: swappedBookCotroller.text,
                               date: DateTime.now().toString(),
                               adType: HomeCubit.get(context).selectedAdType,
@@ -322,7 +330,7 @@ class Add_Post extends StatelessWidget {
                             );
                           }
                         },
-                        child: Text(
+                        child: const Text(
                           'نشر',
                           style: TextStyle(fontFamily: 'Cairo'),
                         ),
@@ -330,7 +338,8 @@ class Add_Post extends StatelessWidget {
                   ],
                 ),
               ),
-              if (state is LoadingUploadPostState) loading(),
+              if (state is LoadingUploadPostState || state is LoadingFetchISBN)
+                loading(),
             ],
           ));
     });
@@ -377,8 +386,10 @@ Widget dropDown({
                 HomeCubit.get(context).selectAdType(newValue!);
               } else if (dropDown == 2) {
                 HomeCubit.get(context).selectAdContentType(newValue!);
-              } else {
+              } else if (dropDown == 3) {
                 HomeCubit.get(context).selectAdCategory(newValue!);
+              } else {
+                HomeCubit.get(context).selectUniversity(newValue!);
               }
             }));
 
@@ -397,4 +408,182 @@ Widget dropDownTitle(String title) {
       ),
     ),
   );
+}
+
+void showImageDialog(context) {
+  showDialog(
+      context: context,
+      builder: (
+        context1,
+      ) =>
+          AlertDialog(
+              title: const Text(
+                'أضف صورة',
+                style: TextStyle(
+                  fontFamily: 'Cairo',
+                ),
+                textAlign: TextAlign.end,
+              ),
+              actions: <Widget>[
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: button(
+                      //choosing image  from camera
+                      onPressed: () {
+                        HomeCubit.get(context).pickImageFromCamera();
+                        Navigator.pop(context);
+                      },
+                      color: mainColor,
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('إلتقط صورة',
+                              style: TextStyle(fontFamily: 'Cairo')),
+                          SizedBox(width: 5),
+                          Icon(Icons.camera),
+                        ],
+                      )),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: button(
+                      onPressed: () {
+                        HomeCubit.get(context).pickImageFromGallery();
+                        Navigator.pop(context);
+                      },
+                      color: mainColor,
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'إختر من المعرض',
+                            style: TextStyle(fontFamily: 'Cairo'),
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Icon(Icons.image),
+                        ],
+                      )),
+                ),
+                Center(
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('إلغاء',
+                        style: TextStyle(
+                          fontFamily: 'Cairo',
+                        )),
+                  ),
+                ),
+              ]));
+}
+
+void showISBNDialog(context, TextEditingController isbnController) {
+  showDialog(
+      context: context,
+      builder: (context1) => AlertDialog(
+              title: const Text(
+                'ISBN',
+                style: TextStyle(
+                  fontFamily: 'Cairo',
+                ),
+                textAlign: TextAlign.end,
+              ),
+              actions: <Widget>[
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: button(
+                      //choosing image  from camera
+                      onPressed: () {
+                        HomeCubit.get(context).scanBarcode();
+                        Navigator.pop(context);
+                      },
+                      color: mainColor,
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('إمسح الكود من الكاميرا',
+                              style: TextStyle(fontFamily: 'Cairo')),
+                          SizedBox(width: 5),
+                          Icon(Icons.camera),
+                        ],
+                      )),
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 10),
+                    child: formField(
+                      control: isbnController,
+                      isScure: false,
+                      label: 'أو قم بإدخال الرقم يدوياً',
+                      prefIcon: const Icon(Icons.numbers),
+                      validator: (String? value) {
+                        if (value!.isEmpty) {
+                          return 'لا يجب أن يترك فارغاً';
+                        } else {
+                          return null;
+                        }
+                      },
+                    )),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () {
+                          HomeCubit.get(context).fetchBookInfoByISBN(
+                              isbnController.text.toString());
+                          Navigator.pop(context);
+                        },
+                        child: const Text('تأكيد',
+                            style: TextStyle(
+                              fontFamily: 'Cairo',
+                            )),
+                      ),
+                    ),
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text('إلغاء',
+                            style: TextStyle(
+                              fontFamily: 'Cairo',
+                            )),
+                      ),
+                    )
+                  ],
+                )
+              ]));
+}
+
+void showISBNInfoDialog(context) {
+  showDialog(
+      context: context,
+      builder: (context1) => AlertDialog(
+              title: const Text(
+                'ISBN info',
+                style: TextStyle(
+                  fontFamily: 'Cairo',
+                ),
+                textAlign: TextAlign.end,
+              ),
+              content: const Image(image: AssetImage('assets/isbn.png')),
+              actions: <Widget>[
+                Center(
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('فهمت',
+                        style: TextStyle(
+                          fontFamily: 'Cairo',
+                        )),
+                  ),
+                ),
+              ]));
 }

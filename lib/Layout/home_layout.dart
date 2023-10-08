@@ -34,7 +34,7 @@ class HomeLayout extends StatelessWidget {
             backgroundColor: mainColor,
             onPressed: () {
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => Add_Post()));
+                  context, MaterialPageRoute(builder: (context) => AddPost()));
             },
             child: const Icon(Icons.add),
           ),

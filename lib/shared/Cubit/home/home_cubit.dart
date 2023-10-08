@@ -16,6 +16,7 @@ import '../../../modules/home.dart';
 import '../../../modules/posts/add_post.dart';
 import '../../../modules/posts/my_ads.dart';
 import '../../../modules/profile/profile.dart';
+import '../../component.dart';
 import '../../constant.dart';
 import 'home_state.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -37,21 +38,111 @@ class HomeCubit extends Cubit<HomeStates> {
   String selectedAdContentType = 'دوسية';
   List<String> adContentTypes = ['سلايدات', 'دوسية', 'كتاب'];
 
+  String selectedUniversity = 'جامعة اليرموك';
+  List<String> universities = [
+    'جامعة الأردنية',
+    'جامعة العلوم و التكنولوجيا',
+    'جامعة اليرموك',
+    'الجامعة الألمانية الأردنية',
+    'جامعة الطفيلة التقنية',
+    'جامعة الحسين بن طلال',
+    'جامعة البلقاء التطبيقية',
+    'الجامعة الهاشمية',
+    'جامعة آل البيت',
+    'جامعة مؤتة',
+    'الجامعة الأردنية - العقبة',
+    'جامعة جدارا',
+    'جامعة ابن سينا للعلوم الطبية',
+    'جامعة العقبة للعلوم الطبية',
+    'جامعة العقبة للتكنولوجيا',
+    'جامعة عجلون الوطنية',
+    'الجامعة الأمريكية في مادبا',
+    'جامعة الشرق الأوسط',
+    'جامعة عمان العربية',
+    'جامعة الزرقاء',
+    'جامعة إربد الأهلية',
+    'جامعة الزيتونة الأردنية',
+    'جامعة جرش',
+    'جامعة الأميرة سمية للتكنولوجيا',
+    'جامعة الإسراء',
+    'جامعة البترا',
+    'جامعة العلوم التطبيقية الخاصة',
+    'جامعة فيلادلفيا',
+    'جامعة عمان الأهلية',
+    'الجامعة العربية المفتوحة فرع الأردن',
+    'جامعة الحسين التقنية',
+    'جامعة العلوم الإسلامية العالمية',
+  ];
+
   String selectedAdCategory = 'رواية';
   List<String> adCategories = [
-    'هندسة طبية',
-    'طب',
-    'هندسة حاسوب',
     'كتاب ديني',
     'رواية',
-    'هندسة مدنية',
-    'هندسة معمارية',
-    'هندسة قوى كهربائية',
-    'هندسة إتصالات',
-    'علوم حاسوب',
-    'نظم معلومات حاسوبية',
-    'نظم معلومات إدارية',
-    'هندسة طبية',
+    'طب',
+    'طب الأسنان',
+    'صيدلة',
+    'الهندسة مدنية',
+    'الهندسة الكهربائية',
+    'هندسة النظم الطبية الحيوية',
+    'هندسة الالكترونيات',
+    'هندسة العمارة',
+    'الهندسة الميكانيكية',
+    'الهندسة الكيميائية',
+    'الهندسة الصناعية',
+    'هندسة الحاسوب',
+    'هندسة الميكاترونكس',
+    'هندسة الاتصالات',
+    'التمريض',
+    'العلاج الطبيعي',
+    'العلاج الوظيفي',
+    'الأطراف الاصطناعية',
+    'علوم السمع والنطق',
+    'علم الحاسوب',
+    'نظم المعلومات الحاسوبية',
+    'تكنولوجيا معلومات الأعمال',
+    'علم البيانات',
+    'الأمن السيبراني	',
+    'الذكاء الاصطناعي	',
+    'الرياضيات',
+    'الفيزياء',
+    'الكيمياء	',
+    'العلوم الحياتية	',
+    'الجيولوجيا البيئية والتطبيقية	',
+    'الانتاج الحيواني	',
+    'إدارة الأعمال	',
+    'المحاسبة',
+    'التمويل',
+    'التسويق',
+    'نظم المعلومات الادارية	',
+    'الإدارة العامة	',
+    'إقتصاد الأعمال	',
+    'اللغة الانجليزية وآدابها	',
+    'اللغة الفرنسية وآدابها	',
+    'اللغات',
+    'التاريخ',
+    'الجغرافيا	',
+    'الفلسفة',
+    'علم الاجتماع	',
+    'القانون',
+    'معلم الصف',
+    'التربية الخاصة	',
+    'تربية طفل',
+    'الارشاد والصحة النفسية	',
+    'أصول الدين	',
+    'الفقه وأصوله	',
+    'المصارف الإسلامية	',
+    'الآثار	',
+    'الادارة السياحية	',
+    'التربية البدنية	',
+    'الفيزياء الطبية والحيوية',
+    'الاحصاء',
+    'العلوم المالية والمصرفية',
+    'اللغة العربية وآدابها',
+    'الأنثروبولوجيا	',
+    'الآثار	',
+    'الادارة الفندقية	',
+    'الصحافة والاعلام',
+    'الإذاعة والتلفزيون',
   ];
 
   var picker = ImagePicker();
@@ -60,7 +151,7 @@ class HomeCubit extends Cubit<HomeStates> {
   List<Widget> screens = [
     const Profile(),
     MyAds(),
-    Add_Post(),
+    AddPost(),
     const Chats(),
     Home(),
   ];
@@ -229,9 +320,13 @@ class HomeCubit extends Cubit<HomeStates> {
   void uploadPostImage({
     required String date,
     required String adType,
-    required String bookName,
     required String adContentType,
     required String category,
+    required String university,
+    String? contentName,
+    String? bookName,
+    String? bookAuthor,
+    String? bookPublisher,
     String? bookPrice,
     String? swapedBook,
   }) {
@@ -244,13 +339,16 @@ class HomeCubit extends Cubit<HomeStates> {
       value.ref.getDownloadURL().then((value) {
         createPost(
           date: date,
+          university: university,
+          contentName: contentName,
           bookName: bookName,
+          bookAuthor: bookAuthor,
+          bookPublisher: bookPublisher,
           swapedBook: swapedBook,
           postImage: value,
           adType: adType,
           adContentType: adContentType,
           category: category,
-          // postId: value
         );
         emit(SuccessUploadPostState());
       }).catchError((onError) {
@@ -264,16 +362,24 @@ class HomeCubit extends Cubit<HomeStates> {
   void createPost({
     required String date,
     required String adType,
-    required String bookName,
     required String adContentType,
     required String category,
+    required String university,
+    String? contentName,
+    String? bookName,
+    String? bookAuthor,
+    String? bookPublisher,
     String? postImage,
     String? swapedBook,
   }) async {
     emit(LoadingUploadPostState());
     PostModel model = PostModel(
       ownerName: userModel!.name,
-      bookName: bookName,
+      university: university,
+      contentName: contentName ?? '',
+      bookName: bookName ?? '',
+      bookAuthorName: bookAuthor ?? '',
+      bookPublisherName: bookPublisher ?? '',
       swapedBook: swapedBook ?? '',
       postId: '',
       userImage: userModel!.image,
@@ -347,6 +453,50 @@ class HomeCubit extends Cubit<HomeStates> {
     });
   }
 
+  void getPostsByFilters({
+    required String type,
+    required String contentType,
+    required String university,
+    required String category,
+  }) {
+    posts = [];
+    emit(LoadingGetPostDataState());
+    if (type == 'all') {
+      FirebaseFirestore.instance
+          .collection('posts')
+          .where('adContentType', isEqualTo: contentType)
+          .where('university', isEqualTo: university)
+          .where('bookCategory', isEqualTo: category)
+          .get()
+          .then((value) {
+        value.docs.forEach(((element) {
+          posts.add(PostModel.formJson(element.data()));
+        }));
+        emit(SuccessGetPostDataState());
+      }).catchError((error) {
+        emit(ErrorGetPostDataState(error.toString()));
+        log('The Error is: $error');
+      });
+    } else {
+      FirebaseFirestore.instance
+          .collection('posts')
+          .where('adType', isEqualTo: type)
+          .where('adContentType', isEqualTo: contentType)
+          .where('university', isEqualTo: university)
+          .where('bookCategory', isEqualTo: category)
+          .get()
+          .then((value) {
+        value.docs.forEach(((element) {
+          posts.add(PostModel.formJson(element.data()));
+        }));
+        emit(SuccessGetPostDataState());
+      }).catchError((error) {
+        emit(ErrorGetPostDataState(error.toString()));
+        log('The Error is: $error');
+      });
+    }
+  }
+
   void getPostsByTypeAndName({
     required String type,
     required String name,
@@ -370,7 +520,7 @@ class HomeCubit extends Cubit<HomeStates> {
     } else {
       FirebaseFirestore.instance
           .collection('posts')
-          .where('type', isEqualTo: type)
+          .where('adType', isEqualTo: type)
           .where('bookName', isEqualTo: name)
           .get()
           .then((value) {
@@ -557,6 +707,11 @@ class HomeCubit extends Cubit<HomeStates> {
     emit(ChangeSelectionState());
   }
 
+  void selectUniversity(String value) {
+    selectedUniversity = value;
+    emit(ChangeSelectionState());
+  }
+
   String isbn = ""; // Variable to store the scanned ISBN
 
   Future<void> scanBarcode() async {
@@ -572,47 +727,52 @@ class HomeCubit extends Cubit<HomeStates> {
       // Store the scanned ISBN in the 'isbn' variable
 
       isbn = barcodeScanRes;
-
+      await fetchBookInfoByISBN(isbn);
       // You can now use 'isbn' in your application to retrieve book information, etc.
-      print('Scanned ISBN: $isbn');
+      log('Scanned ISBN: $isbn');
       emit(SuccessScanState());
     } on PlatformException {
       // Handle exceptions here, e.g., permission denied or scan canceled
-      print('Error scanning barcode');
       emit(ErrorScanState());
+      defaultToast(
+          massage: 'هناك مشكلة في قراءة الرمز', state: ToastStates.ERROR);
     }
   }
 
+  String bookTitle = "";
+  String author = "";
+  String publisher = "";
+
   Future<void> fetchBookInfoByISBN(String isbn) async {
+    emit(LoadingFetchISBN());
     final apiUrl =
-        'https://openlibrary.org/api/books?bibkeys=ISBN:$isbn&format=json';
+        'https://www.googleapis.com/books/v1/volumes?q=isbn:$isbn&key=AIzaSyDRnkh0FlhyzkQwAUyv7PGcOQtoEbqNPuA';
 
     final response = await http.get(Uri.parse(apiUrl));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
 
-      // Extract book details from the JSON response
-      final bookInfo = data['ISBN:$isbn'];
+      // Check if any items were returned in the response
+      if (data['totalItems'] > 0) {
+        final bookInfo = data['items'][0]['volumeInfo'];
 
-      if (bookInfo != null) {
-        final title = bookInfo['title'];
-        final author = bookInfo['authors'] != null
-            ? bookInfo['authors'][0]['name']
+        // Extract book details from the JSON response
+        bookTitle = bookInfo['title'] ?? 'Unknown';
+        author = bookInfo['authors'] != null && bookInfo['authors'].isNotEmpty
+            ? bookInfo['authors'][0] ?? 'Unknown'
             : 'Unknown';
-        final publisher = bookInfo['publishers'] != null
-            ? bookInfo['publishers'][0]['name']
-            : 'Unknown';
-
-        print('Title: $title');
-        print('Author: $author');
-        print('Publisher: $publisher');
+        publisher = bookInfo['publisher'] ?? 'Unknown';
+        emit(SuccessFetchISBN());
       } else {
-        print('Book not found with ISBN: $isbn');
+        emit(ErrorFetchISBN());
       }
     } else {
-      // Handle error
-      print('Error fetching book data');
+      // Handle specific API errors
+      defaultToast(massage: 'الكتاب غير متوفر', state: ToastStates.ERROR);
+      final errorMessage = jsonDecode(response.body)['error']['message'];
+      log('API Error: $errorMessage');
+      emit(ErrorFetchISBN());
     }
   }
 }

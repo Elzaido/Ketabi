@@ -1,9 +1,11 @@
-// ignore_for_file: non_constant_identifier_names
-
 class PostModel {
   late String? ownerName;
-  late String postId;
+  late String university;
   late String bookName;
+  late String bookAuthorName;
+  late String bookPublisherName;
+  late String postId;
+  late String contentName;
   late String swapedBook;
   late String userImage;
   late String date;
@@ -15,7 +17,11 @@ class PostModel {
 
   PostModel({
     required this.ownerName,
+    required this.university,
+    required this.contentName,
     required this.bookName,
+    required this.bookAuthorName,
+    required this.bookPublisherName,
     required this.swapedBook,
     required this.postId,
     required this.userImage,
@@ -29,7 +35,11 @@ class PostModel {
 
   PostModel.formJson(Map<String, dynamic> json) {
     ownerName = json['ownerName'];
+    university = json['university'];
+    contentName = json['contentName'];
     bookName = json['bookName'];
+    bookAuthorName = json['bookAuthorName'];
+    bookPublisherName = json['bookPublisherName'];
     swapedBook = json['swapedBook'];
     postId = json['postId'];
     userImage = json['userImage'];
@@ -44,7 +54,11 @@ class PostModel {
   Map<String, dynamic> toMap() {
     return {
       'ownerName': ownerName,
+      'university': university,
+      'contentName': contentName,
       'bookName': bookName,
+      'bookAuthorName': bookAuthorName,
+      'bookPublisherName': bookPublisherName,
       'swapedBook': swapedBook,
       'postId': postId,
       'userImage': userImage,

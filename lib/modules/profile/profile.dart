@@ -67,7 +67,7 @@ class Profile extends StatelessWidget {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => Add_Post()));
+                                  builder: (context) => AddPost()));
                         },
                         text: 'إضافة إعلان',
                         icon: const Icon(Icons.add)),

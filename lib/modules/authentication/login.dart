@@ -173,6 +173,7 @@ class _LoginPageState extends State<LoginPage> {
                         height: 10,
                       ),
                       Container(
+                        height: 50,
                         width: double.infinity,
                         decoration: BoxDecoration(
                           border: Border.all(width: 1, color: Colors.grey),
@@ -208,6 +209,10 @@ class _LoginPageState extends State<LoginPage> {
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
+                              Text('Or sign in with Google'),
+                              SizedBox(
+                                width: 5,
+                              ),
                               Text(
                                 'G',
                                 style: TextStyle(
@@ -216,10 +221,6 @@ class _LoginPageState extends State<LoginPage> {
                                   fontSize: 20,
                                 ),
                               ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text('Or sign in with Google'),
                             ],
                           ),
                         ),

@@ -60,6 +60,8 @@ class ErrorGetPostDataState extends HomeStates {
   ErrorGetPostDataState(this.error);
 }
 
+// Change Selected Item:
+
 class ChangeSelectionState extends HomeStates {}
 
 // All User Data States
@@ -107,3 +109,11 @@ class LoadingScanState extends HomeStates {}
 class SuccessScanState extends HomeStates {}
 
 class ErrorScanState extends HomeStates {}
+
+// Fetch ISBN Code States:
+
+class LoadingFetchISBN extends HomeStates {}
+
+class SuccessFetchISBN extends HomeStates {}
+
+class ErrorFetchISBN extends HomeStates {}

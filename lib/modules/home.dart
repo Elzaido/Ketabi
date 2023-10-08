@@ -2,8 +2,7 @@
 
 import 'package:book_swapping/shared/component.dart';
 import 'package:flutter/material.dart';
-import '../shared/Cubit/home/home_cubit.dart';
-import 'posts/ads.dart';
+import '../models/gridmodel.dart';
 
 class Home extends StatelessWidget {
   Home({Key? key}) : super(key: key);
@@ -12,66 +11,44 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-   
-
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(15),
       child: Column(
         children: [
           const SizedBox(
-            height: 10,
+            height: 5,
           ),
-          defualtHomeItem(
-            context: context,
-            title: 'كتب للتبديل',
-            image: 'assets/boarding4.png',
-            onTap: () {
-              HomeCubit.get(context).getPostsByType(type: 'تبديل');
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => AllAds(
-                            title: 'كتب للتبديل',
-                            type: 'تبديل',
-                          )));
-            },
+          ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: const Image(image: AssetImage('assets/yar.png'))),
+          const SizedBox(
+            height: 20,
           ),
-          defualtHomeItem(
-            context: context,
-            title: 'كتب مجانية',
-            image: 'assets/boarding2.png',
-            onTap: () {
-              HomeCubit.get(context).getPostsByType(type: 'تبرع');
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => AllAds(
-                            title: 'كتب مجانية',
-                            type: 'تبرع',
-                          )));
-            },
-          ),
-          defualtHomeItem(
-            context: context,
-            title: 'جميع الإعلانات',
-            image: 'assets/boarding1.png',
-            onTap: () {
-              HomeCubit.get(context).getAllPosts();
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => AllAds(
-                            title: 'جميع الإعلانات',
-                            type: 'all',
-                          )));
-            },
-          ),
+          useActionGridView(context),
           const SizedBox(
             height: 25,
           )
         ],
       ),
+    );
+  }
+
+  Widget useActionGridView(context) {
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: 2,
+      mainAxisSpacing: 15,
+      crossAxisSpacing: 15,
+      childAspectRatio: 1 / 1.50,
+      children: gridList.map((item) {
+        return gridItem(
+            context: context,
+            nav: item.nav,
+            image: item.image!,
+            title: item.title!);
+      }).toList(),
     );
   }
 }

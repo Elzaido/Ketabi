@@ -44,15 +44,16 @@ Widget bookState(String state) {
   );
 }
 
-Widget formField(
-        {required TextEditingController control,
-        required bool isScure,
-        required String label,
-        required Icon prefIcon,
-        TextInputType inputType = TextInputType.visiblePassword,
-        ValueChanged<String>? onSubmit,
-        required FormFieldValidator<String> validator,
-        IconButton? suffButton}) =>
+Widget formField({
+  required TextEditingController control,
+  required bool isScure,
+  required String label,
+  required Icon prefIcon,
+  TextInputType inputType = TextInputType.visiblePassword,
+  ValueChanged<String>? onSubmit,
+  required FormFieldValidator<String> validator,
+  IconButton? suffButton,
+}) =>
     TextFormField(
       textDirection: TextDirection.rtl,
       validator: validator,
@@ -416,27 +417,40 @@ void showItemDialog(PostModel model, context, bool isImage, String bookType) {
                 fontFamily: 'Cairo',
               ),
             ),
-            content: Column(
+            content: SingleChildScrollView(
+                child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                infoItems(
-                    title: 'إسم ال${model.adContentType}',
-                    info: model.bookName),
+                if (model.adContentType == 'كتاب')
+                  infoItems(title: 'إسم الكتاب', info: model.bookName),
+                if (model.adContentType == 'كتاب')
+                  infoItems(title: 'إسم المؤلف', info: model.bookAuthorName),
+                if (model.adContentType == 'كتاب')
+                  infoItems(title: 'إسم الناشر', info: model.bookPublisherName),
+                if (model.adContentType != 'كتاب')
+                  infoItems(
+                      title: 'إسم ال${model.adContentType}',
+                      info: model.contentName),
                 if (bookType == 'تبديل')
                   infoItems(title: 'للتبديل على', info: model.swapedBook),
+                infoItems(title: 'الجامعة', info: model.university),
+                infoItems(title: 'القسم أو المجال', info: model.bookCategory),
                 infoItems(title: 'صاحب الكتاب', info: model.ownerName!),
-                if (isImage)
-                  SizedBox(
-                      width: 300,
-                      height: 300,
-                      child: Image(
-                        image: NetworkImage(
-                          model.postImage,
-                        ),
-                        fit: BoxFit.cover,
-                      ))
+                isImage
+                    ? SizedBox(
+                        width: 300,
+                        height: 300,
+                        child: Image(
+                          image: NetworkImage(
+                            model.postImage,
+                          ),
+                          fit: BoxFit.cover,
+                        ))
+                    : const SizedBox(
+                        height: 0,
+                      )
               ],
-            ),
+            )),
             actions: <Widget>[
               TextButton(
                   onPressed: () {
@@ -506,25 +520,39 @@ void showMyItemDialog(PostModel model, context, bool isImage, String bookType) {
                 fontFamily: 'Cairo',
               ),
             ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                infoItems(
-                    title: 'إسم ال${model.adContentType}',
-                    info: model.bookName),
-                if (bookType == 'تبديل')
-                  infoItems(title: 'للتبديل على', info: model.swapedBook),
-                if (isImage)
-                  SizedBox(
-                      width: 300,
-                      height: 300,
-                      child: Image(
-                        image: NetworkImage(
-                          model.postImage,
-                        ),
-                        fit: BoxFit.cover,
-                      ))
-              ],
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (model.adContentType == 'كتاب')
+                    infoItems(title: 'إسم الكتاب', info: model.bookName),
+                  if (model.adContentType == 'كتاب')
+                    infoItems(title: 'إسم المؤلف', info: model.bookAuthorName),
+                  if (model.adContentType == 'كتاب')
+                    infoItems(
+                        title: 'إسم الناشر', info: model.bookPublisherName),
+                  if (model.adContentType != 'كتاب')
+                    infoItems(
+                        title: 'إسم ال${model.adContentType}',
+                        info: model.contentName),
+                  if (bookType == 'تبديل')
+                    infoItems(title: 'للتبديل على', info: model.swapedBook),
+                  infoItems(title: 'الجامعة', info: model.university),
+                  infoItems(title: 'القسم أو المجال', info: model.bookCategory),
+                  infoItems(title: 'صاحب الكتاب', info: model.ownerName!),
+                  isImage
+                      ? SizedBox(
+                          width: 300,
+                          height: 300,
+                          child: Image(
+                            image: NetworkImage(
+                              model.postImage,
+                            ),
+                            fit: BoxFit.cover,
+                          ))
+                      : Container(),
+                ],
+              ),
             ),
             actions: <Widget>[
               Expanded(
@@ -646,3 +674,77 @@ Widget separator() => Padding(
         color: const Color.fromARGB(255, 226, 226, 226),
       )),
     );
+
+Widget gridItem({
+  required context,
+  required Widget nav,
+  required String image,
+  required String title,
+}) {
+  return InkWell(
+      onTap: () {
+        if (title == 'كتب مجانية') {
+          HomeCubit.get(context).getPostsByType(type: 'تبرع');
+        } else if (title == 'كتب للتبديل') {
+          HomeCubit.get(context).getPostsByType(type: 'تبديل');
+        } else if (title == 'جميع الإعلانات') {
+          HomeCubit.get(context).getAllPosts();
+        }
+        Navigator.push(context, MaterialPageRoute(builder: (context) => nav));
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius:
+              BorderRadius.circular(16.0), // Adjust the radius as needed
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.8), // Shadow color
+              spreadRadius: 3,
+              blurRadius: 7,
+              offset:
+                  const Offset(-1, 2), // Shadow position [horizontal, vertical]
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(15.0),
+          child: Stack(
+            children: [
+              Center(
+                child: Image(
+                  image: AssetImage(image),
+                  fit: BoxFit.contain,
+                  width: double.infinity, // Match the width of the Container
+                  height: double.infinity, // Match the height of the Container
+                ),
+              ),
+              Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.4),
+                        spreadRadius: 6,
+                        blurRadius: 6,
+                      ),
+                    ],
+                  ),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      title,
+                      style: const TextStyle(
+                          fontFamily: 'Cairo',
+                          fontSize: 18,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
+                      maxLines: 2,
+                      textAlign: TextAlign.center,
+                    ),
+                  )),
+            ],
+          ),
+        ),
+      ));
+}
