@@ -168,9 +168,17 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(
                         height: 10,
                       ),
-                      separator(),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(child: separator()),
+                          const Text('OR'),
+                          Expanded(child: separator())
+                        ],
+                      ),
                       const SizedBox(
-                        height: 10,
+                        height: 20,
                       ),
                       Container(
                         height: 50,
@@ -209,7 +217,7 @@ class _LoginPageState extends State<LoginPage> {
                           child: const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text('Or sign in with Google'),
+                              Text('Sign in with Google'),
                               SizedBox(
                                 width: 5,
                               ),
@@ -218,7 +226,7 @@ class _LoginPageState extends State<LoginPage> {
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.red,
-                                  fontSize: 20,
+                                  fontSize: 25,
                                 ),
                               ),
                             ],

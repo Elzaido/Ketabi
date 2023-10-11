@@ -22,7 +22,7 @@ class MyAds extends StatelessWidget {
             massage: 'هناك مشكلة في حذف الإعلان', state: ToastStates.ERROR);
       }
     }, builder: (context, state) {
-      return state is LoadingGetPostDataState
+      return state is LoadingGetPostDataState || state is LoadingDeletePostState
           ? loading()
           : HomeCubit.get(context).posts.isNotEmpty
               ? Padding(

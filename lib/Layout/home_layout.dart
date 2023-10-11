@@ -1,7 +1,7 @@
 import 'package:book_swapping/shared/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../modules/posts/add_post.dart';
+import '../modules/posts/select_post_type.dart';
 import '../shared/Cubit/home/home_cubit.dart';
 import '../shared/Cubit/home/home_state.dart';
 
@@ -34,7 +34,9 @@ class HomeLayout extends StatelessWidget {
             backgroundColor: mainColor,
             onPressed: () {
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => AddPost()));
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const SelectPostType()));
             },
             child: const Icon(Icons.add),
           ),

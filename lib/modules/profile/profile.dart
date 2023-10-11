@@ -1,3 +1,4 @@
+import 'package:book_swapping/modules/posts/select_post_type.dart';
 import './../authentication/login.dart';
 import './../profile/favorite.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,7 +8,6 @@ import '../../network/local/cache_helper.dart';
 import '../../shared/Cubit/home/home_cubit.dart';
 import '../../shared/Cubit/home/home_state.dart';
 import '../../shared/component.dart';
-import '../posts/add_post.dart';
 import 'edit_profile.dart';
 
 class Profile extends StatelessWidget {
@@ -67,7 +67,8 @@ class Profile extends StatelessWidget {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => AddPost()));
+                                  builder: (context) =>
+                                      const SelectPostType()));
                         },
                         text: 'إضافة إعلان',
                         icon: const Icon(Icons.add)),

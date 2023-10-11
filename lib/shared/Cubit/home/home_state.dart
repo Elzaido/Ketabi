@@ -40,17 +40,17 @@ class ErrorPickPostImageState extends HomeStates {}
 
 class RemovePostImageState extends HomeStates {}
 
+// Upload Post State:
+
 class LoadingUploadPostState extends HomeStates {}
 
 class SuccessUploadPostState extends HomeStates {}
 
 class ErrorUploadPostState extends HomeStates {}
 
+// Get Post Data State:
+
 class LoadingGetPostDataState extends HomeStates {}
-
-class SuccessDeletePostState extends HomeStates {}
-
-class ErrorDeletePostState extends HomeStates {}
 
 class SuccessGetPostDataState extends HomeStates {}
 
@@ -59,6 +59,14 @@ class ErrorGetPostDataState extends HomeStates {
 
   ErrorGetPostDataState(this.error);
 }
+
+// Delete Post data State:
+
+class LoadingDeletePostState extends HomeStates {}
+
+class SuccessDeletePostState extends HomeStates {}
+
+class ErrorDeletePostState extends HomeStates {}
 
 // Change Selected Item:
 

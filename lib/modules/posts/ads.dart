@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../shared/Cubit/home/home_cubit.dart';
 import '../../shared/Cubit/home/home_state.dart';
 import '../../shared/component.dart';
-import 'add_post.dart';
 
 class AllAds extends StatelessWidget {
   AllAds({super.key, required this.title, required this.type});

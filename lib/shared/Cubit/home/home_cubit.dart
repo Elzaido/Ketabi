@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'package:book_swapping/modules/posts/select_post_type.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,7 +14,6 @@ import '../../../models/post_model.dart';
 import '../../../models/user_model.dart';
 import '../../../modules/chat/chats.dart';
 import '../../../modules/home.dart';
-import '../../../modules/posts/add_post.dart';
 import '../../../modules/posts/my_ads.dart';
 import '../../../modules/profile/profile.dart';
 import '../../component.dart';
@@ -31,9 +31,6 @@ class HomeCubit extends Cubit<HomeStates> {
   File? profileImage;
   File? postImage;
   File? chatImage;
-
-  String selectedAdType = 'تبرع';
-  List<String> adTypes = ['تبديل', 'تبرع'];
 
   String selectedAdContentType = 'دوسية';
   List<String> adContentTypes = ['سلايدات', 'دوسية', 'كتاب'];
@@ -151,7 +148,7 @@ class HomeCubit extends Cubit<HomeStates> {
   List<Widget> screens = [
     const Profile(),
     MyAds(),
-    AddPost(),
+    const SelectPostType(),
     const Chats(),
     Home(),
   ];
@@ -327,10 +324,8 @@ class HomeCubit extends Cubit<HomeStates> {
     String? bookName,
     String? bookAuthor,
     String? bookPublisher,
-    String? bookPrice,
     String? swapedBook,
   }) {
-    emit(LoadingUploadPostState());
     firebase_storage.FirebaseStorage.instance
         .ref()
         .child('posts/${Uri.file(postImage!.path).pathSegments.last}')
@@ -372,7 +367,6 @@ class HomeCubit extends Cubit<HomeStates> {
     String? postImage,
     String? swapedBook,
   }) async {
-    emit(LoadingUploadPostState());
     PostModel model = PostModel(
       ownerName: userModel!.name,
       university: university,
@@ -407,7 +401,65 @@ class HomeCubit extends Cubit<HomeStates> {
     }
   }
 
+  void postValidator({
+    required String date,
+    required String adType,
+    required String adContentType,
+    required String category,
+    required String university,
+    String? contentName,
+    String? bookName,
+    String? bookAuthor,
+    String? bookPublisher,
+    String? postImage,
+    String? swapedBook,
+  }) {
+    emit(LoadingUploadPostState());
+
+    // Check validation conditions and set isValid accordingly
+    if (adType == 'تبديل' && swapedBook == '') {
+      defaultToast(
+        massage: 'يجب إدخال بماذا تريد أن تبدل',
+        state: ToastStates.ERROR,
+      );
+      emit(ErrorUploadPostState());
+    } else if (adContentType == 'كتاب' &&
+        (bookAuthor == '' || bookName == '' || bookPublisher == '')) {
+      defaultToast(
+        massage: 'يجب إدخال كامل معلومات الكتاب',
+        state: ToastStates.ERROR,
+      );
+      emit(ErrorUploadPostState());
+    } else if (adContentType != 'كتاب' && contentName == '') {
+      defaultToast(
+        massage: 'بعض الحقول ما زالت فارغة',
+        state: ToastStates.ERROR,
+      );
+      emit(ErrorUploadPostState());
+    } else {
+      // If isValid is true, proceed to create or upload the post
+      if (postImage == null) {
+        createPost(
+          date: date,
+          adType: adType,
+          adContentType: adContentType,
+          category: category,
+          university: university,
+        );
+      } else {
+        uploadPostImage(
+          date: date,
+          adType: adType,
+          adContentType: adContentType,
+          category: category,
+          university: university,
+        );
+      }
+    }
+  }
+
   Future<void> deletePost(String postId) async {
+    emit(LoadingDeletePostState());
     try {
       // Delete the post document from the 'posts' collection
       await FirebaseFirestore.instance.collection('posts').doc(postId).delete();
@@ -692,11 +744,6 @@ class HomeCubit extends Cubit<HomeStates> {
     emit(RemovePostImageState());
   }
 
-  void selectAdType(String value) {
-    selectedAdType = value;
-    emit(ChangeSelectionState());
-  }
-
   void selectAdContentType(String value) {
     selectedAdContentType = value;
     emit(ChangeSelectionState());
@@ -742,6 +789,7 @@ class HomeCubit extends Cubit<HomeStates> {
   String bookTitle = "";
   String author = "";
   String publisher = "";
+  bool bookIsNotExist = false;
 
   Future<void> fetchBookInfoByISBN(String isbn) async {
     emit(LoadingFetchISBN());
@@ -766,6 +814,10 @@ class HomeCubit extends Cubit<HomeStates> {
         emit(SuccessFetchISBN());
       } else {
         emit(ErrorFetchISBN());
+        defaultToast(
+            massage: 'الكتاب غير متوفر، الرجاء إدخال المعلومات يدوياً',
+            state: ToastStates.ERROR);
+        bookIsNotExist = true;
       }
     } else {
       // Handle specific API errors

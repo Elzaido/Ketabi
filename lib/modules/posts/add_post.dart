@@ -6,13 +6,20 @@ import '../../shared/component.dart';
 import '../../shared/constant.dart';
 
 class AddPost extends StatelessWidget {
-  AddPost({Key? key}) : super(key: key);
+  AddPost({
+    super.key,
+    required this.type,
+  });
 
-  final bookNameController = TextEditingController();
+  final String type;
+  final contentNameController = TextEditingController();
   final bookPriceController = TextEditingController();
   final swappedBookCotroller = TextEditingController();
   final isbnNumberController = TextEditingController();
   final categoryController = TextEditingController();
+  final bookNameController = TextEditingController();
+  final bookAuthorController = TextEditingController();
+  final bookPublisherController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +89,7 @@ class AddPost extends StatelessWidget {
                         HomeCubit.get(context).selectedAdContentType ==
                             'سلايدات')
                       formField(
-                          control: bookNameController,
+                          control: contentNameController,
                           isScure: false,
                           label:
                               'إسم ال${HomeCubit.get(context).selectedAdContentType}',
@@ -94,12 +101,14 @@ class AddPost extends StatelessWidget {
                             }
                           },
                           prefIcon: const Icon(Icons.book)),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    if (HomeCubit.get(context).selectedAdContentType == 'كتاب')
+                    if (HomeCubit.get(context).selectedAdContentType ==
+                            'كتاب' &&
+                        HomeCubit.get(context).bookIsNotExist == false)
                       Column(
                         children: [
+                          const SizedBox(
+                            height: 20,
+                          ),
                           Row(
                             children: [
                               IconButton(
@@ -179,6 +188,56 @@ class AddPost extends StatelessWidget {
                                 info: HomeCubit.get(context).publisher),
                         ],
                       ),
+                    if (HomeCubit.get(context).bookIsNotExist)
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          formField(
+                              control: bookNameController,
+                              isScure: false,
+                              label: 'أدخل إسم الكتاب',
+                              prefIcon: const Icon(Icons.book),
+                              validator: (String? value) {
+                                if (value!.isEmpty) {
+                                  return 'لا يجب أن يترك فارغاً';
+                                } else {
+                                  return null;
+                                }
+                              }),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          formField(
+                              control: bookAuthorController,
+                              isScure: false,
+                              label: 'أدخل إسم مؤلف الكتاب',
+                              prefIcon: const Icon(Icons.person),
+                              validator: (String? value) {
+                                if (value!.isEmpty) {
+                                  return 'لا يجب أن يترك فارغاً';
+                                } else {
+                                  return null;
+                                }
+                              }),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          formField(
+                              control: bookPublisherController,
+                              isScure: false,
+                              label: 'أدخل إسم ناشر الكتاب',
+                              prefIcon:
+                                  const Icon(Icons.published_with_changes),
+                              validator: (String? value) {
+                                if (value!.isEmpty) {
+                                  return 'لا يجب أن يترك فارغاً';
+                                } else {
+                                  return null;
+                                }
+                              }),
+                        ],
+                      ),
                     if (HomeCubit.get(context).selectedAdContentType == 'كتاب')
                       const SizedBox(
                         height: 20,
@@ -201,16 +260,7 @@ class AddPost extends StatelessWidget {
                     const SizedBox(
                       height: 20,
                     ),
-                    dropDownTitle('نوع الإعلان'),
-                    dropDown(
-                        selected: HomeCubit.get(context).selectedAdType,
-                        list: HomeCubit.get(context).adTypes,
-                        context: context,
-                        dropDown: 1),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    if (HomeCubit.get(context).selectedAdType == 'تبديل')
+                    if (type == 'تبديل')
                       formField(
                           control: swappedBookCotroller,
                           isScure: false,
@@ -296,33 +346,36 @@ class AddPost extends StatelessWidget {
                     ),
                     button(
                         onPressed: () {
-                          if (HomeCubit.get(context).postImage == null) {
-                            HomeCubit.get(context).createPost(
-                              contentName: bookNameController.text,
+                          if (HomeCubit.get(context).bookIsNotExist) {
+                            HomeCubit.get(context).postValidator(
+                              contentName:
+                                  contentNameController.text.toString(),
                               university:
                                   HomeCubit.get(context).selectedUniversity,
-                              bookName: HomeCubit.get(context).bookTitle,
-                              bookAuthor: HomeCubit.get(context).author,
-                              bookPublisher: HomeCubit.get(context).publisher,
-                              swapedBook: swappedBookCotroller.text,
+                              bookName: bookNameController.text.toString(),
+                              bookAuthor: bookAuthorController.text.toString(),
+                              bookPublisher:
+                                  bookPublisherController.text.toString(),
+                              swapedBook: swappedBookCotroller.text.toString(),
                               date: DateTime.now().toString(),
-                              adType: HomeCubit.get(context).selectedAdType,
+                              adType: type,
                               adContentType:
                                   HomeCubit.get(context).selectedAdContentType,
                               category:
                                   HomeCubit.get(context).selectedAdCategory,
                             );
                           } else {
-                            HomeCubit.get(context).uploadPostImage(
-                              contentName: bookNameController.text,
+                            HomeCubit.get(context).postValidator(
+                              contentName:
+                                  contentNameController.text.toString(),
                               university:
                                   HomeCubit.get(context).selectedUniversity,
                               bookName: HomeCubit.get(context).bookTitle,
                               bookAuthor: HomeCubit.get(context).author,
                               bookPublisher: HomeCubit.get(context).publisher,
-                              swapedBook: swappedBookCotroller.text,
+                              swapedBook: swappedBookCotroller.text.toString(),
                               date: DateTime.now().toString(),
-                              adType: HomeCubit.get(context).selectedAdType,
+                              adType: type,
                               adContentType:
                                   HomeCubit.get(context).selectedAdContentType,
                               category:
@@ -344,70 +397,6 @@ class AddPost extends StatelessWidget {
           ));
     });
   }
-}
-
-Widget dropDown({
-  required String selected,
-  required List<String> list,
-  required context,
-  required int dropDown,
-}) =>
-    Container(
-        decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey, width: 1),
-            borderRadius: BorderRadius.circular(10)),
-        child: DropdownButton(
-            padding: const EdgeInsets.all(5),
-            dropdownColor: const Color.fromARGB(255, 247, 247, 247),
-            icon: const Icon(Icons.arrow_drop_down),
-            isExpanded: true,
-            iconSize: 22,
-            style: const TextStyle(color: Colors.black, fontSize: 15),
-            value: selected,
-            underline: const SizedBox(),
-            items: list.map((valueItem) {
-              return DropdownMenuItem(
-                  value: valueItem,
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 10),
-                      child: Text(
-                        valueItem,
-                        style: const TextStyle(
-                          fontFamily: 'Cairo',
-                        ),
-                      ),
-                    ),
-                  ));
-            }).toList(),
-            onChanged: (newValue) {
-              if (dropDown == 1) {
-                HomeCubit.get(context).selectAdType(newValue!);
-              } else if (dropDown == 2) {
-                HomeCubit.get(context).selectAdContentType(newValue!);
-              } else if (dropDown == 3) {
-                HomeCubit.get(context).selectAdCategory(newValue!);
-              } else {
-                HomeCubit.get(context).selectUniversity(newValue!);
-              }
-            }));
-
-Widget dropDownTitle(String title) {
-  return Align(
-    alignment: Alignment.centerRight,
-    child: Padding(
-      padding: const EdgeInsets.only(right: 5),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontFamily: 'Cairo',
-        ),
-        textAlign: TextAlign.right,
-        textDirection: TextDirection.rtl,
-      ),
-    ),
-  );
 }
 
 void showImageDialog(context) {

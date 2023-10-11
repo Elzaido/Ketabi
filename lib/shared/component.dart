@@ -10,40 +10,6 @@ import '../models/user_model.dart';
 import '../modules/chat/chat_details.dart';
 import 'constant.dart';
 
-Widget bookState(String state) {
-  Color backgroundColor;
-  switch (state) {
-    case 'قيد الدراسة':
-      backgroundColor = Colors.orange;
-      break;
-    case 'تم الرفض':
-      backgroundColor = Colors.red;
-      break;
-    case 'تم القبول':
-      backgroundColor = Colors.green;
-      break;
-    default:
-      backgroundColor = Colors.transparent; // Default color for unknown states
-      break;
-  }
-
-  return Container(
-    width: double.infinity,
-    height: 50,
-    decoration: BoxDecoration(
-      color: backgroundColor,
-      borderRadius: BorderRadius.circular(10),
-    ),
-    child: Center(
-      child: Text(
-        state,
-        style: const TextStyle(
-            fontFamily: 'Cairo', color: Colors.white, fontSize: 12),
-      ),
-    ),
-  );
-}
-
 Widget formField({
   required TextEditingController control,
   required bool isScure,
@@ -146,21 +112,48 @@ void navigateAndFinish({required context, required Widget widget}) =>
         // delete previous pages when i go to the next page:
         (Route<dynamic> route) => false);
 
-Widget boardingItemBuilder(BoardingModel model) => Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
+Widget boardingItemBuilder(BoardingModel model, size) => Stack(
       children: [
-        Image(image: AssetImage('${model.image}')),
-        const SizedBox(
-          height: 30,
+        Positioned(
+          child: SizedBox(
+              height: size.height,
+              child: Image(
+                image: AssetImage('${model.image}'),
+                fit: BoxFit.cover,
+              )),
         ),
-        Text(
-          '${model.title}',
-          style: const TextStyle(
-            fontSize: 40,
-            fontFamily: 'Cairo',
-            // fontWeight: FontWeight.bold,
-          ),
-          textAlign: TextAlign.center,
+        const SizedBox(
+          height: 25,
+        ),
+        Positioned(
+          child: Container(
+              height: size.height,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.green.withOpacity(0.3),
+                    spreadRadius: 6,
+                    blurRadius: 6,
+                  ),
+                ],
+              ),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 80, horizontal: 10),
+                  child: Text(
+                    '${model.title}',
+                    style: const TextStyle(
+                      fontSize: 35,
+                      fontFamily: 'Cairo',
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              )),
         ),
         const SizedBox(
           height: 20,
@@ -329,30 +322,42 @@ Widget adItem(
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        model.bookName,
-                        textAlign: TextAlign.justify,
-                        overflow: TextOverflow.ellipsis,
-                        textDirection: TextDirection.rtl,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontFamily: 'Cairo',
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      Text(
-                        '${model.adType} -',
+                        'لل${model.adType} -',
                         textAlign: TextAlign.end,
                         style: const TextStyle(
                           fontSize: 15,
                           fontFamily: 'Cairo',
                         ),
                       ),
+                      if (model.adContentType == 'كتاب')
+                        Text(
+                          'كتاب ${model.bookName}',
+                          textAlign: TextAlign.justify,
+                          overflow: TextOverflow.ellipsis,
+                          textDirection: TextDirection.rtl,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontFamily: 'Cairo',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      if (model.adContentType != 'كتاب')
+                        Text(
+                          model.contentName,
+                          textAlign: TextAlign.justify,
+                          overflow: TextOverflow.ellipsis,
+                          textDirection: TextDirection.rtl,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontFamily: 'Cairo',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -404,6 +409,68 @@ Widget adItem(
             )
         ]),
       ));
+}
+
+Widget dropDown({
+  required String selected,
+  required List<String> list,
+  required context,
+  required int dropDown,
+}) =>
+    Container(
+        decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey, width: 1),
+            borderRadius: BorderRadius.circular(10)),
+        child: DropdownButton(
+            padding: const EdgeInsets.all(5),
+            dropdownColor: const Color.fromARGB(255, 247, 247, 247),
+            icon: const Icon(Icons.arrow_drop_down),
+            isExpanded: true,
+            iconSize: 22,
+            style: const TextStyle(color: Colors.black, fontSize: 15),
+            value: selected,
+            underline: const SizedBox(),
+            items: list.map((valueItem) {
+              return DropdownMenuItem(
+                  value: valueItem,
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: Text(
+                        valueItem,
+                        style: const TextStyle(
+                          fontFamily: 'Cairo',
+                        ),
+                      ),
+                    ),
+                  ));
+            }).toList(),
+            onChanged: (newValue) {
+              if (dropDown == 2) {
+                HomeCubit.get(context).selectAdContentType(newValue!);
+              } else if (dropDown == 3) {
+                HomeCubit.get(context).selectAdCategory(newValue!);
+              } else {
+                HomeCubit.get(context).selectUniversity(newValue!);
+              }
+            }));
+
+Widget dropDownTitle(String title) {
+  return Align(
+    alignment: Alignment.centerRight,
+    child: Padding(
+      padding: const EdgeInsets.only(right: 5),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontFamily: 'Cairo',
+        ),
+        textAlign: TextAlign.right,
+        textDirection: TextDirection.rtl,
+      ),
+    ),
+  );
 }
 
 void showItemDialog(PostModel model, context, bool isImage, String bookType) {
@@ -670,6 +737,7 @@ Widget chatItem(context, UserModel model) => InkWell(
 Widget separator() => Padding(
       padding: const EdgeInsets.all(10.0),
       child: (Container(
+        width: double.infinity,
         height: 1,
         color: const Color.fromARGB(255, 226, 226, 226),
       )),
@@ -714,7 +782,7 @@ Widget gridItem({
               Center(
                 child: Image(
                   image: AssetImage(image),
-                  fit: BoxFit.contain,
+                  fit: BoxFit.cover,
                   width: double.infinity, // Match the width of the Container
                   height: double.infinity, // Match the height of the Container
                 ),
@@ -737,6 +805,75 @@ Widget gridItem({
                       style: const TextStyle(
                           fontFamily: 'Cairo',
                           fontSize: 18,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
+                      maxLines: 2,
+                      textAlign: TextAlign.center,
+                    ),
+                  )),
+            ],
+          ),
+        ),
+      ));
+}
+
+postTypeItem({
+  required context,
+  required Widget nav,
+  required String image,
+  required String title,
+}) {
+  return InkWell(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => nav));
+      },
+      child: Container(
+        width: double.infinity,
+        height: 150,
+        decoration: BoxDecoration(
+          borderRadius:
+              BorderRadius.circular(16.0), // Adjust the radius as needed
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.8), // Shadow color
+              spreadRadius: 3,
+              blurRadius: 7,
+              offset:
+                  const Offset(-1, 2), // Shadow position [horizontal, vertical]
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(15.0),
+          child: Stack(
+            children: [
+              Center(
+                child: Image(
+                  image: AssetImage(image),
+                  fit: BoxFit.cover,
+                  width: double.infinity, // Match the width of the Container
+                  height: double.infinity, // Match the height of the Container
+                ),
+              ),
+              Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.4),
+                        spreadRadius: 6,
+                        blurRadius: 6,
+                      ),
+                    ],
+                  ),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      title,
+                      style: const TextStyle(
+                          fontFamily: 'Cairo',
+                          fontSize: 20,
                           color: Colors.white,
                           fontWeight: FontWeight.bold),
                       maxLines: 2,

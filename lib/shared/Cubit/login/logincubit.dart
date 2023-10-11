@@ -128,33 +128,40 @@ class LoginCubit extends Cubit<LoginState> {
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
+      if (googleUser == null) {
+        throw const TlsException("Google Sign-In was canceled.");
+      }
+
       // Obtain the auth details from the request
-      final GoogleSignInAuthentication? googleAuth =
-          await googleUser?.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
       // Create a new credential
       final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
       );
 
-      // Once signed in, return the UserCredential
-      await FirebaseAuth.instance
-          .signInWithCredential(credential)
-          .then((value) {
-        creatUser(
-            name: value.user!.displayName,
-            email: value.user!.email,
-            phone: value.user!.phoneNumber,
-            uId: value.user!.uid);
-        emit(GoogleSuccessState(uId));
-      });
-    } on FirebaseAuthException catch (e) {
-      final ex = TlsException(e.toString());
-      throw ex.message;
-    } catch (_) {}
-    const ex = TlsException();
-    throw ex.message;
+      // Sign in with Firebase Authentication
+      final UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+
+      // Create user and emit success state
+      creatUser(
+          name: userCredential.user!.displayName,
+          email: userCredential.user!.email,
+          phone: userCredential.user!.phoneNumber,
+          uId: userCredential.user!.uid);
+
+      emit(GoogleSuccessState(userCredential.user!.uid));
+
+      return userCredential;
+    } catch (e) {
+      // Handle errors here
+      print("Google Sign-In Error: $e");
+      emit(GoogleFaildState());
+      throw TlsException("Google Sign-In failed: $e");
+    }
   }
 
   void creatUser({
