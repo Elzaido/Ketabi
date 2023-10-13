@@ -35,6 +35,9 @@ class HomeCubit extends Cubit<HomeStates> {
   String selectedAdContentType = 'دوسية';
   List<String> adContentTypes = ['سلايدات', 'دوسية', 'كتاب'];
 
+  String selectedSwapAdContentType = 'دوسية';
+  List<String> adSwapContentTypes = ['سلايدات', 'دوسية', 'كتاب'];
+
   String selectedUniversity = 'جامعة اليرموك';
   List<String> universities = [
     'جامعة الأردنية',
@@ -325,6 +328,7 @@ class HomeCubit extends Cubit<HomeStates> {
     String? bookAuthor,
     String? bookPublisher,
     String? swapedBook,
+    String? swapedBookType,
   }) {
     firebase_storage.FirebaseStorage.instance
         .ref()
@@ -340,6 +344,7 @@ class HomeCubit extends Cubit<HomeStates> {
           bookAuthor: bookAuthor,
           bookPublisher: bookPublisher,
           swapedBook: swapedBook,
+          swapedBookType: swapedBookType,
           postImage: value,
           adType: adType,
           adContentType: adContentType,
@@ -366,6 +371,7 @@ class HomeCubit extends Cubit<HomeStates> {
     String? bookPublisher,
     String? postImage,
     String? swapedBook,
+    String? swapedBookType,
   }) async {
     PostModel model = PostModel(
       ownerName: userModel!.name,
@@ -375,6 +381,7 @@ class HomeCubit extends Cubit<HomeStates> {
       bookAuthorName: bookAuthor ?? '',
       bookPublisherName: bookPublisher ?? '',
       swapedBook: swapedBook ?? '',
+      swapedBookType: swapedBookType ?? '',
       postId: '',
       userImage: userModel!.image,
       uId: userModel!.uId,
@@ -411,8 +418,8 @@ class HomeCubit extends Cubit<HomeStates> {
     String? bookName,
     String? bookAuthor,
     String? bookPublisher,
-    String? postImage,
     String? swapedBook,
+    String? swapedBookType,
   }) {
     emit(LoadingUploadPostState());
 
@@ -437,24 +444,19 @@ class HomeCubit extends Cubit<HomeStates> {
       );
       emit(ErrorUploadPostState());
     } else {
-      // If isValid is true, proceed to create or upload the post
-      if (postImage == null) {
-        createPost(
-          date: date,
-          adType: adType,
-          adContentType: adContentType,
-          category: category,
-          university: university,
-        );
-      } else {
-        uploadPostImage(
-          date: date,
-          adType: adType,
-          adContentType: adContentType,
-          category: category,
-          university: university,
-        );
-      }
+      uploadPostImage(
+        date: date,
+        adType: adType,
+        adContentType: adContentType,
+        contentName: contentName,
+        bookName: bookName,
+        bookAuthor: bookAuthor,
+        bookPublisher: bookPublisher,
+        swapedBook: swapedBook,
+        swapedBookType: swapedBookType,
+        category: category,
+        university: university,
+      );
     }
   }
 
@@ -607,6 +609,53 @@ class HomeCubit extends Cubit<HomeStates> {
     });
   }
 
+  void getSpecificPosts({
+    required String myBook,
+    required String myContentType,
+    required String swapBook,
+    required String adContentType,
+  }) {
+    posts = [];
+    emit(LoadingGetPostDataState());
+    if (adContentType == 'كتاب') {
+      FirebaseFirestore.instance
+          .collection('posts')
+          .where('adType', isEqualTo: 'تبديل')
+          .where('adContentType', isEqualTo: adContentType)
+          .where('swapedBookType', isEqualTo: myContentType)
+          .where('bookName', isEqualTo: swapBook)
+          .where('swapedBook', isEqualTo: myBook)
+          .get()
+          .then((value) {
+        value.docs.forEach(((element) {
+          posts.add(PostModel.formJson(element.data()));
+        }));
+        emit(SuccessGetPostDataState());
+      }).catchError((error) {
+        emit(ErrorGetPostDataState(error.toString()));
+        log('The Error is: $error');
+      });
+    } else {
+      FirebaseFirestore.instance
+          .collection('posts')
+          .where('adType', isEqualTo: 'تبديل')
+          .where('adContentType', isEqualTo: adContentType)
+          .where('swapedBookType', isEqualTo: myContentType)
+          .where('contentName', isEqualTo: swapBook)
+          .where('swapedBook', isEqualTo: myBook)
+          .get()
+          .then((value) {
+        value.docs.forEach(((element) {
+          posts.add(PostModel.formJson(element.data()));
+        }));
+        emit(SuccessGetPostDataState());
+      }).catchError((error) {
+        emit(ErrorGetPostDataState(error.toString()));
+        log('The Error is: $error');
+      });
+    }
+  }
+
   List<UserModel> users = [];
 
   void getUsers() {
@@ -756,6 +805,11 @@ class HomeCubit extends Cubit<HomeStates> {
 
   void selectUniversity(String value) {
     selectedUniversity = value;
+    emit(ChangeSelectionState());
+  }
+
+  void selectSwapContentType(String value) {
+    selectedSwapAdContentType = value;
     emit(ChangeSelectionState());
   }
 

@@ -54,45 +54,47 @@ class _SelectPostTypeState extends State<SelectPostType> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AnimatedOpacity(
-              opacity: textOpacity,
-              duration: const Duration(milliseconds: 500),
-              child: const Text(
-                'ما توع الإعلان الذي تريد نشره؟',
-                style: TextStyle(
-                  fontFamily: 'Cairo',
-                  fontSize: 20,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedOpacity(
+                opacity: textOpacity,
+                duration: const Duration(milliseconds: 500),
+                child: const Text(
+                  'ما توع الإعلان الذي تريد نشره؟',
+                  style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 20,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            AnimatedOpacity(
-                opacity: image1Opacity,
-                duration: const Duration(milliseconds: 500),
-                child: postTypeItem(
-                    context: context,
-                    nav: DialogPage1(),
-                    image: 'assets/boarding3.png',
-                    title: 'نشر إعلان للتبديل بكتاب')),
-            const SizedBox(
-              height: 30,
-            ),
-            AnimatedOpacity(
-                opacity: image2Opacity,
-                duration: const Duration(milliseconds: 500),
-                child: postTypeItem(
-                    context: context,
-                    nav: AddPost(
-                      type: 'تبرع',
-                    ),
-                    image: 'assets/boarding2.png',
-                    title: 'نشر إعلان للتبرع بكتاب')),
-          ],
+              const SizedBox(
+                height: 30,
+              ),
+              AnimatedOpacity(
+                  opacity: image1Opacity,
+                  duration: const Duration(milliseconds: 500),
+                  child: postTypeItem(
+                      context: context,
+                      nav: DialogPage1(),
+                      image: 'assets/boarding3.png',
+                      title: 'نشر إعلان للتبديل بكتاب')),
+              const SizedBox(
+                height: 30,
+              ),
+              AnimatedOpacity(
+                  opacity: image2Opacity,
+                  duration: const Duration(milliseconds: 500),
+                  child: postTypeItem(
+                      context: context,
+                      nav: AddPost(
+                        type: 'تبرع',
+                      ),
+                      image: 'assets/boarding2.png',
+                      title: 'نشر إعلان للتبرع بكتاب')),
+            ],
+          ),
         ),
       ),
     );

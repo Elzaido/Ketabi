@@ -27,9 +27,10 @@ class AddPost extends StatelessWidget {
       if (state is SuccessUploadPostState) {
         defaultToast(
             massage: 'تم نشر الإعلان بنجاح', state: ToastStates.SUCCESS);
-        HomeCubit.get(context).removePostImage();
         bookNameController.text = '';
         swappedBookCotroller.text = '';
+        contentNameController.text = '';
+        HomeCubit.get(context).removePostImage();
         HomeCubit.get(context).bookTitle = '';
         HomeCubit.get(context).author = '';
         HomeCubit.get(context).publisher = '';
@@ -261,21 +262,36 @@ class AddPost extends StatelessWidget {
                       height: 20,
                     ),
                     if (type == 'تبديل')
-                      formField(
-                          control: swappedBookCotroller,
-                          isScure: false,
-                          label: 'بماذا تريد أن تبدل',
-                          validator: (String? value) {
-                            if (value!.isEmpty) {
-                              return 'لا يجب أن يترك فارغاً';
-                            } else {
-                              return null;
-                            }
-                          },
-                          prefIcon: const Icon(Icons.book)),
-                    const SizedBox(
-                      height: 20,
-                    ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          dropDownTitle('نوع الشيء الذي تريد أن تبدل به'),
+                          dropDown(
+                              selected: HomeCubit.get(context)
+                                  .selectedSwapAdContentType,
+                              list: HomeCubit.get(context).adSwapContentTypes,
+                              context: context,
+                              dropDown: 5),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          formField(
+                              control: swappedBookCotroller,
+                              isScure: false,
+                              label: 'بماذا تريد أن تبدل',
+                              validator: (String? value) {
+                                if (value!.isEmpty) {
+                                  return 'لا يجب أن يترك فارغاً';
+                                } else {
+                                  return null;
+                                }
+                              },
+                              prefIcon: const Icon(Icons.book)),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                        ],
+                      ),
                     InkWell(
                         onTap: () async {
                           showImageDialog(context);
@@ -346,34 +362,29 @@ class AddPost extends StatelessWidget {
                     ),
                     button(
                         onPressed: () {
-                          if (HomeCubit.get(context).bookIsNotExist) {
-                            HomeCubit.get(context).postValidator(
-                              contentName:
-                                  contentNameController.text.toString(),
-                              university:
-                                  HomeCubit.get(context).selectedUniversity,
-                              bookName: bookNameController.text.toString(),
-                              bookAuthor: bookAuthorController.text.toString(),
-                              bookPublisher:
-                                  bookPublisherController.text.toString(),
-                              swapedBook: swappedBookCotroller.text.toString(),
-                              date: DateTime.now().toString(),
-                              adType: type,
-                              adContentType:
-                                  HomeCubit.get(context).selectedAdContentType,
-                              category:
-                                  HomeCubit.get(context).selectedAdCategory,
-                            );
+                          if (HomeCubit.get(context).postImage == null) {
+                            defaultToast(
+                                massage: 'يجب إضافة صورة',
+                                state: ToastStates.ERROR);
                           } else {
                             HomeCubit.get(context).postValidator(
                               contentName:
                                   contentNameController.text.toString(),
                               university:
                                   HomeCubit.get(context).selectedUniversity,
-                              bookName: HomeCubit.get(context).bookTitle,
-                              bookAuthor: HomeCubit.get(context).author,
-                              bookPublisher: HomeCubit.get(context).publisher,
+                              bookName: HomeCubit.get(context).bookIsNotExist
+                                  ? bookNameController.text.toString()
+                                  : HomeCubit.get(context).bookTitle,
+                              bookAuthor: HomeCubit.get(context).bookIsNotExist
+                                  ? bookAuthorController.text.toString()
+                                  : HomeCubit.get(context).author,
+                              bookPublisher:
+                                  HomeCubit.get(context).bookIsNotExist
+                                      ? bookPublisherController.text.toString()
+                                      : HomeCubit.get(context).publisher,
                               swapedBook: swappedBookCotroller.text.toString(),
+                              swapedBookType: HomeCubit.get(context)
+                                  .selectedSwapAdContentType,
                               date: DateTime.now().toString(),
                               adType: type,
                               adContentType:

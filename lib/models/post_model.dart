@@ -7,6 +7,7 @@ class PostModel {
   late String postId;
   late String contentName;
   late String swapedBook;
+  late String swapedBookType;
   late String userImage;
   late String date;
   late String postImage;
@@ -23,6 +24,7 @@ class PostModel {
     required this.bookAuthorName,
     required this.bookPublisherName,
     required this.swapedBook,
+    required this.swapedBookType,
     required this.postId,
     required this.userImage,
     required this.date,
@@ -41,6 +43,7 @@ class PostModel {
     bookAuthorName = json['bookAuthorName'];
     bookPublisherName = json['bookPublisherName'];
     swapedBook = json['swapedBook'];
+    swapedBookType = json['swapedBookType'];
     postId = json['postId'];
     userImage = json['userImage'];
     date = json['date'];
@@ -60,6 +63,7 @@ class PostModel {
       'bookAuthorName': bookAuthorName,
       'bookPublisherName': bookPublisherName,
       'swapedBook': swapedBook,
+      'swapedBookType': swapedBookType,
       'postId': postId,
       'userImage': userImage,
       'date': date,

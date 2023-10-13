@@ -194,7 +194,7 @@ Widget profileButton(
   );
 }
 
-Widget defualtHomeItem({
+Widget defaultHomeItem({
   required BuildContext context,
   required String title,
   required String image,
@@ -251,7 +251,7 @@ Widget adItem(
   return Container(
       decoration: BoxDecoration(
         borderRadius:
-            BorderRadius.circular(16.0), // Adjust the radius as needed
+            BorderRadius.circular(15.0), // Adjust the radius as needed
         color: Colors.white,
         boxShadow: [
           BoxShadow(
@@ -322,58 +322,79 @@ Widget adItem(
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        'لل${model.adType} -',
-                        textAlign: TextAlign.end,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontFamily: 'Cairo',
+                      if(model.adType == 'تبرع')
+                        const Text(
+                          'مجاني',
+                          textAlign: TextAlign.end,
+                          style:  TextStyle(
+                            fontSize: 14,
+                            fontFamily: 'Cairo',
+                            fontWeight: FontWeight.bold
+                          ),
                         ),
-                      ),
+                      if(model.adType != 'تبرع')
+                        Text(
+                          'لل${model.adType}',
+                          textAlign: TextAlign.end,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontFamily: 'Cairo',
+                            fontWeight: FontWeight.bold
+                          ),
+                        ),
                       if (model.adContentType == 'كتاب')
                         Text(
                           'كتاب ${model.bookName}',
-                          textAlign: TextAlign.justify,
-                          overflow: TextOverflow.ellipsis,
                           textDirection: TextDirection.rtl,
                           style: const TextStyle(
-                            fontSize: 15,
+                            fontSize: 14,
                             fontFamily: 'Cairo',
-                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       if (model.adContentType != 'كتاب')
                         Text(
-                          model.contentName,
-                          textAlign: TextAlign.justify,
-                          overflow: TextOverflow.ellipsis,
+                          '${model.adContentType} ${model.contentName}',
                           textDirection: TextDirection.rtl,
                           style: const TextStyle(
-                            fontSize: 15,
+                            fontSize: 14,
                             fontFamily: 'Cairo',
-                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
+                      if(model.adType == 'تبديل')
+                        Text(
+                          'للتبديل على ${model.swapedBookType} ${model.swapedBook}',
+                          textDirection: TextDirection.rtl,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontFamily: 'Cairo',
+                          ),
+                        ),
+                      Text(
+                        model.university,
+                        textDirection: TextDirection.rtl,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontFamily: 'Cairo',
+                        ),
+                      ),
+
                     ],
                   ),
                 ),
               ),
-              if (model.postImage != '')
-                Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: Image(
-                    image: NetworkImage(
-                      model.postImage,
-                    ),
-                    height: 100,
-                    width: 100,
-                    fit: BoxFit.cover,
-                  ),
-                ),
+              Image.network(
+                model.postImage,
+                height: 110,
+                width: 110,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return const Text("هناك مشكلة\nفي عرض الصورة",textAlign: TextAlign.center,); // Display a custom error message.
+                },
+              )
             ]),
           ),
           if (myAd)
@@ -451,8 +472,10 @@ Widget dropDown({
                 HomeCubit.get(context).selectAdContentType(newValue!);
               } else if (dropDown == 3) {
                 HomeCubit.get(context).selectAdCategory(newValue!);
-              } else {
+              } else if (dropDown == 4) {
                 HomeCubit.get(context).selectUniversity(newValue!);
+              } else {
+                HomeCubit.get(context).selectSwapContentType(newValue!);
               }
             }));
 
@@ -477,10 +500,20 @@ void showItemDialog(PostModel model, context, bool isImage, String bookType) {
   showDialog(
       context: context,
       builder: (context1) => AlertDialog(
-            title: Text(
-              model.adType,
-              textAlign: TextAlign.right,
+            title: model.adType == 'تبرع'?
+            const Text(
+              'مجاني',
+              textAlign: TextAlign.end,
+              style:  TextStyle(
+                fontSize: 15,
+                fontFamily: 'Cairo',
+              ),
+            ):
+            Text(
+              'لل${model.adType}',
+              textAlign: TextAlign.end,
               style: const TextStyle(
+                fontSize: 15,
                 fontFamily: 'Cairo',
               ),
             ),
@@ -502,7 +535,7 @@ void showItemDialog(PostModel model, context, bool isImage, String bookType) {
                   infoItems(title: 'للتبديل على', info: model.swapedBook),
                 infoItems(title: 'الجامعة', info: model.university),
                 infoItems(title: 'القسم أو المجال', info: model.bookCategory),
-                infoItems(title: 'صاحب الكتاب', info: model.ownerName!),
+                infoItems(title: 'صاحب ال${model.adContentType}', info: model.ownerName!),
                 isImage
                     ? SizedBox(
                         width: 300,
@@ -580,13 +613,23 @@ void showMyItemDialog(PostModel model, context, bool isImage, String bookType) {
   showDialog(
       context: context,
       builder: (context1) => AlertDialog(
-            title: Text(
-              model.adType,
-              textAlign: TextAlign.right,
-              style: const TextStyle(
-                fontFamily: 'Cairo',
-              ),
-            ),
+            title: model.adType == 'تبرع'?
+                    const Text(
+                    'مجاني',
+                    textAlign: TextAlign.end,
+                    style:  TextStyle(
+                      fontSize: 15,
+                      fontFamily: 'Cairo',
+                    ),
+                  ):
+                  Text(
+                  'لل${model.adType}',
+                  textAlign: TextAlign.end,
+                  style: const TextStyle(
+                  fontSize: 15,
+                  fontFamily: 'Cairo',
+                  ),
+                  ),
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -606,7 +649,7 @@ void showMyItemDialog(PostModel model, context, bool isImage, String bookType) {
                     infoItems(title: 'للتبديل على', info: model.swapedBook),
                   infoItems(title: 'الجامعة', info: model.university),
                   infoItems(title: 'القسم أو المجال', info: model.bookCategory),
-                  infoItems(title: 'صاحب الكتاب', info: model.ownerName!),
+                  infoItems(title: 'صاحب ال${model.adContentType}', info: model.ownerName!),
                   isImage
                       ? SizedBox(
                           width: 300,
@@ -622,33 +665,31 @@ void showMyItemDialog(PostModel model, context, bool isImage, String bookType) {
               ),
             ),
             actions: <Widget>[
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: button(
-                      onPressed: () {
-                        HomeCubit.get(context).deletePost(model.postId);
-                        Navigator.pop(context);
-                      },
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.delete,
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: button(
+                    onPressed: () {
+                      HomeCubit.get(context).deletePost(model.postId);
+                      Navigator.pop(context);
+                    },
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.delete,
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          'حذف',
+                          style: TextStyle(
+                            fontFamily: 'Cairo',
                           ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            'حذف',
-                            style: TextStyle(
-                              fontFamily: 'Cairo',
-                            ),
-                          )
-                        ],
-                      ),
-                      color: Colors.red),
-                ),
+                        )
+                      ],
+                    ),
+                    color: Colors.red),
               ),
               Align(
                 alignment: Alignment.bottomCenter,

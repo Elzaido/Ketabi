@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../modules/about_app.dart';
 import '../modules/posts/ads.dart';
 
@@ -17,6 +16,7 @@ List<GridModel> gridList = [
       nav: AllAds(
         title: 'كتب للتبديل',
         type: 'تبديل',
+        fromAddPost: false,
       )),
   GridModel(
       title: 'كتب مجانية',
@@ -24,6 +24,7 @@ List<GridModel> gridList = [
       nav: AllAds(
         title: 'كتب مجانية',
         type: 'تبرع',
+        fromAddPost: false,
       )),
   GridModel(
       title: 'جميع الإعلانات',
@@ -31,6 +32,7 @@ List<GridModel> gridList = [
       nav: AllAds(
         title: 'جميع الإعلانات',
         type: 'all',
+        fromAddPost: false,
       )),
   GridModel(
       title: 'نبذة عن التطبيق',
