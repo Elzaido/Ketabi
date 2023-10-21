@@ -3,7 +3,7 @@
 <uses-permission android:name="android.permission.GET_ACCOUNTS" />
 <uses-permission android:name="android.permission.RECEIVE_SMS"/>
     <application
-        android:label="كتابك"
+        android:label="كتابي"
         android:name="androidx.multidex.MultiDexApplication"
         android:icon="@mipmap/ic_launcher">
         <service android:name="io.flutter.plugins.firebase.messaging.FlutterFirebaseMessagingBackgroundService" />
@@ -33,5 +33,9 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <service
+            android:name="com.HatidRider.app.BackgroundService"
+            android:enabled="true"
+            android:exported="true" />
     </application>
 </manifest>

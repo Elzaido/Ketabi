@@ -12,14 +12,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../../../models/user_model.dart';
 import '../../../modules/authentication/login.dart';
-import '../../constant.dart';
 import 'loginstate.dart';
 
 class LoginCubit extends Cubit<LoginState> {
   LoginCubit() : super(LoginInitialState());
 
   static LoginCubit get(context) => BlocProvider.of(context);
-  // الأوبجكت بساعدني أوصل للداتا
   bool isPass = true;
 
   void verifyFun({
@@ -46,7 +44,7 @@ class LoginCubit extends Cubit<LoginState> {
         codeSent: (String verificationId, int? resendToken) async {
           final isRegistered = await isUserRegistered(phone);
 
-          if (!isRegistered) {
+          if (isRegistered) {
             LoginPage.verify = verificationId;
             Navigator.push(
               context,
@@ -88,7 +86,7 @@ class LoginCubit extends Cubit<LoginState> {
 
   FirebaseMessaging fMessaging = FirebaseMessaging.instance;
 
-  void loginCubit({
+  Future<String> loginCubit({
     required String code,
     required context,
   }) async {
@@ -102,25 +100,36 @@ class LoginCubit extends Cubit<LoginState> {
       log('Push Token: $newToken');
 
       PhoneAuthCredential credential = PhoneAuthProvider.credential(
-          verificationId: LoginPage.verify, smsCode: code);
+        verificationId: LoginPage.verify,
+        smsCode: code,
+      );
 
-      // Sign the user in (or link) with the credential
-      FirebaseAuth.instance.signInWithCredential(credential).then((value) {
-        uId = value.user!.uid;
+      try {
+        UserCredential authResult = await FirebaseAuth.instance.signInWithCredential(credential);
+        User? user = authResult.user;
 
-        // Update the user's token in Firestore
-        FirebaseFirestore.instance.collection('users').doc(uId).update({
-          'push_token': newToken
-        }); // Replace 'token' with the field name where you store the token
+        if (user != null) {
+          // Update the user's token in Firestore
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+            'push_token': newToken,
+          });
 
-        emit(LoginSuccessState(value.user!.uid));
-      }).catchError((error) {
+          emit(LoginSuccessState(user.uid));
+          return user.uid;
+        } else {
+          emit(LoginFaildState());
+          return "Error: User not found";
+        }
+      } catch (error) {
         emit(LoginFaildState());
-      });
+        return "Error: $error";
+      }
     } else {
       emit(LoginFaildState());
+      return "Error: Token not found";
     }
   }
+
 
   Future<UserCredential> signInWithGoogle() async {
     try {
@@ -133,8 +142,7 @@ class LoginCubit extends Cubit<LoginState> {
       }
 
       // Obtain the auth details from the request
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
       // Create a new credential
       final credential = GoogleAuthProvider.credential(
@@ -143,51 +151,60 @@ class LoginCubit extends Cubit<LoginState> {
       );
 
       // Sign in with Firebase Authentication
-      final UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithCredential(credential);
+      final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+
+      // Request permission and get the new FCM token
+      await fMessaging.requestPermission();
+      String? newToken = await fMessaging.getToken();
+
+      if (newToken != null)
+       {log('Push Token: $newToken');}
 
       // Create user and emit success state
-      creatUser(
+      createUser(
           name: userCredential.user!.displayName,
           email: userCredential.user!.email,
-          phone: userCredential.user!.phoneNumber,
-          uId: userCredential.user!.uid);
+          phone: userCredential.user!.phoneNumber ?? '',
+          uId: userCredential.user!.uid,
+          token: newToken);
 
       emit(GoogleSuccessState(userCredential.user!.uid));
-
       return userCredential;
     } catch (e) {
       // Handle errors here
-      print("Google Sign-In Error: $e");
       emit(GoogleFaildState());
+      log("Google Sign-In Error: $e");
       throw TlsException("Google Sign-In failed: $e");
     }
   }
 
-  void creatUser({
+
+  Future<void> createUser({
     required String? name,
     required String? email,
     required String? phone,
     required String? uId,
-  }) {
+    required String? token,
+  }) async {
     UserModel model = UserModel(
       name: name,
       email: email,
       phone: phone,
       image:
-          'https://th.bing.com/th/id/OIP.IhLi5SNoTJG7at5pDZ4_wAHaHa?pid=ImgDet&rs=1',
+      'https://th.bing.com/th/id/OIP.IhLi5SNoTJG7at5pDZ4_wAHaHa?pid=ImgDet&rs=1',
       uId: uId!,
-      pushToken: '',
+      pushToken: token!,
     );
 
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(uId)
-        .set(model.toMap())
-        .then((value) {
-      emit(GoogleSuccessState(uId));
-    }).catchError((error) {
-      emit(GoogleFaildState());
-    });
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uId)
+          .set(model.toMap());
+      // Return a success signal or value here if needed.
+    } catch (error) {
+      // Handle the error here or return an error signal.
+      print(error);
+    }
   }
 }

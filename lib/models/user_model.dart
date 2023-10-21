@@ -24,7 +24,7 @@ class UserModel {
   UserModel.formJson(Map<String, dynamic> json) {
     email = json['email'];
     name = json['name'];
-    phone = json['phone'];
+    phone = json['phone'] ?? '';
     image = json['image'];
     uId = json['uId'];
     chatList = List<String>.from(json['chatlist'] ?? []);

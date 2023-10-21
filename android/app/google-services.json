@@ -1,51 +1,26 @@
 {
   "project_info": {
-    "project_number": "311290449733",
-    "project_id": "book-swapping-25932",
-    "storage_bucket": "book-swapping-25932.appspot.com"
+    "project_number": "821352302186",
+    "project_id": "ketabi-f9e9c",
+    "storage_bucket": "ketabi-f9e9c.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:311290449733:android:419eed37cd27f751c6b82c",
+        "mobilesdk_app_id": "1:821352302186:android:cbf4f52cec3049908bac13",
         "android_client_info": {
-          "package_name": "com.example.book_swapping"
+          "package_name": "com.ketabiapp.book_swapping"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "311290449733-s31gkv0t0e4459esrv1jgevao2mj0aub.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.book_swapping",
-            "certificate_hash": "fc2db7b7b87ec5cac4adb7f162fa7c1f22515437"
-          }
-        },
-        {
-          "client_id": "311290449733-gj18i2q942stu6ujj42kr8fuus1rl8ln.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyD0L5KWGxh8ZVapPIBKKho4-vJKbeli-cI"
+          "current_key": "AIzaSyCxT5hssbJJlDn57RFo5q_zkVGjktqrW4Y"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "311290449733-gj18i2q942stu6ujj42kr8fuus1rl8ln.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "311290449733-e9cn7hcdjvrbd3f368tvv6dlhsq4enj4.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.bookSwapping.RunnerTests"
-              }
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

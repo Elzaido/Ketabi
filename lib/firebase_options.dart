@@ -44,39 +44,37 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBFve_cxGOD21vmQlIQWZJd2OOO7D5fE_I',
-    appId: '1:311290449733:web:d108164f9d5e8f8fc6b82c',
-    messagingSenderId: '311290449733',
-    projectId: 'book-swapping-25932',
-    authDomain: 'book-swapping-25932.firebaseapp.com',
-    storageBucket: 'book-swapping-25932.appspot.com',
+    apiKey: 'AIzaSyDYv9t0jMezEehoVWU9SZWGxqmWxvU4kSs',
+    appId: '1:821352302186:web:21d572ebcdcf7e008bac13',
+    messagingSenderId: '821352302186',
+    projectId: 'ketabi-f9e9c',
+    authDomain: 'ketabi-f9e9c.firebaseapp.com',
+    storageBucket: 'ketabi-f9e9c.appspot.com',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyD0L5KWGxh8ZVapPIBKKho4-vJKbeli-cI',
-    appId: '1:311290449733:android:419eed37cd27f751c6b82c',
-    messagingSenderId: '311290449733',
-    projectId: 'book-swapping-25932',
-    storageBucket: 'book-swapping-25932.appspot.com',
+    apiKey: 'AIzaSyCxT5hssbJJlDn57RFo5q_zkVGjktqrW4Y',
+    appId: '1:821352302186:android:cbf4f52cec3049908bac13',
+    messagingSenderId: '821352302186',
+    projectId: 'ketabi-f9e9c',
+    storageBucket: 'ketabi-f9e9c.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDgaAeb35g3f7-vCxJjPiW-tcVxjRx9dVk',
-    appId: '1:311290449733:ios:8f387a3a8ef93dd3c6b82c',
-    messagingSenderId: '311290449733',
-    projectId: 'book-swapping-25932',
-    storageBucket: 'book-swapping-25932.appspot.com',
-    iosClientId: '311290449733-mbth5etppmq70t85vma0g2uo50fo5let.apps.googleusercontent.com',
+    apiKey: 'AIzaSyCaQz0V-214Zl6QodF0tymyvI0_hggbz94',
+    appId: '1:821352302186:ios:16a027946296ea918bac13',
+    messagingSenderId: '821352302186',
+    projectId: 'ketabi-f9e9c',
+    storageBucket: 'ketabi-f9e9c.appspot.com',
     iosBundleId: 'com.example.bookSwapping',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyDgaAeb35g3f7-vCxJjPiW-tcVxjRx9dVk',
-    appId: '1:311290449733:ios:c047c4514f2653ecc6b82c',
-    messagingSenderId: '311290449733',
-    projectId: 'book-swapping-25932',
-    storageBucket: 'book-swapping-25932.appspot.com',
-    iosClientId: '311290449733-e9cn7hcdjvrbd3f368tvv6dlhsq4enj4.apps.googleusercontent.com',
+    apiKey: 'AIzaSyCaQz0V-214Zl6QodF0tymyvI0_hggbz94',
+    appId: '1:821352302186:ios:4d0c12b3ae46404c8bac13',
+    messagingSenderId: '821352302186',
+    projectId: 'ketabi-f9e9c',
+    storageBucket: 'ketabi-f9e9c.appspot.com',
     iosBundleId: 'com.example.bookSwapping.RunnerTests',
   );
 }

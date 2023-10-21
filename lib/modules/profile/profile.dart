@@ -94,15 +94,19 @@ class Profile extends StatelessWidget {
                         onPressed: () {
                           CacheHelper.removeData(key: 'uId').then((value) {
                             if (value) {
-                              navigateAndFinish(
-                                  context: context, widget: const LoginPage());
-                              FirebaseAuth.instance.signOut();
-                              HomeCubit.get(context).changeNav(4);
+                              FirebaseAuth.instance.signOut().then((_) {
+                                navigateAndFinish(context: context, widget: const LoginPage());
+                                HomeCubit.get(context).changeNav(4);
+                              }).catchError((error) {
+                                // Handle the sign-out error, e.g., display an error message.
+                                print("Sign-out error: $error");
+                              });
                             }
                           });
                         },
                         text: 'تسجيل الخروج',
-                        icon: const Icon(Icons.logout)),
+                        icon: const Icon(Icons.logout)
+                    )
                   ],
                 ),
               ),

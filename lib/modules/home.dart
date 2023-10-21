@@ -2,7 +2,7 @@
 
 import 'package:book_swapping/shared/component.dart';
 import 'package:flutter/material.dart';
-import '../models/gridmodel.dart';
+import '../models/grid_model.dart';
 
 class Home extends StatelessWidget {
   Home({Key? key}) : super(key: key);
@@ -41,7 +41,7 @@ class Home extends StatelessWidget {
       crossAxisCount: 2,
       mainAxisSpacing: 15,
       crossAxisSpacing: 15,
-      childAspectRatio: 1 / 1.50,
+      childAspectRatio: 1 / 1.35,
       children: gridList.map((item) {
         return gridItem(
             context: context,

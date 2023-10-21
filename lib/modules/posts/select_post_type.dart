@@ -3,8 +3,6 @@ import 'package:book_swapping/shared/component.dart';
 import 'package:book_swapping/shared/constant.dart';
 import 'package:flutter/material.dart';
 
-import 'dialog_page1.dart';
-
 class SelectPostType extends StatefulWidget {
   const SelectPostType({super.key});
 
@@ -77,7 +75,9 @@ class _SelectPostTypeState extends State<SelectPostType> {
                   duration: const Duration(milliseconds: 500),
                   child: postTypeItem(
                       context: context,
-                      nav: DialogPage1(),
+                      nav: AddPost(
+                        type: 'تبديل',
+                      ),
                       image: 'assets/boarding3.png',
                       title: 'نشر إعلان للتبديل بكتاب')),
               const SizedBox(

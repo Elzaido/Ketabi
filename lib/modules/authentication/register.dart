@@ -102,6 +102,7 @@ class _RegisterState extends State<Register> {
                             isScure: false,
                             label: 'الريد الإلكتروني',
                             prefIcon: Icon(Icons.email),
+                            inputType: TextInputType.emailAddress,
                             validator: (String? value) {
                               if (value!.isEmpty) {
                                 return 'يجب إدخال البريد الإلكتروني';

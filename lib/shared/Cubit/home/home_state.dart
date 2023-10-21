@@ -48,6 +48,14 @@ class SuccessUploadPostState extends HomeStates {}
 
 class ErrorUploadPostState extends HomeStates {}
 
+// Upload Opinion States:
+
+class LoadingUploadOpinion extends HomeStates {}
+
+class SuccessUploadOpinion extends HomeStates {}
+
+class ErrorUploadOpinion extends HomeStates {}
+
 // Get Post Data State:
 
 class LoadingGetPostDataState extends HomeStates {}

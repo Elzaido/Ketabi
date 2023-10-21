@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../modules/about_app.dart';
+import '../modules/opinion.dart';
 import '../modules/posts/ads.dart';
 
 class GridModel {
@@ -35,7 +36,11 @@ List<GridModel> gridList = [
         fromAddPost: false,
       )),
   GridModel(
+      title: 'رأيك يهمنا',
+      image: 'assets/boarding2.png',
+      nav:  YourOpinion()),
+  GridModel(
       title: 'نبذة عن التطبيق',
-      image: 'assets/aboutApp.gif',
+      image: 'assets/aboutgrid.gif',
       nav: const AboutApp()),
 ];

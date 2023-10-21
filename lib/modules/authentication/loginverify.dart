@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, avoid_print
 
 import 'package:book_swapping/Layout/home_layout.dart';
+import 'package:book_swapping/shared/Cubit/home/home_cubit.dart';
 import 'package:book_swapping/shared/Cubit/login/logincubit.dart';
 import 'package:book_swapping/shared/constant.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -90,7 +91,9 @@ class LoginVerify extends StatelessWidget {
                         button(
                             onPressed: () {
                               LoginCubit.get(context)
-                                  .loginCubit(code: code, context: context);
+                                  .loginCubit(code: code, context: context).then((value){
+                                    HomeCubit.get(context).getUserData();
+                              });
                             },
                             child: Text(
                               "تحقق من رقم الهاتف",

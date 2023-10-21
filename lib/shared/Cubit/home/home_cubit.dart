@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:book_swapping/modules/posts/select_post_type.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../models/chat_model.dart';
+import '../../../models/opinion_model.dart';
 import '../../../models/post_model.dart';
 import '../../../models/user_model.dart';
 import '../../../modules/chat/chats.dart';
@@ -195,7 +197,7 @@ class HomeCubit extends Cubit<HomeStates> {
           headers: {
             HttpHeaders.contentTypeHeader: 'application/json',
             HttpHeaders.authorizationHeader:
-                'key=AAAASHpbT0U:APA91bH4pfTc7KvV4rJWHfJm9cU-bcrxLVfJC0nxQZxFNrGmMWvKca_I9qAYC_I3PJUpCTKjVS3XcQjZM1WGYzu6hb5ylhlK7Q4e11fZYs21xubhYZ6oczogr1bKKG2suo5ssXo4_iI6',
+                'key=AAAAvzxphmo:APA91bFfB8P9Pi4jva_EUPqikBBOUQAWRd-uNMNcGVH6BK82dre4xdaQEejgxkwJ6qL3fn3xqU2E34vWQfwUisbqncU0Dl-wU7_SOV2sDxkbUcppZQckwLb0KuPx-zP4XMKIXyDCaga0',
           },
           body: jsonEncode(body));
       emit(SuccessSendMessagenotification());
@@ -210,16 +212,26 @@ class HomeCubit extends Cubit<HomeStates> {
   void getUserData() {
     emit(LoadingGetUserDataState());
 
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(uId)
-        .get()
-        .then((value) async {
-      userModel = UserModel.formJson(value.data()!);
-      emit(SuccessGetUserDataState());
-    }).catchError((error) {
-      log(error.toString());
-      emit(ErrorGetUserDataState(error.toString()));
+    FirebaseAuth.instance.authStateChanges().listen((user) {
+      if (user != null) {
+        // Set the uId when the user is not null
+        uId = user.uid;
+
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(uId)
+            .get()
+            .then((value) async {
+          userModel = UserModel.formJson(value.data()!);
+          emit(SuccessGetUserDataState());
+        }).catchError((error) {
+          log(error.toString());
+          emit(ErrorGetUserDataState(error.toString()));
+        });
+      } else {
+        // Handle the case where the user is not authenticated
+        emit(ErrorGetUserDataState('User is not authenticated.'));
+      }
     });
   }
 
@@ -402,9 +414,32 @@ class HomeCubit extends Cubit<HomeStates> {
       // Update the post document with the correct post ID
       await postRef.update({'postId': postRef.id});
       getMyPosts(uId: uId!);
-      emit(SuccessUploadPostState());
+
     } catch (e) {
       emit(ErrorUploadPostState());
+    }
+  }
+
+  void createOpinion({
+    required String opinion,
+  }) async {
+    OpinionModel model = OpinionModel(
+      name: userModel!.name,
+      opinion: opinion,
+      opinionId: '',
+    );
+    try {
+      emit(LoadingUploadOpinion());
+      DocumentReference opinionRef = await FirebaseFirestore.instance
+          .collection('opinion')
+          .add(model.toMap());
+      model.opinionId = opinionRef.id;
+      await opinionRef.update({'opinionId': opinionRef.id});
+      emit(SuccessUploadOpinion());
+      defaultToast(
+          massage: 'شكراً لك، تم الإرسال بنجاح', state: ToastStates.SUCCESS);
+    } catch (e) {
+      emit(ErrorUploadOpinion());
     }
   }
 
@@ -674,6 +709,7 @@ class HomeCubit extends Cubit<HomeStates> {
         }));
       }).catchError((error) {
         emit(FailedAllUserDataState(error.toString()));
+        print(error);
       });
     }
   }
@@ -848,7 +884,7 @@ class HomeCubit extends Cubit<HomeStates> {
   Future<void> fetchBookInfoByISBN(String isbn) async {
     emit(LoadingFetchISBN());
     final apiUrl =
-        'https://www.googleapis.com/books/v1/volumes?q=isbn:$isbn&key=AIzaSyDRnkh0FlhyzkQwAUyv7PGcOQtoEbqNPuA';
+        'https://www.googleapis.com/books/v1/volumes?q=isbn:$isbn&key=AIzaSyBg-9yFjRGMB1ukamwQaz85wXpljiy69q0';
 
     final response = await http.get(Uri.parse(apiUrl));
 
