@@ -47,6 +47,7 @@ class AllAds extends StatelessWidget {
                       physics: const BouncingScrollPhysics(),
                       child: Column(
                         children: [
+                          if(!fromAddPost)
                           Row(
                             children: [
                               Expanded(
@@ -92,6 +93,7 @@ class AllAds extends StatelessWidget {
                           const SizedBox(
                             height: 10,
                           ),
+                          if(!fromAddPost)
                           InkWell(
                               onTap: () async {
                                 showFilteringDialog(
@@ -147,18 +149,34 @@ class AllAds extends StatelessWidget {
                               const SizedBox(height: 15),
                               itemCount:
                               HomeCubit.get(context).posts.length)
-                              : const Center(
+                              :
+                          fromAddPost ? Center(
+                            child: AlertDialog(
+                              title: const Text(
+                                'للأسف لم يتم العثور على طلبك',
+                                style: TextStyle(
+                                fontFamily: 'Cairo',
+                                ),
+                                textDirection: TextDirection.rtl,
+                              ),
+                              actions: [
+                                TextButton(onPressed: (){
+                                
+                                }, child: const Text(
+                                  'نشر الإعلان ليتمكن الآخرون من التبديل معك',
+                                  style: TextStyle(
+                                  fontFamily: 'Cairo',
+                                  ),
+                                  textDirection: TextDirection.rtl,
+                                ))
+                              ],
+                            ),
+                          ) :
+                          const Center(
                             child: Row(
                               mainAxisAlignment:
                               MainAxisAlignment.center,
                               children: [
-                                Text(
-                                  '!',
-                                  style: TextStyle(
-                                    fontFamily: 'Cairo',
-                                    fontSize: 15,
-                                  ),
-                                ),
                                 Text(
                                   'لا يوجد إعلانات لعرضها',
                                   style: TextStyle(
@@ -181,28 +199,6 @@ class AllAds extends StatelessWidget {
                       ),
                     ),
                   ),
-                  if (fromAddPost)
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 65, vertical: 20),
-                        child: button(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        AddPost(type: type)));
-                          },
-                          child: const Text(
-                            'لم أجد طلبي',
-                            style: TextStyle(fontFamily: 'Cairo'),
-                          ),
-                          color: mainColor,
-                        ),
-                      ),
-                    ),
                 ],
               ));
         });

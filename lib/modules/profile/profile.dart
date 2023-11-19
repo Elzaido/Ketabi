@@ -95,7 +95,9 @@ class Profile extends StatelessWidget {
                           CacheHelper.removeData(key: 'uId').then((value) {
                             if (value) {
                               FirebaseAuth.instance.signOut().then((_) {
-                                navigateAndFinish(context: context, widget: const LoginPage());
+                                navigateAndFinish(
+                                    context: context,
+                                    widget: const LoginPage());
                                 HomeCubit.get(context).changeNav(4);
                               }).catchError((error) {
                                 // Handle the sign-out error, e.g., display an error message.
@@ -105,12 +107,14 @@ class Profile extends StatelessWidget {
                           });
                         },
                         text: 'تسجيل الخروج',
-                        icon: const Icon(Icons.logout)
-                    )
+                        icon: const Icon(Icons.logout)),
                   ],
                 ),
               ),
-            )
+            ),
+            const SizedBox(
+              height: 30,
+            ),
           ]),
         );
       },

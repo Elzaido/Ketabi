@@ -105,6 +105,7 @@ class RegisterCubit extends Cubit<RegisterState> {
             emit(SuccessVerifyRegisterState());
           } else {
             // User is already registered, navigate to login screen
+            defaultToast(massage: 'الرقم موجود بالفعل', state: ToastStates.ERROR);
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const LoginPage()),
@@ -126,17 +127,14 @@ class RegisterCubit extends Cubit<RegisterState> {
 
   Future<bool> isUserRegistered(String phone) async {
     try {
-      // Check if a user with the given phone number exists in Firestore
       final querySnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .where('phone', isEqualTo: phone)
+          .collection('phones')
+          .doc(phone)
           .get();
-
-      return querySnapshot.docs.isNotEmpty;
+      return querySnapshot.exists;
     } catch (error) {
-      // Handle Firestore query error here
-      log("Error querying Firestore: $error");
-      return false; // Assume user is not registered in case of error
+      print("Error querying Firestore: $error");
+      return false;
     }
   }
 
@@ -162,6 +160,19 @@ class RegisterCubit extends Cubit<RegisterState> {
         .set(model.toMap())
         .then((value) {
       emit(CreateSuccessState(uId));
+
+      // Create a separate document in 'users-checkPhone' collection
+      // using the phone number as the document ID.
+      FirebaseFirestore.instance.collection('phones').doc(phone).set({
+        'uId': uId,
+      }).then((value) {
+        print('Phone number added to phones collection');
+        emit(SuccessCreatePhoneRecord());
+      }).catchError((error) {
+        emit(ErrorCreatePhoneRecord());
+        print(
+            'Failed to add phone number to phones collection: $error');
+      });
     }).catchError((error) {
       emit(CreateFaildState(error));
     });

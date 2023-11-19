@@ -32,6 +32,10 @@ class CreateFaildState extends RegisterState {
   CreateFaildState(this.error);
 }
 
+class SuccessCreatePhoneRecord extends RegisterState {}
+
+class ErrorCreatePhoneRecord extends RegisterState {}
+
 // regsiter verify states
 
 class LoadingVerifyRegisterState extends RegisterState {}

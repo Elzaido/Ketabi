@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'package:book_swapping/modules/posts/filtering_dialog.dart';
 import 'package:book_swapping/modules/posts/select_post_type.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -449,6 +450,7 @@ class HomeCubit extends Cubit<HomeStates> {
     required String adContentType,
     required String category,
     required String university,
+    required context,
     String? contentName,
     String? bookName,
     String? bookAuthor,
@@ -479,27 +481,124 @@ class HomeCubit extends Cubit<HomeStates> {
       );
       emit(ErrorUploadPostState());
     } else {
-      uploadPostImage(
-        date: date,
-        adType: adType,
-        adContentType: adContentType,
-        contentName: contentName,
-        bookName: bookName,
-        bookAuthor: bookAuthor,
-        bookPublisher: bookPublisher,
-        swapedBook: swapedBook,
-        swapedBookType: swapedBookType,
-        category: category,
-        university: university,
-      );
+      if (adType == 'تبديل') {
+        showOkDialog(
+            date: date,
+            adType: adType,
+            adContentType: adContentType,
+            contentName: contentName,
+            bookName: bookName,
+            bookAuthor: bookAuthor,
+            bookPublisher: bookPublisher,
+            swapedBook: swapedBook,
+            swapedBookType: swapedBookType,
+            category: category,
+            university: university,
+            context: context);
+      } else {
+          uploadPostImage(
+            date: date,
+            adType: adType,
+            adContentType: adContentType,
+            contentName: contentName,
+            bookName: bookName,
+            bookAuthor: bookAuthor,
+            bookPublisher: bookPublisher,
+            swapedBook: swapedBook,
+            swapedBookType: swapedBookType,
+            category: category,
+            university: university,
+        );
+      }
     }
   }
+
+  void showOkDialog({
+    required String date,
+    required String adType,
+    required String adContentType,
+    required String category,
+    required String university,
+    required context,
+    String? contentName,
+    String? bookName,
+    String? bookAuthor,
+    String? bookPublisher,
+    String? swapedBook,
+    String? swapedBookType,
+  }) {
+    showDialog(
+        context: context,
+        builder: (context1) => AlertDialog(
+                content: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                     Icon(Icons.check_circle, color: mainColor,),
+                     const SizedBox(
+                       width: 3,
+                     ),
+                     const Text(
+                      'تم إضافة الإعلان إلى مكتبة التبديل',
+                      style: TextStyle(
+                        fontFamily: 'Cairo',
+                      ),
+                      textAlign: TextAlign.end,
+                    ),
+                  ],
+                ),
+                actions: <Widget>[
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const FilteringDialog()));
+                              getSpecificPosts(
+                                  myBook: bookName!,
+                                  myContentType: adContentType,
+                                  swapBook: swapedBook!,
+                                  swapContentType: swapedBookType!);
+                              },
+                            child: const Text('عرض إعلانات التبديل التي تتوافق مع طلبك',
+                                style: TextStyle(
+                                  fontFamily: 'Cairo',
+                                )),
+                          ),
+                          const SizedBox(
+                            width: 6,
+                          ),
+                        ],
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text('إلغاء',
+                            style: TextStyle(
+                              fontFamily: 'Cairo',
+                            )),
+                      )
+                    ],
+                  ),
+
+                    ],
+                  ));
+                }
+
+
 
   Future<void> deletePost(String postId) async {
     emit(LoadingDeletePostState());
     try {
       // Delete the post document from the 'posts' collection
-      await FirebaseFirestore.instance.collection('posts').doc(postId).delete();
+      await FirebaseFirestore
+          .instance.collection('posts')
+          .doc(postId)
+          .delete();
       getMyPosts(uId: uId!);
       emit(SuccessDeletePostState());
     } catch (e) {
@@ -648,15 +747,15 @@ class HomeCubit extends Cubit<HomeStates> {
     required String myBook,
     required String myContentType,
     required String swapBook,
-    required String adContentType,
+    required String swapContentType,
   }) {
     posts = [];
     emit(LoadingGetPostDataState());
-    if (adContentType == 'كتاب') {
+    if (swapContentType == 'كتاب') {
       FirebaseFirestore.instance
           .collection('posts')
           .where('adType', isEqualTo: 'تبديل')
-          .where('adContentType', isEqualTo: adContentType)
+          .where('adContentType', isEqualTo: swapContentType)
           .where('swapedBookType', isEqualTo: myContentType)
           .where('bookName', isEqualTo: swapBook)
           .where('swapedBook', isEqualTo: myBook)
@@ -674,7 +773,7 @@ class HomeCubit extends Cubit<HomeStates> {
       FirebaseFirestore.instance
           .collection('posts')
           .where('adType', isEqualTo: 'تبديل')
-          .where('adContentType', isEqualTo: adContentType)
+          .where('adContentType', isEqualTo: swapContentType)
           .where('swapedBookType', isEqualTo: myContentType)
           .where('contentName', isEqualTo: swapBook)
           .where('swapedBook', isEqualTo: myBook)

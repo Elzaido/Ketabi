@@ -25,8 +25,7 @@ class AddPost extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<HomeCubit, HomeStates>(listener: (context, state) {
       if (state is SuccessUploadPostState) {
-        defaultToast(
-            massage: 'تم نشر الإعلان بنجاح', state: ToastStates.SUCCESS);
+
         bookNameController.text = '';
         swappedBookCotroller.text = '';
         contentNameController.text = '';
@@ -265,7 +264,7 @@ class AddPost extends StatelessWidget {
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          dropDownTitle('نوع الشيء الذي تريد أن تبدل به'),
+                          dropDownTitle('ما الشيء الذي تريده'),
                           dropDown(
                               selected: HomeCubit.get(context)
                                   .selectedSwapAdContentType,
@@ -368,21 +367,22 @@ class AddPost extends StatelessWidget {
                                 state: ToastStates.ERROR);
                           } else {
                             HomeCubit.get(context).postValidator(
+                              context: context,
                               contentName:
-                                  contentNameController.text.toString(),
+                                  contentNameController.text.toString(), // move to home cubit!!
                               university:
                                   HomeCubit.get(context).selectedUniversity,
                               bookName: HomeCubit.get(context).bookIsNotExist
-                                  ? bookNameController.text.toString()
+                                  ? bookNameController.text.toString() // move to home cubit!!
                                   : HomeCubit.get(context).bookTitle,
                               bookAuthor: HomeCubit.get(context).bookIsNotExist
-                                  ? bookAuthorController.text.toString()
+                                  ? bookAuthorController.text.toString() // move to home cubit!!
                                   : HomeCubit.get(context).author,
                               bookPublisher:
                                   HomeCubit.get(context).bookIsNotExist
-                                      ? bookPublisherController.text.toString()
+                                      ? bookPublisherController.text.toString() // move to home cubit!!
                                       : HomeCubit.get(context).publisher,
-                              swapedBook: swappedBookCotroller.text.toString(),
+                              swapedBook: swappedBookCotroller.text.toString(), // move to home cubit!!
                               swapedBookType: HomeCubit.get(context)
                                   .selectedSwapAdContentType,
                               date: DateTime.now().toString(),

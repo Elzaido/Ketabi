@@ -37,11 +37,7 @@ class _LoginPageState extends State<LoginPage> {
     return BlocProvider(
         create: (BuildContext context) => LoginCubit(),
         child: BlocConsumer<LoginCubit, LoginState>(listener: (context, state) {
-          if (state is VerifyFaildState) {
-            defaultToast(
-                massage: 'الرقم غير مسجل, قم بإنشاء حساب أولاً',
-                state: ToastStates.ERROR);
-          }
+
           if (state is GoogleSuccessState) {
             CacheHelper.saveDate(key: 'uId', value: state.uId).then((value) {
               defaultToast(

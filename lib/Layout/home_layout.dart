@@ -38,11 +38,15 @@ class HomeLayout extends StatelessWidget {
                   MaterialPageRoute(
                       builder: (context) => const SelectPostType()));
             },
-            child: const Icon(Icons.add),
+            child: const Icon(
+              Icons.add,
+              size: 30,
+            ),
           ),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,
           bottomNavigationBar: BottomAppBar(
+            height: 70,
             shape: const CircularNotchedRectangle(),
             notchMargin: 10,
             child: SizedBox(
@@ -59,7 +63,6 @@ class HomeLayout extends StatelessWidget {
                           HomeCubit.get(context)
                               .changeNav(HomeCubit.get(context).currentIndex);
                           HomeCubit.get(context).getUserData();
-                          HomeCubit.get(context).getUsers();
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -76,6 +79,8 @@ class HomeLayout extends StatelessWidget {
                                 color: HomeCubit.get(context).currentIndex == 0
                                     ? mainColor
                                     : Colors.grey,
+                                fontFamily: 'Cairo',
+                                fontSize: 12,
                               ),
                             ),
                           ],
@@ -103,9 +108,30 @@ class HomeLayout extends StatelessWidget {
                                 color: HomeCubit.get(context).currentIndex == 1
                                     ? mainColor
                                     : Colors.grey,
+                                fontFamily: 'Cairo',
+                                fontSize: 12,
                               ),
                             ),
                           ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          '   أضف إعلاناً',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontFamily: 'Cairo',
+                            fontSize: 12,
+                          ),
                         ),
                       ),
                     ],
@@ -135,6 +161,8 @@ class HomeLayout extends StatelessWidget {
                                 color: HomeCubit.get(context).currentIndex == 3
                                     ? mainColor
                                     : Colors.grey,
+                                fontFamily: 'Cairo',
+                                fontSize: 12,
                               ),
                             ),
                           ],
@@ -162,6 +190,8 @@ class HomeLayout extends StatelessWidget {
                                 color: HomeCubit.get(context).currentIndex == 4
                                     ? mainColor
                                     : Colors.grey,
+                                fontFamily: 'Cairo',
+                                fontSize: 12,
                               ),
                             ),
                           ],

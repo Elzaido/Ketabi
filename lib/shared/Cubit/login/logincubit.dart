@@ -12,6 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../../../models/user_model.dart';
 import '../../../modules/authentication/login.dart';
+import '../../component.dart';
 import 'loginstate.dart';
 
 class LoginCubit extends Cubit<LoginState> {
@@ -52,6 +53,9 @@ class LoginCubit extends Cubit<LoginState> {
             );
             emit(VerifySuccessState());
           } else {
+            defaultToast(
+                massage: 'الرقم غير مسجل، قم بإنشاء حساب أولاً',
+                state: ToastStates.ERROR);
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const Register()),
@@ -73,13 +77,12 @@ class LoginCubit extends Cubit<LoginState> {
   Future<bool> isUserRegistered(String phone) async {
     try {
       final querySnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .where('phone', isEqualTo: phone)
+          .collection('phones')
+          .doc(phone)
           .get();
-
-      return querySnapshot.docs.isNotEmpty;
+      return querySnapshot.exists;
     } catch (error) {
-      log("Error querying Firestore: $error");
+      print("Error querying Firestore: $error");
       return false;
     }
   }
@@ -105,12 +108,16 @@ class LoginCubit extends Cubit<LoginState> {
       );
 
       try {
-        UserCredential authResult = await FirebaseAuth.instance.signInWithCredential(credential);
+        UserCredential authResult =
+            await FirebaseAuth.instance.signInWithCredential(credential);
         User? user = authResult.user;
 
         if (user != null) {
           // Update the user's token in Firestore
-          await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .update({
             'push_token': newToken,
           });
 
@@ -130,7 +137,6 @@ class LoginCubit extends Cubit<LoginState> {
     }
   }
 
-
   Future<UserCredential> signInWithGoogle() async {
     try {
       emit(GoogleLoadingState());
@@ -142,7 +148,8 @@ class LoginCubit extends Cubit<LoginState> {
       }
 
       // Obtain the auth details from the request
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
       // Create a new credential
       final credential = GoogleAuthProvider.credential(
@@ -151,14 +158,16 @@ class LoginCubit extends Cubit<LoginState> {
       );
 
       // Sign in with Firebase Authentication
-      final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      final UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
 
       // Request permission and get the new FCM token
       await fMessaging.requestPermission();
       String? newToken = await fMessaging.getToken();
 
-      if (newToken != null)
-       {log('Push Token: $newToken');}
+      if (newToken != null) {
+        log('Push Token: $newToken');
+      }
 
       // Create user and emit success state
       createUser(
@@ -178,7 +187,6 @@ class LoginCubit extends Cubit<LoginState> {
     }
   }
 
-
   Future<void> createUser({
     required String? name,
     required String? email,
@@ -191,7 +199,7 @@ class LoginCubit extends Cubit<LoginState> {
       email: email,
       phone: phone,
       image:
-      'https://th.bing.com/th/id/OIP.IhLi5SNoTJG7at5pDZ4_wAHaHa?pid=ImgDet&rs=1',
+          'https://th.bing.com/th/id/OIP.IhLi5SNoTJG7at5pDZ4_wAHaHa?pid=ImgDet&rs=1',
       uId: uId!,
       pushToken: token!,
     );
