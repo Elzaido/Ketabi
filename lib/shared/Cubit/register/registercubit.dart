@@ -105,7 +105,8 @@ class RegisterCubit extends Cubit<RegisterState> {
             emit(SuccessVerifyRegisterState());
           } else {
             // User is already registered, navigate to login screen
-            defaultToast(massage: 'الرقم موجود بالفعل', state: ToastStates.ERROR);
+            defaultToast(
+                massage: 'الرقم موجود بالفعل', state: ToastStates.ERROR);
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const LoginPage()),
@@ -133,7 +134,7 @@ class RegisterCubit extends Cubit<RegisterState> {
           .get();
       return querySnapshot.exists;
     } catch (error) {
-      print("Error querying Firestore: $error");
+      log("Error querying Firestore: $error");
       return false;
     }
   }
@@ -166,12 +167,11 @@ class RegisterCubit extends Cubit<RegisterState> {
       FirebaseFirestore.instance.collection('phones').doc(phone).set({
         'uId': uId,
       }).then((value) {
-        print('Phone number added to phones collection');
+        log('Phone number added to phones collection');
         emit(SuccessCreatePhoneRecord());
       }).catchError((error) {
         emit(ErrorCreatePhoneRecord());
-        print(
-            'Failed to add phone number to phones collection: $error');
+        log('Failed to add phone number to phones collection: $error');
       });
     }).catchError((error) {
       emit(CreateFaildState(error));

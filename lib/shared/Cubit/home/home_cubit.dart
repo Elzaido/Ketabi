@@ -415,7 +415,6 @@ class HomeCubit extends Cubit<HomeStates> {
       // Update the post document with the correct post ID
       await postRef.update({'postId': postRef.id});
       getMyPosts(uId: uId!);
-
     } catch (e) {
       emit(ErrorUploadPostState());
     }
@@ -496,18 +495,18 @@ class HomeCubit extends Cubit<HomeStates> {
             university: university,
             context: context);
       } else {
-          uploadPostImage(
-            date: date,
-            adType: adType,
-            adContentType: adContentType,
-            contentName: contentName,
-            bookName: bookName,
-            bookAuthor: bookAuthor,
-            bookPublisher: bookPublisher,
-            swapedBook: swapedBook,
-            swapedBookType: swapedBookType,
-            category: category,
-            university: university,
+        uploadPostImage(
+          date: date,
+          adType: adType,
+          adContentType: adContentType,
+          contentName: contentName,
+          bookName: bookName,
+          bookAuthor: bookAuthor,
+          bookPublisher: bookPublisher,
+          swapedBook: swapedBook,
+          swapedBookType: swapedBookType,
+          category: category,
+          university: university,
         );
       }
     }
@@ -530,75 +529,77 @@ class HomeCubit extends Cubit<HomeStates> {
     showDialog(
         context: context,
         builder: (context1) => AlertDialog(
-                content: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                     Icon(Icons.check_circle, color: mainColor,),
-                     const SizedBox(
-                       width: 3,
-                     ),
-                     const Text(
-                      'تم إضافة الإعلان إلى مكتبة التبديل',
-                      style: TextStyle(
-                        fontFamily: 'Cairo',
-                      ),
-                      textAlign: TextAlign.end,
+              content: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Icon(
+                    Icons.check_circle,
+                    color: mainColor,
+                  ),
+                  const SizedBox(
+                    width: 3,
+                  ),
+                  const Text(
+                    'تم إضافة الإعلان إلى مكتبة التبديل',
+                    style: TextStyle(
+                      fontFamily: 'Cairo',
                     ),
+                    textAlign: TextAlign.end,
+                  ),
+                ],
+              ),
+              actions: <Widget>[
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const FilteringDialog()));
+                            getSpecificPosts(
+                                myBook: bookName!,
+                                myContentType: adContentType,
+                                swapBook: swapedBook!,
+                                swapContentType: swapedBookType!);
+                          },
+                          child: const Text(
+                              'عرض إعلانات التبديل التي تتوافق مع طلبك',
+                              style: TextStyle(
+                                fontFamily: 'Cairo',
+                              )),
+                        ),
+                        const SizedBox(
+                          width: 6,
+                        ),
+                      ],
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('إلغاء',
+                          style: TextStyle(
+                            fontFamily: 'Cairo',
+                          )),
+                    )
                   ],
                 ),
-                actions: <Widget>[
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => const FilteringDialog()));
-                              getSpecificPosts(
-                                  myBook: bookName!,
-                                  myContentType: adContentType,
-                                  swapBook: swapedBook!,
-                                  swapContentType: swapedBookType!);
-                              },
-                            child: const Text('عرض إعلانات التبديل التي تتوافق مع طلبك',
-                                style: TextStyle(
-                                  fontFamily: 'Cairo',
-                                )),
-                          ),
-                          const SizedBox(
-                            width: 6,
-                          ),
-                        ],
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text('إلغاء',
-                            style: TextStyle(
-                              fontFamily: 'Cairo',
-                            )),
-                      )
-                    ],
-                  ),
-
-                    ],
-                  ));
-                }
-
-
+              ],
+            ));
+  }
 
   Future<void> deletePost(String postId) async {
     emit(LoadingDeletePostState());
     try {
       // Delete the post document from the 'posts' collection
-      await FirebaseFirestore
-          .instance.collection('posts')
-          .doc(postId)
-          .delete();
+      await FirebaseFirestore.instance.collection('posts').doc(postId).delete();
       getMyPosts(uId: uId!);
       emit(SuccessDeletePostState());
     } catch (e) {
@@ -808,7 +809,7 @@ class HomeCubit extends Cubit<HomeStates> {
         }));
       }).catchError((error) {
         emit(FailedAllUserDataState(error.toString()));
-        print(error);
+        log("$error");
       });
     }
   }

@@ -82,7 +82,7 @@ class LoginCubit extends Cubit<LoginState> {
           .get();
       return querySnapshot.exists;
     } catch (error) {
-      print("Error querying Firestore: $error");
+      log("Error querying Firestore: $error");
       return false;
     }
   }
@@ -212,7 +212,7 @@ class LoginCubit extends Cubit<LoginState> {
       // Return a success signal or value here if needed.
     } catch (error) {
       // Handle the error here or return an error signal.
-      print(error);
+      log("$error");
     }
   }
 }
