@@ -60,7 +60,7 @@ class _SelectPostTypeState extends State<SelectPostType> {
                 opacity: textOpacity,
                 duration: const Duration(milliseconds: 500),
                 child: const Text(
-                  'ما توع الإعلان الذي تريد نشره؟',
+                  'ما نوع الإعلان الذي تريد نشره؟',
                   style: TextStyle(
                     fontFamily: 'Cairo',
                     fontSize: 20,

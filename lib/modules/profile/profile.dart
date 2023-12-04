@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:book_swapping/modules/posts/select_post_type.dart';
 import './../authentication/login.dart';
 import './../profile/favorite.dart';

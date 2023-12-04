@@ -22,184 +22,211 @@ class AllAds extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<HomeCubit, HomeStates>(
-        listener: (context, state) {},
-        builder: (context, state) {
-          return Scaffold(
-              appBar: AppBar(
-                title: Text(
-                  title,
-                  style: const TextStyle(
-                    fontFamily: 'Cairo',
-                  ),
-                ),
-                backgroundColor: mainColor,
+    return BlocConsumer<HomeCubit, HomeStates>(listener: (context, state) {
+      if (state is SuccessUploadPostState) {
+        defaultToast(
+            massage: 'تم نشر الإعلان بنجاح', state: ToastStates.SUCCESS);
+      } else if (state is ErrorUploadPostState) {
+        defaultToast(
+            massage: 'هناك مشكلة في نشر الإعلان', state: ToastStates.ERROR);
+      }
+    }, builder: (context, state) {
+      return Scaffold(
+          appBar: AppBar(
+            title: Text(
+              title,
+              style: const TextStyle(
+                fontFamily: 'Cairo',
               ),
-              body: state is LoadingGetPostDataState ||
-                      state is LoadingDeletePostState
-                  ? loading()
-                  : Stack(
+            ),
+            backgroundColor: mainColor,
+          ),
+          body: state is LoadingGetPostDataState ||
+                  state is LoadingDeletePostState
+              ? loading()
+              : Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Column(
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.all(15.0),
-                          child: SingleChildScrollView(
-                            physics: const BouncingScrollPhysics(),
-                            child: Column(
-                              children: [
-                                if (!fromAddPost)
-                                  Row(
+                        if (!fromAddPost)
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 3,
+                                child: formField(
+                                    control: search2,
+                                    isScure: false,
+                                    label: 'إبحث عن الكتاب الذي تريده ...',
+                                    prefIcon: const Icon(Icons.search),
+                                    validator: (String? value) {
+                                      if (value!.isEmpty) {
+                                        return 'إبحث عن ما تريد ...';
+                                      } else {
+                                        return null;
+                                      }
+                                    }),
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: button(
+                                    onPressed: () {
+                                      HomeCubit.get(context)
+                                          .getPostsByTypeAndName(
+                                              type: type, name: search2.text);
+                                    },
+                                    child: const Text(
+                                      'بحث',
+                                      style: TextStyle(
+                                        fontFamily: 'Cairo',
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                    color: mainColor,
+                                    height: 60),
+                              ),
+                            ],
+                          ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        if (!fromAddPost)
+                          InkWell(
+                              onTap: () async {
+                                showFilteringDialog(context, type);
+                              },
+                              child: Container(
+                                height: 50,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(color: Colors.green)),
+                                child: const Center(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Expanded(
-                                        flex: 3,
-                                        child: formField(
-                                            control: search2,
-                                            isScure: false,
-                                            label:
-                                                'إبحث عن الكتاب الذي تريده ...',
-                                            prefIcon: const Icon(Icons.search),
-                                            validator: (String? value) {
-                                              if (value!.isEmpty) {
-                                                return 'إبحث عن ما تريد ...';
-                                              } else {
-                                                return null;
-                                              }
-                                            }),
+                                      Text(
+                                        'قم بفلترة نتائج البحث',
+                                        style: TextStyle(
+                                          color: Colors.green,
+                                          fontFamily: "Cairo",
+                                        ),
                                       ),
-                                      const SizedBox(
-                                        width: 10,
+                                      SizedBox(
+                                        width: 5,
                                       ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: button(
-                                            onPressed: () {
-                                              HomeCubit.get(context)
-                                                  .getPostsByTypeAndName(
-                                                      type: type,
-                                                      name: search2.text);
-                                            },
-                                            child: const Text(
-                                              'بحث',
-                                              style: TextStyle(
-                                                fontFamily: 'Cairo',
-                                                fontSize: 15,
-                                              ),
-                                            ),
-                                            color: mainColor,
-                                            height: 60),
-                                      ),
+                                      Icon(
+                                        Icons.filter_alt,
+                                        color: Colors.green,
+                                      )
                                     ],
                                   ),
-                                const SizedBox(
-                                  height: 10,
                                 ),
-                                if (!fromAddPost)
-                                  InkWell(
-                                      onTap: () async {
-                                        showFilteringDialog(context, type);
-                                      },
-                                      child: Container(
-                                        height: 50,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            border: Border.all(
-                                                color: Colors.green)),
-                                        child: const Center(
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                'قم بفلترة نتائج البحث',
-                                                style: TextStyle(
-                                                  color: Colors.green,
-                                                  fontFamily: "Cairo",
-                                                ),
+                              )),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        HomeCubit.get(context).posts.isNotEmpty
+                            ? ListView.separated(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemBuilder: ((context, index) => adItem(
+                                    context,
+                                    HomeCubit.get(context).posts[index],
+                                    false)),
+                                separatorBuilder: (context, index) =>
+                                    const SizedBox(height: 15),
+                                itemCount: HomeCubit.get(context).posts.length)
+                            : fromAddPost
+                                ? Center(
+                                    child: AlertDialog(
+                                      title: const Text(
+                                        'للأسف لم يتم العثور على طلبك',
+                                        style: TextStyle(
+                                          fontFamily: 'Cairo',
+                                        ),
+                                        textDirection: TextDirection.rtl,
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () {
+                                              HomeCubit.get(context)
+                                                  .uploadPostImage(
+                                                date: DateTime.now().toString(),
+                                                adType: type,
+                                                adContentType:
+                                                    HomeCubit.get(context)
+                                                        .selectedAdContentType,
+                                                category: HomeCubit.get(context)
+                                                    .selectedAdCategory,
+                                                university:
+                                                    HomeCubit.get(context)
+                                                        .selectedUniversity,
+                                                contentName:
+                                                    HomeCubit.get(context)
+                                                        .contentNameController
+                                                        .text,
+                                                bookName: HomeCubit.get(context)
+                                                    .bookNameController
+                                                    .text,
+                                                swapedBook:
+                                                    HomeCubit.get(context)
+                                                        .swappedBookController
+                                                        .text,
+                                                swapedBookType: HomeCubit.get(
+                                                        context)
+                                                    .selectedSwapAdContentType,
+                                                bookAuthor:
+                                                    HomeCubit.get(context)
+                                                        .bookAuthorController
+                                                        .text,
+                                                bookPublisher:
+                                                    HomeCubit.get(context)
+                                                        .bookPublisherController
+                                                        .text,
+                                              );
+                                            },
+                                            child: const Text(
+                                              'نشر الإعلان ليتمكن الآخرون من التبديل معك',
+                                              style: TextStyle(
+                                                fontFamily: 'Cairo',
                                               ),
-                                              SizedBox(
-                                                width: 5,
-                                              ),
-                                              Icon(
-                                                Icons.filter_alt,
-                                                color: Colors.green,
-                                              )
-                                            ],
+                                              textDirection: TextDirection.rtl,
+                                            ))
+                                      ],
+                                    ),
+                                  )
+                                : const Center(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'لا يوجد إعلانات لعرضها',
+                                          style: TextStyle(
+                                            fontFamily: 'Cairo',
+                                            fontSize: 15,
                                           ),
                                         ),
-                                      )),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                HomeCubit.get(context).posts.isNotEmpty
-                                    ? ListView.separated(
-                                        shrinkWrap: true,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        itemBuilder: ((context, index) =>
-                                            adItem(
-                                                context,
-                                                HomeCubit.get(context)
-                                                    .posts[index],
-                                                false)),
-                                        separatorBuilder: (context, index) =>
-                                            const SizedBox(height: 15),
-                                        itemCount:
-                                            HomeCubit.get(context).posts.length)
-                                    : fromAddPost
-                                        ? Center(
-                                            child: AlertDialog(
-                                              title: const Text(
-                                                'للأسف لم يتم العثور على طلبك',
-                                                style: TextStyle(
-                                                  fontFamily: 'Cairo',
-                                                ),
-                                                textDirection:
-                                                    TextDirection.rtl,
-                                              ),
-                                              actions: [
-                                                TextButton(
-                                                    onPressed: () {},
-                                                    child: const Text(
-                                                      'نشر الإعلان ليتمكن الآخرون من التبديل معك',
-                                                      style: TextStyle(
-                                                        fontFamily: 'Cairo',
-                                                      ),
-                                                      textDirection:
-                                                          TextDirection.rtl,
-                                                    ))
-                                              ],
-                                            ),
-                                          )
-                                        : const Center(
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  'لا يوجد إعلانات لعرضها',
-                                                  style: TextStyle(
-                                                    fontFamily: 'Cairo',
-                                                    fontSize: 15,
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  width: 7,
-                                                ),
-                                                Icon(
-                                                  Icons.warning,
-                                                  color: Colors.red,
-                                                  size: 35,
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                              ],
-                            ),
-                          ),
-                        ),
+                                        SizedBox(
+                                          width: 7,
+                                        ),
+                                        Icon(
+                                          Icons.warning,
+                                          color: Colors.red,
+                                          size: 35,
+                                        )
+                                      ],
+                                    ),
+                                  ),
                       ],
-                    ));
-        });
+                    ),
+                  ),
+                ));
+    });
   }
 }
 

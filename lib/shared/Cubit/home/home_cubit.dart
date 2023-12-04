@@ -35,6 +35,12 @@ class HomeCubit extends Cubit<HomeStates> {
   File? postImage;
   File? chatImage;
 
+  final contentNameController = TextEditingController();
+  final swappedBookController = TextEditingController();
+  final bookNameController = TextEditingController();
+  final bookAuthorController = TextEditingController();
+  final bookPublisherController = TextEditingController();
+
   String selectedAdContentType = 'دوسية';
   List<String> adContentTypes = ['سلايدات', 'دوسية', 'كتاب'];
 
@@ -104,46 +110,45 @@ class HomeCubit extends Cubit<HomeStates> {
     'نظم المعلومات الحاسوبية',
     'تكنولوجيا معلومات الأعمال',
     'علم البيانات',
-    'الأمن السيبراني	',
-    'الذكاء الاصطناعي	',
+    'الأمن السيبراني',
+    'الذكاء الاصطناعي',
     'الرياضيات',
     'الفيزياء',
-    'الكيمياء	',
-    'العلوم الحياتية	',
-    'الجيولوجيا البيئية والتطبيقية	',
-    'الانتاج الحيواني	',
-    'إدارة الأعمال	',
+    'الكيمياء',
+    'العلوم الحياتية',
+    'الجيولوجيا البيئية والتطبيقية',
+    'الانتاج الحيواني',
+    'إدارة الأعمال',
     'المحاسبة',
     'التمويل',
     'التسويق',
-    'نظم المعلومات الادارية	',
-    'الإدارة العامة	',
-    'إقتصاد الأعمال	',
-    'اللغة الانجليزية وآدابها	',
-    'اللغة الفرنسية وآدابها	',
+    'نظم المعلومات الادارية',
+    'الإدارة العامة',
+    'إقتصاد الأعمال',
+    'اللغة الانجليزية وآدابها',
+    'اللغة الفرنسية وآدابها',
     'اللغات',
     'التاريخ',
-    'الجغرافيا	',
+    'الجغرافيا',
     'الفلسفة',
-    'علم الاجتماع	',
+    'علم الاجتماع',
     'القانون',
     'معلم الصف',
-    'التربية الخاصة	',
+    'التربية الخاصة',
     'تربية طفل',
-    'الارشاد والصحة النفسية	',
-    'أصول الدين	',
-    'الفقه وأصوله	',
-    'المصارف الإسلامية	',
-    'الآثار	',
-    'الادارة السياحية	',
-    'التربية البدنية	',
+    'الارشاد والصحة النفسية',
+    'أصول الدين',
+    'الفقه وأصوله',
+    'المصارف الإسلامية',
+    'الادارة السياحية',
+    'التربية البدنية',
     'الفيزياء الطبية والحيوية',
     'الاحصاء',
     'العلوم المالية والمصرفية',
     'اللغة العربية وآدابها',
-    'الأنثروبولوجيا	',
-    'الآثار	',
-    'الادارة الفندقية	',
+    'الأنثفثسففثسفtestروبولوجيا',
+    'الآثار',
+    'الادارة الفندقية',
     'الصحافة والاعلام',
     'الإذاعة والتلفزيون',
   ];
@@ -336,7 +341,7 @@ class HomeCubit extends Cubit<HomeStates> {
     required String adContentType,
     required String category,
     required String university,
-    String? contentName,
+    required String contentName,
     String? bookName,
     String? bookAuthor,
     String? bookPublisher,
@@ -482,24 +487,19 @@ class HomeCubit extends Cubit<HomeStates> {
     } else {
       if (adType == 'تبديل') {
         showOkDialog(
-            date: date,
-            adType: adType,
             adContentType: adContentType,
             contentName: contentName,
             bookName: bookName,
-            bookAuthor: bookAuthor,
-            bookPublisher: bookPublisher,
             swapedBook: swapedBook,
             swapedBookType: swapedBookType,
-            category: category,
-            university: university,
             context: context);
+        print(contentNameController.text);
       } else {
         uploadPostImage(
           date: date,
           adType: adType,
           adContentType: adContentType,
-          contentName: contentName,
+          contentName: contentName!,
           bookName: bookName,
           bookAuthor: bookAuthor,
           bookPublisher: bookPublisher,
@@ -513,16 +513,10 @@ class HomeCubit extends Cubit<HomeStates> {
   }
 
   void showOkDialog({
-    required String date,
-    required String adType,
     required String adContentType,
-    required String category,
-    required String university,
     required context,
     String? contentName,
     String? bookName,
-    String? bookAuthor,
-    String? bookPublisher,
     String? swapedBook,
     String? swapedBookType,
   }) {
@@ -558,11 +552,9 @@ class HomeCubit extends Cubit<HomeStates> {
                         TextButton(
                           onPressed: () {
                             Navigator.pop(context);
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const FilteringDialog()));
+                            navigateAndFinish(
+                                context: context,
+                                widget: const FilteringDialog());
                             getSpecificPosts(
                                 myBook: bookName!,
                                 myContentType: adContentType,
