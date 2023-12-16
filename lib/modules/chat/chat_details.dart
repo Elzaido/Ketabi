@@ -14,12 +14,11 @@ class ChatDetails extends StatelessWidget {
   final String fToken;
 
   ChatDetails(
-      {Key? key,
+      {super.key,
       required this.uId,
       required this.image,
       required this.name,
-      required this.fToken})
-      : super(key: key);
+      required this.fToken});
 
   var messageCotroller = TextEditingController();
 

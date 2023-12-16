@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../shared/Cubit/home/home_cubit.dart';
@@ -377,7 +379,7 @@ class AddPost extends StatelessWidget {
                               category: cubit.selectedAdCategory,
                             );
                           }
-                          print(cubit.swappedBookController.text);
+                          log(cubit.swappedBookController.text);
                         },
                         child: const Text(
                           'نشر',

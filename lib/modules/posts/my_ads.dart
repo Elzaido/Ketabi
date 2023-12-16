@@ -7,7 +7,7 @@ import '../../shared/Cubit/home/home_state.dart';
 import '../../shared/component.dart';
 
 class MyAds extends StatelessWidget {
-  MyAds({Key? key}) : super(key: key);
+  MyAds({super.key});
 
   TextEditingController search2 = TextEditingController();
 

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../models/grid_model.dart';
 
 class Home extends StatelessWidget {
-  Home({Key? key}) : super(key: key);
+  Home({super.key});
 
   TextEditingController search = TextEditingController();
 

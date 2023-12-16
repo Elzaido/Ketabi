@@ -10,7 +10,7 @@ import '../../shared/component.dart';
 import 'register.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   static String verify = "";
 
@@ -37,12 +37,10 @@ class _LoginPageState extends State<LoginPage> {
     return BlocProvider(
         create: (BuildContext context) => LoginCubit(),
         child: BlocConsumer<LoginCubit, LoginState>(listener: (context, state) {
-
           if (state is GoogleSuccessState) {
             CacheHelper.saveDate(key: 'uId', value: state.uId).then((value) {
               defaultToast(
-                  massage: 'تم تسجيل الدخول بنجاح',
-                  state: ToastStates.SUCCESS);
+                  massage: 'تم تسجيل الدخول بنجاح', state: ToastStates.SUCCESS);
               navigateAndFinish(context: context, widget: HomeLayout());
             });
           } else if (state is LoginFaildState) {
@@ -198,7 +196,9 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         child: InkWell(
                           onTap: () {
-                            LoginCubit.get(context).signInWithGoogle().then((value){
+                            LoginCubit.get(context)
+                                .signInWithGoogle()
+                                .then((value) {
                               HomeCubit.get(context).getUserData();
                             });
                           },
@@ -223,10 +223,10 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-              if (state is VerifyLoadingState || state is GoogleLoadingState) loading(),
+              if (state is VerifyLoadingState || state is GoogleLoadingState)
+                loading(),
             ],
           ));
         }));
   }
 }
-

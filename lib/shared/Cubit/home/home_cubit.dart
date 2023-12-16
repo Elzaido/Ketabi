@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-import 'package:book_swapping/modules/posts/filtering_dialog.dart';
-import 'package:book_swapping/modules/posts/select_post_type.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +15,9 @@ import '../../../models/post_model.dart';
 import '../../../models/user_model.dart';
 import '../../../modules/chat/chats.dart';
 import '../../../modules/home.dart';
+import '../../../modules/posts/filtering_dialog.dart';
 import '../../../modules/posts/my_ads.dart';
+import '../../../modules/posts/select_post_type.dart';
 import '../../../modules/profile/profile.dart';
 import '../../component.dart';
 import '../../constant.dart';
@@ -493,7 +493,7 @@ class HomeCubit extends Cubit<HomeStates> {
             swapedBook: swapedBook,
             swapedBookType: swapedBookType,
             context: context);
-        print(contentNameController.text);
+        log(contentNameController.text);
       } else {
         uploadPostImage(
           date: date,

@@ -7,7 +7,7 @@ import '../shared/component.dart';
 
 // ignore: must_be_immutable
 class OnBoarding extends StatefulWidget {
-  const OnBoarding({Key? key}) : super(key: key);
+  const OnBoarding({super.key});
 
   @override
   State<OnBoarding> createState() => _OnBoardingState();
