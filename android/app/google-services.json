@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "821352302186",
+    "project_id": "ketabi-f9e9c",
+    "storage_bucket": "ketabi-f9e9c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:821352302186:android:cbf4f52cec3049908bac13",
+        "android_client_info": {
+          "package_name": "com.ketabiapp.book_swapping"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxT5hssbJJlDn57RFo5q_zkVGjktqrW4Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
