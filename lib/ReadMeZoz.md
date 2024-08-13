@@ -18,3 +18,5 @@ Firebase storage: used for storing media, like photos, videos, etc.
 Firebase Auth: used for the authentication process.
 Cloud Firestore: used to store the data of our app, like users, posts, chats, etc.
 Http: this backage used in this app to use the Firebase messeging API which is responsable about sending chat notifications. 
+
+-- to be continued ...
