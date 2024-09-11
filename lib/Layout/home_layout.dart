@@ -25,6 +25,7 @@ class HomeLayout extends StatelessWidget {
                 style: const TextStyle(
                   fontFamily: 'Cairo',
                   fontSize: 25,
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -42,6 +43,7 @@ class HomeLayout extends StatelessWidget {
             child: const Icon(
               Icons.add,
               size: 30,
+              color: Colors.white,
             ),
           ),
           floatingActionButtonLocation:
@@ -118,25 +120,6 @@ class HomeLayout extends StatelessWidget {
                       ),
                     ],
                   ),
-                  // const Column(
-                  //   mainAxisAlignment: MainAxisAlignment.center,
-                  //   children: [
-                  //     SizedBox(
-                  //       height: 30,
-                  //     ),
-                  //     Align(
-                  //       alignment: Alignment.center,
-                  //       child: Text(
-                  //         'أضف إعلاناً',
-                  //         style: TextStyle(
-                  //           color: Colors.grey,
-                  //           fontFamily: 'Cairo',
-                  //           fontSize: 12,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
                   Row(
                     children: [
                       MaterialButton(
