@@ -29,6 +29,8 @@ Widget formField({
       obscuringCharacter: '*',
       onFieldSubmitted: onSubmit,
       decoration: InputDecoration(
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
           isDense: true,
           prefixIcon: prefIcon,
           suffixIcon: suffButton,
@@ -43,7 +45,7 @@ Widget button({
   required void Function()? onPressed,
   required Widget? child,
   required Color color,
-  double height = 50,
+  double height = 60,
 }) =>
     SizedBox(
       width: double.infinity,
@@ -326,25 +328,23 @@ Widget adItem(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      if(model.adType == 'تبرع')
+                      if (model.adType == 'تبرع')
                         const Text(
                           'مجاني',
                           textAlign: TextAlign.end,
-                          style:  TextStyle(
-                            fontSize: 14,
-                            fontFamily: 'Cairo',
-                            fontWeight: FontWeight.bold
-                          ),
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontFamily: 'Cairo',
+                              fontWeight: FontWeight.bold),
                         ),
-                      if(model.adType != 'تبرع')
+                      if (model.adType != 'تبرع')
                         Text(
                           'لل${model.adType}',
                           textAlign: TextAlign.end,
                           style: const TextStyle(
-                            fontSize: 14,
-                            fontFamily: 'Cairo',
-                            fontWeight: FontWeight.bold
-                          ),
+                              fontSize: 14,
+                              fontFamily: 'Cairo',
+                              fontWeight: FontWeight.bold),
                         ),
                       if (model.adContentType == 'كتاب')
                         Text(
@@ -364,7 +364,7 @@ Widget adItem(
                             fontFamily: 'Cairo',
                           ),
                         ),
-                      if(model.adType == 'تبديل')
+                      if (model.adType == 'تبديل')
                         Text(
                           'للتبديل على ${model.swapedBookType} ${model.swapedBook}',
                           textDirection: TextDirection.rtl,
@@ -381,7 +381,6 @@ Widget adItem(
                           fontFamily: 'Cairo',
                         ),
                       ),
-
                     ],
                   ),
                 ),
@@ -392,7 +391,10 @@ Widget adItem(
                 width: 110,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
-                  return const Text("هناك مشكلة\nفي عرض الصورة",textAlign: TextAlign.center,); // Display a custom error message.
+                  return const Text(
+                    "هناك مشكلة\nفي عرض الصورة",
+                    textAlign: TextAlign.center,
+                  ); // Display a custom error message.
                 },
               )
             ]),
@@ -500,23 +502,23 @@ void showItemDialog(PostModel model, context, bool isImage, String bookType) {
   showDialog(
       context: context,
       builder: (context1) => AlertDialog(
-            title: model.adType == 'تبرع'?
-            const Text(
-              'مجاني',
-              textAlign: TextAlign.end,
-              style:  TextStyle(
-                fontSize: 15,
-                fontFamily: 'Cairo',
-              ),
-            ):
-            Text(
-              'لل${model.adType}',
-              textAlign: TextAlign.end,
-              style: const TextStyle(
-                fontSize: 15,
-                fontFamily: 'Cairo',
-              ),
-            ),
+            title: model.adType == 'تبرع'
+                ? const Text(
+                    'مجاني',
+                    textAlign: TextAlign.end,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontFamily: 'Cairo',
+                    ),
+                  )
+                : Text(
+                    'لل${model.adType}',
+                    textAlign: TextAlign.end,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontFamily: 'Cairo',
+                    ),
+                  ),
             content: SingleChildScrollView(
                 child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -535,7 +537,9 @@ void showItemDialog(PostModel model, context, bool isImage, String bookType) {
                   infoItems(title: 'للتبديل على', info: model.swapedBook),
                 infoItems(title: 'الجامعة', info: model.university),
                 infoItems(title: 'القسم أو المجال', info: model.bookCategory),
-                infoItems(title: 'صاحب ال${model.adContentType}', info: model.ownerName!),
+                infoItems(
+                    title: 'صاحب ال${model.adContentType}',
+                    info: model.ownerName!),
                 isImage
                     ? SizedBox(
                         width: 300,
@@ -613,22 +617,22 @@ void showMyItemDialog(PostModel model, context, bool isImage, String bookType) {
   showDialog(
       context: context,
       builder: (context1) => AlertDialog(
-            title: model.adType == 'تبرع'?
-                    const Text(
+            title: model.adType == 'تبرع'
+                ? const Text(
                     'مجاني',
                     textAlign: TextAlign.end,
-                    style:  TextStyle(
+                    style: TextStyle(
                       fontSize: 15,
                       fontFamily: 'Cairo',
                     ),
-                  ):
-                  Text(
-                  'لل${model.adType}',
-                  textAlign: TextAlign.end,
-                  style: const TextStyle(
-                  fontSize: 15,
-                  fontFamily: 'Cairo',
-                  ),
+                  )
+                : Text(
+                    'لل${model.adType}',
+                    textAlign: TextAlign.end,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontFamily: 'Cairo',
+                    ),
                   ),
             content: SingleChildScrollView(
               child: Column(
@@ -649,7 +653,9 @@ void showMyItemDialog(PostModel model, context, bool isImage, String bookType) {
                     infoItems(title: 'للتبديل على', info: model.swapedBook),
                   infoItems(title: 'الجامعة', info: model.university),
                   infoItems(title: 'القسم أو المجال', info: model.bookCategory),
-                  infoItems(title: 'صاحب ال${model.adContentType}', info: model.ownerName!),
+                  infoItems(
+                      title: 'صاحب ال${model.adContentType}',
+                      info: model.ownerName!),
                   isImage
                       ? SizedBox(
                           width: 300,

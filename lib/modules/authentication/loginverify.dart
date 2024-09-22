@@ -91,17 +91,22 @@ class LoginVerify extends StatelessWidget {
                         button(
                             onPressed: () {
                               LoginCubit.get(context)
-                                  .loginCubit(code: code, context: context).then((value){
-                                    HomeCubit.get(context).getUserData();
+                                  .loginCubit(code: code, context: context)
+                                  .then((value) {
+                                HomeCubit.get(context).getUserData();
                               });
                             },
                             child: Text(
                               "تحقق من رقم الهاتف",
-                              style: TextStyle(fontFamily: 'Cairo'),
+                              style: TextStyle(
+                                  fontFamily: 'Cairo', color: Colors.white),
                             ),
                             color: mainColor),
+                        SizedBox(
+                          height: 5,
+                        ),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             TextButton(
                                 onPressed: () {
@@ -113,7 +118,9 @@ class LoginVerify extends StatelessWidget {
                                 child: Text(
                                   "تغيير رقم الهاتف؟",
                                   style: TextStyle(
-                                      color: Colors.black, fontFamily: 'Cairo'),
+                                      color: mainColor,
+                                      fontFamily: 'Cairo',
+                                      fontWeight: FontWeight.bold),
                                 ))
                           ],
                         )

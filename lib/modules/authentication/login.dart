@@ -108,6 +108,8 @@ class _LoginPageState extends State<LoginPage> {
                                 // },
                                 keyboardType: TextInputType.phone,
                                 decoration: InputDecoration(
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      vertical: 15.0, horizontal: 10.0),
                                   isDense: true,
                                   hintTextDirection: TextDirection.rtl,
                                   border: OutlineInputBorder(
@@ -138,8 +140,7 @@ class _LoginPageState extends State<LoginPage> {
                           child: const Text(
                             "أرسل الرمز",
                             style: TextStyle(
-                              fontFamily: 'Cairo',
-                            ),
+                                fontFamily: 'Cairo', color: Colors.white),
                           ),
                           color: mainColor),
                       const SizedBox(
@@ -188,7 +189,7 @@ class _LoginPageState extends State<LoginPage> {
                         height: 20,
                       ),
                       Container(
-                        height: 50,
+                        height: 60,
                         width: double.infinity,
                         decoration: BoxDecoration(
                           border: Border.all(width: 1, color: Colors.grey),

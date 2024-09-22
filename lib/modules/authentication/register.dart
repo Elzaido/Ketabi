@@ -139,6 +139,8 @@ class _RegisterState extends State<Register> {
                                   },
                                   keyboardType: TextInputType.phone,
                                   decoration: InputDecoration(
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        vertical: 15.0, horizontal: 10.0),
                                     isDense: true,
                                     hintTextDirection: TextDirection.rtl,
                                     border: OutlineInputBorder(
@@ -173,8 +175,7 @@ class _RegisterState extends State<Register> {
                             child: Text(
                               "إنشاء حساب",
                               style: TextStyle(
-                                fontFamily: 'Cairo',
-                              ),
+                                  fontFamily: 'Cairo', color: Colors.white),
                             ),
                             color: mainColor),
                         SizedBox(
