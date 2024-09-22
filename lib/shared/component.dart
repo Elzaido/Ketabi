@@ -1,5 +1,3 @@
-// ignore_for_file: constant_identifier_names
-
 import 'package:book_swapping/shared/Cubit/home/home_cubit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -88,6 +86,7 @@ void defaultToast({
         fontSize: 16.0);
 
 // states of the Toast
+// ignore: constant_identifier_names
 enum ToastStates { SUCCESS, ERROR, WARNING }
 
 Color choseToastColor(ToastStates state) {

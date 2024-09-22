@@ -1,5 +1,4 @@
-// ignore_for_file: prefer_const_constructors, avoid_print
-
+import 'dart:developer';
 import 'package:book_swapping/Layout/home_layout.dart';
 import 'package:book_swapping/shared/Cubit/home/home_cubit.dart';
 import 'package:book_swapping/shared/Cubit/login/logincubit.dart';
@@ -45,7 +44,7 @@ class LoginVerify extends StatelessWidget {
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                icon: Icon(
+                icon: const Icon(
                   Icons.arrow_back_ios_rounded,
                   color: Colors.black,
                 ),
@@ -56,7 +55,7 @@ class LoginVerify extends StatelessWidget {
               children: [
                 Center(
                   child: SingleChildScrollView(
-                    padding: EdgeInsets.all(15),
+                    padding: const EdgeInsets.all(15),
                     child: Column(
                       children: [
                         Image.asset(
@@ -64,17 +63,17 @@ class LoginVerify extends StatelessWidget {
                           width: 180,
                           height: 180,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
-                        Text(
+                        const Text(
                           "التحقق من الهاتف",
                           style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
                               fontFamily: 'Cairo'),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 30,
                         ),
                         Pinput(
@@ -83,9 +82,9 @@ class LoginVerify extends StatelessWidget {
                             code = value;
                           },
                           showCursor: true,
-                          onCompleted: (pin) => print(pin),
+                          onCompleted: (pin) => log(pin),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         button(
@@ -96,13 +95,13 @@ class LoginVerify extends StatelessWidget {
                                 HomeCubit.get(context).getUserData();
                               });
                             },
-                            child: Text(
+                            child: const Text(
                               "تحقق من رقم الهاتف",
                               style: TextStyle(
                                   fontFamily: 'Cairo', color: Colors.white),
                             ),
                             color: mainColor),
-                        SizedBox(
+                        const SizedBox(
                           height: 5,
                         ),
                         Row(
@@ -113,7 +112,8 @@ class LoginVerify extends StatelessWidget {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => LoginPage()));
+                                          builder: (context) =>
+                                              const LoginPage()));
                                 },
                                 child: Text(
                                   "تغيير رقم الهاتف؟",
